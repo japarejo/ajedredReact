@@ -35,19 +35,13 @@ class Login extends React.Component{
     }
 
     handleButton =() => {
-      let url = "/login";
+      let url = "http://localhost:8080/login";
       axios.post(url,this.state.form)
       .then( response =>{
-        if(response.statusText === "OK"){
+        if(response.status === 200){
           localStorage.setItem("jwtToken",response.data.jwtToken);
           window.location.replace('/dashboard');
           
-        
-        }else{
-          this.setState({
-            error:true,
-            errorMsg : "Credenciales Incorrectas"
-          })
         }
       
       }).catch(error => {

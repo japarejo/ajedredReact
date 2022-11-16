@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+
+  db:
+    image: "mysql:8"
+    container_name: db
+    restart: always
+
+    ports:
+      - 3306:3306
+
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: prueba
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: ajedrezreact
+
+  
+  back-end:
+    build: ./
+    container_name: back-end
+
+    volumes:
+      - /workspace/src/
+      - .:/workspace
+
+    environment:
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_USER: prueba
+      SPRING_DATASOURCE_NAME: ajedrezreact
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/ajedrezreact
+
+    
+    depends_on:
+      - db
+
+    ports:
+      - 8080:8080
+
+  
+
+  
+  front-end:
+    container_name: front-end
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+
+    volumes:
+      - /app/src/
+      - ./frontend/:/app
+    
+    
+    ports:
+      - 3000:3000
+    depends_on:
+      - back-end

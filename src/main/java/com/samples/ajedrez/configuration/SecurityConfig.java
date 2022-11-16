@@ -54,10 +54,7 @@ public class SecurityConfig   {
         .antMatchers("/login").permitAll()
 		.antMatchers("/games/**").authenticated()
 		.antMatchers("/players/**").hasAnyRole("player","admin")
-        .anyRequest().authenticated()
-		.and().cors()
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .anyRequest().permitAll();
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 

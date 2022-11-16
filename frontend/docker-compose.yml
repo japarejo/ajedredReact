@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+  sample:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/src'
+    ports:
+      - 3000:3000
