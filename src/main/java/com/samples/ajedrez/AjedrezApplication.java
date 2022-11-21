@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import com.samples.ajedrez.user.User;
 import com.samples.ajedrez.user.UserService;
 
@@ -25,7 +23,7 @@ public class AjedrezApplication implements CommandLineRunner {
 		if (userService.findAllUsers().isEmpty()) {
 			User user1 = new User();
 			user1.setUsername("dani");
-			user1.setPassword(new BCryptPasswordEncoder().encode("react"));
+			user1.setPassword("react");
 			userService.saveUser(user1);
 		
 		}

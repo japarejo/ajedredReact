@@ -5,6 +5,7 @@ import './Login.css';
 
 import logo from "../../logo.svg";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 class Login extends React.Component{
 
@@ -25,7 +26,7 @@ class Login extends React.Component{
 
 
     handleChange = async e =>{
-      await this.setState({
+       this.setState({
         form:{
           ...this.state.form,
           [e.target.name]: e.target.value
@@ -36,20 +37,26 @@ class Login extends React.Component{
 
     handleButton =() => {
       let url = "http://localhost:8080/login";
-      axios.post(url,this.state.form)
-      .then( response =>{
-        if(response.status === 200){
-          localStorage.setItem("jwtToken",response.data.jwtToken);
-          window.location.replace('/dashboard');
-          
-        }
-      
-      }).catch(error => {
-        this.setState({
-          error:true,
-          errorMsg : "Credenciales Incorrectas"
-        })
-      });
+      if (validate(this.state.form)){
+
+        axios.post(url,this.state.form)
+        .then( response =>{
+          console.log(response);
+          if(response.status === 200){
+            
+            localStorage.setItem("jwtToken",response.data.jwtToken);
+            this.props.navigate('/dashboard');
+            
+          }
+        
+        }).catch(error => {
+          this.setState({
+            error:true,
+            errorMsg : "Credenciales Incorrectas"
+          })
+        });
+
+      }
       
     }
 
@@ -57,7 +64,11 @@ class Login extends React.Component{
 
     render(){
       return(
+        
        <React.Fragment>
+            
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossOrigin="anonymous"/>
+            
 
             <div className="wrapper fadeInDown">
               <div id="formContent">
@@ -67,8 +78,8 @@ class Login extends React.Component{
                 </div>
 
                 <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required="required" onChange={this.handleChange}/>
-                  <input type="password" className="fadeIn third" name="password" placeholder="Password" required="required" onChange={this.handleChange}/>
+                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={this.handleChange}/>
+                  <input type="password" className="fadeIn third" name="password" placeholder="Password" required onChange={this.handleChange}/>
                   <input type="submit" className="fadeIn fourth" value="Log In" onClick={this.handleButton}/>
                 </form>
 
@@ -88,4 +99,18 @@ class Login extends React.Component{
   }
 }
 
-export default Login;
+export default function Redirect(props){
+  const navigate = useNavigate();
+
+  return <Login {... props} navigate={navigate}/>;
+}
+
+
+function validate(props){
+  if (props["username"].length > 1 && props["password"].length > 1){
+    return true;
+    }else{
+      return false;
+    }
+  }
+
