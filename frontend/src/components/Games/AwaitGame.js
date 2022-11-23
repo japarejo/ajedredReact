@@ -2,14 +2,12 @@ import React from 'react';
 
 import axios from 'axios';
 
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom";
+
+import NavBar from '../../Navbar';
+
 
 class AwaitGame extends React.Component{
-
-    state = {};
-
-    
-  
 
     componentDidMount = () => {
        setInterval(this.numberOfPlayers,1000);
@@ -45,9 +43,12 @@ class AwaitGame extends React.Component{
 
     render(){
     return(
+        <React.Fragment>
+            <NavBar></NavBar>
         <div>
             <h1>Esperando a que se una otro jugador</h1>
         </div>
+        </React.Fragment>
         )
 
     }

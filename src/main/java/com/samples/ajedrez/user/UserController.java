@@ -96,11 +96,4 @@ public class UserController {
     }
 
 
-
-    @GetMapping("/players")
-    public String mensaje(){
-
-        return "Prueba";
-    }
-
 }

@@ -1,9 +1,16 @@
 package com.samples.ajedrez.game;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +19,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.samples.ajedrez.player.Player;
+import com.samples.ajedrez.user.User;
 
 @RequestMapping("/games")
 @RestController
@@ -44,6 +55,7 @@ public class GameController {
         if(player!=null){
             participantes.add(player);
             game.setPlayer(participantes);
+            game.setNumeroJugadores(1);
             this.gameService.saveGame(game);
 
             return game.getId().toString();
@@ -63,17 +75,19 @@ public class GameController {
         return game.getPlayer().size();
     }
 
-    @GetMapping("/{gameId}")
+    @GetMapping("/{gameId}/join")
     public String joinPlayer(@PathVariable int gameId){
         Game game = this.gameService.findGameById(gameId);
         List<Player>participantes = game.getPlayer();
 
         Player player = this.gameService.jugadorSesion();
 
-        if(player!=null && participantes.size()<2){
+        if(player!=null && game.getNumeroJugadores()<2 && !participantes.contains(player)){
             participantes.add(player);
 
             game.setPlayer(participantes);
+
+            game.setNumeroJugadores(game.getNumeroJugadores()+1);
 
             this.gameService.saveGame(game);
 
@@ -83,6 +97,34 @@ public class GameController {
             return "Error";
         }
     }
+
+
+    @GetMapping("/{gameId}")
+    public String estadoJugador(@PathVariable int gameId){
+        Game game = this.gameService.findGameById(gameId);
+        List<Player>participantes = game.getPlayer();
+
+        Player player = this.gameService.jugadorSesion();
+
+        if(participantes.contains(player)){
+            return "jugador";
+        }else{
+            return "espectador";
+        }
+
+    }
+
+
+
+    @GetMapping("/findGames")
+    public List<Game> getGames(){
+       
+        
+        List<Game> pl = this.gameService.findGames();
+
+        return pl;
+
+}
 
 
 

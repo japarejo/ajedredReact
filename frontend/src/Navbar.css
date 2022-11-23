@@ -1,5 +1,5 @@
 .navbar {
-    background-color: #afe6ff;
+    background-color: #afffc3;
     font-weight: bold;
     margin: 0%;
     padding: 0%;
@@ -18,48 +18,4 @@ body::after {
     right: 0;
     position: absolute;
     z-index: -1;
-}
-
-.title1 {
-    font-family: 'sans-serif';
-}
-
-.logo {
-    height: 70px;
-    width: 80px;
-    align-content: center;
-}
-
-.center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-h1 {
-    text-align: center;
-}
-
-body {
-    overflow-y: scroll;
-    overflow: auto;
-    overflow-x: hidden;
-    /* Show vertical scrollbar */
-}
-
-#container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.boton {
-    background-color: #2694BF;
-    color: white;
-}
-
-.separado {
-    margin-top: 20px;
-    margin-left: 10%;
-    margin-right: 10%;
 }

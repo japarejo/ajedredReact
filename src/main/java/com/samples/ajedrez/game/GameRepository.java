@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface GameRepository extends CrudRepository<Game, Integer> {
 
-	@Query("SELECT game FROM Game game ORDER BY game.name")
+	@Query("SELECT game FROM Game game WHERE game.numeroJugadores < 2 OR game.espectadores=True ORDER BY game.name")
 	List<Game> findGames() throws DataAccessException;
 
 	@Query("SELECT COUNT(*) FROM Game")

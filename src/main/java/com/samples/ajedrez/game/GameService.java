@@ -1,6 +1,7 @@
 package com.samples.ajedrez.game;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,7 +29,7 @@ public class GameService {
     }
 	
 	@Transactional(readOnly = true)
-	public Collection<Game> findGames() throws DataAccessException {
+	public List<Game> findGames() throws DataAccessException {
 		return gameRepository.findGames();
 	}
 
