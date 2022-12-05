@@ -51,10 +51,10 @@ public class SecurityConfig   {
         //.httpBasic(withDefaults()) 
         .csrf().disable()
         .authorizeRequests()
-        .antMatchers("/login").permitAll()
+        .antMatchers("/login","/register").permitAll()
 		.antMatchers("/games/**").authenticated()
-		.antMatchers("/players/**").hasAnyRole("player","admin")
-        .anyRequest().permitAll()
+		.antMatchers("/player/**").authenticated()
+        .anyRequest().authenticated()
 		.and().cors()
         .and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -18,6 +18,7 @@ class ListGame extends React.Component{
   
 
     componentDidMount = () => {
+       this.listGames()
        setInterval(this.listGames,500);
         
     }
@@ -98,7 +99,6 @@ class ListGame extends React.Component{
 
             <thead>
                 <tr>
-                    <th scope="col">Id</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Tiempo</th>
                     <th scope="col">Acciones</th>
@@ -110,7 +110,6 @@ class ListGame extends React.Component{
                 { this.state.games.map((value,i) =>{
                     return (
                         <tr key={i}>
-                            <td>{value.id} </td>
                             <td>{value.name} </td>
                             <td>{value.tiempo} min</td>
                             

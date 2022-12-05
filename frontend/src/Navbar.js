@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-import { Navbar, Nav, Container } from "react-bootstrap"
+import { Navbar, Container } from "react-bootstrap"
 
 import { Outlet, Link } from "react-router-dom"
 
@@ -19,10 +19,10 @@ class NavBar extends React.Component{
                  <Navbar.Brand as={Link} to="/games/create" >Crear Partida</Navbar.Brand>
                  <Navbar.Toggle aria-controls="basic-navbar-nav" />
                  <Navbar.Collapse id="basic-navbar-nav">
-                 <Nav className="nav-item dropdown">
-                     <Nav.Link as={Link} to="/games/list" >Partidas Disponibles</Nav.Link>
-                     <Nav.Link as={Link} to="/contact">Datos Personales</Nav.Link>                
-                 </Nav>
+                 
+                <Navbar.Brand as={Link} to="/games/list" >Partidas Disponibles</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/player">Datos Personales</Navbar.Brand>                
+                
                  </Navbar.Collapse>
              </Container>
              </Navbar>  

@@ -63,7 +63,7 @@ class Register extends React.Component{
           axios.post(url,this.state.form)
           .then( response =>{
             if(response.data==='OK'){
-              window.location.reload('');
+              window.location.replace('/login');
             }else{
               this.setState({
                 error:true,
@@ -94,12 +94,12 @@ class Register extends React.Component{
                 </div>
 
                 <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="firstName" placeholder="First Name" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Last Name" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telephone" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="username" placeholder="Username" required onChange={this.handleChange}/>
-                  <input type="password" className="fadeIn third" name="password" placeholder="Password" required onChange={this.handleChange}/>
-                  <input type="submit" className="fadeIn fourth" value="Register" onClick={this.handleButton}/>
+                  <input type="text"  className="fadeIn second" name="firstName" placeholder="Nombre" required onChange={this.handleChange}/>
+                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Apellidos" required onChange={this.handleChange}/>
+                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telefono" required onChange={this.handleChange}/>
+                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={this.handleChange}/>
+                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={this.handleChange}/>
+                  <input type="submit" className="fadeIn fourth" value="Registrarse" onClick={this.handleButton}/>
                 </form>
 
             {this.state.error === true &&

@@ -1,5 +1,6 @@
 package com.samples.ajedrez.user;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class AuthoritiesService {
 		authoritiesRepository.save(authorities);
 	}
 
+
 	@Transactional
 	public void saveAuthorities(String username, String role) throws DataAccessException {
 		Authorities authority = new Authorities();
@@ -37,6 +39,11 @@ public class AuthoritiesService {
 		} else
 			throw new DataAccessException("User '" + username + "' not found!") {
 			};
+	}
+
+
+	public void deleteAuthorities(List<Authorities> authorities) throws DataAccessException {
+		authoritiesRepository.deleteAll(authorities);
 	}
 
 }

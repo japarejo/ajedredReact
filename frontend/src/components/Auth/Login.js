@@ -80,7 +80,7 @@ class Login extends React.Component{
                 <form onSubmit={this.handleSubmit}>
                   <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={this.handleChange}/>
                   <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={this.handleChange}/>
-                  <input type="submit" className="fadeIn fourth" value="Log In" onClick={this.handleButton}/>
+                  <input type="submit" className="fadeIn fourth" value="Iniciar Sesion" onClick={this.handleButton}/>
                 </form>
 
             {this.state.error === true &&

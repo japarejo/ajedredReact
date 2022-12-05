@@ -43,14 +43,23 @@ public class UsuarioDetailsService implements UserDetailsService  {
     var user = userService.findUser(username);
     List<Authorities> authorities = user.get().getAuthorities();
 
-    String[] array = new String[authorities.size()];
+    if(authorities!=null){
+      String[] array = new String[authorities.size()];
 
-    for(int i = 0; i<authorities.size();i++){
-      array[i] = authorities.get(i).getAuthority();
-      }
+      for(int i = 0; i<authorities.size();i++){
+        array[i] = authorities.get(i).getAuthority();
+        }
 
 
-    return array;
+      return array;
+    
+    }else{
+      String[] array = new String[1];
+      array[0] = "player";
+
+      return array;
+    }
+    
     
     
     }
