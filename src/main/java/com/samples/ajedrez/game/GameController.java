@@ -2,6 +2,7 @@ package com.samples.ajedrez.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.samples.ajedrez.chess.ChessBoard;
+import com.samples.ajedrez.chess.Piece;
 import com.samples.ajedrez.player.Player;
 
 @RequestMapping("/games")
@@ -89,17 +92,43 @@ public class GameController {
 
 
     @GetMapping("/{gameId}")
-    public String estadoJugador(@PathVariable int gameId){
-        Game game = this.gameService.findGameById(gameId);
-        List<Player>participantes = game.getPlayer();
+    public Optional<ChessBoard> inicioPartida(@PathVariable int gameId){
 
-        Player player = this.gameService.jugadorSesion();
+        return this.gameService.findBoardById(1);
+        
 
-        if(participantes.contains(player)){
-            return "jugador";
-        }else{
-            return "espectador";
-        }
+    }
+
+
+
+    @PostMapping("/listMovements")
+    public List<List<Integer>> listaMovimientos(@RequestBody Piece piece){
+
+        Piece pieza = this.gameService.findPieceById(piece.getId());
+
+    
+        return this.gameService.listaMovimientos(pieza);
+
+
+
+    }
+
+
+    @PostMapping("/move")
+    public String movimiento(@RequestBody Piece piece){
+
+        Piece pieza = this.gameService.findPieceById(piece.getId());
+
+        Integer posX = piece.getXPosition();
+        Integer posY = piece.getYPosition();
+
+        pieza.setXPosition(posX);
+        pieza.setYPosition(posY);
+
+        this.gameService.savePiece(pieza);
+        
+        return "OK";
+        
 
     }
 

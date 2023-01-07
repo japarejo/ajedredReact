@@ -63,6 +63,7 @@ class Register extends React.Component{
           axios.post(url,this.state.form)
           .then( response =>{
             if(response.data==='OK'){
+              alert("Se ha registrado el usuario correctamente");
               window.location.replace('/login');
             }else{
               this.setState({
