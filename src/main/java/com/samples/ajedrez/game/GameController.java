@@ -120,6 +120,7 @@ public class GameController {
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
         Integer posX = piece.getXPosition();
+        System.out.println(posX);
         Integer posY = piece.getYPosition();
 
         pieza.setXPosition(posX);

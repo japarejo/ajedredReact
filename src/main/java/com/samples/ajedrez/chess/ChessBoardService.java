@@ -49,9 +49,139 @@ public class ChessBoardService {
         
         } else if(piece.getType().equals("TOWER")){
             ls = calculaMovimientoTorre(piece);
+        
+        } else if(piece.getType().equals("BISHOP")){
+            ls = calculaMovimientoAlfil(piece);
+        
+        } else if(piece.getType().equals("QUEEN")){
+            ls = calculaMovimientoAlfil(piece);
+
+            ls.addAll(calculaMovimientoTorre(piece));
         }
         
         return ls;
+    }
+
+
+
+    private List<List<Integer>> calculaMovimientoAlfil(Piece piece){
+        
+        List<List<Integer>> ls = new ArrayList<>();
+        List<Integer> posicion = new ArrayList<>();
+
+        int posXActual = piece.getXPosition();
+        int posYActual = piece.getYPosition();
+
+        //Vemos la diagonal superior derecha
+        for(int x = posXActual +1, y = posYActual -1; x<=7 && y>=0; x++, y--){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(x);
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        
+        }
+
+
+
+        //Vemos la diagonal inferior izquierda
+        for(int x = posXActual -1, y = posYActual +1; x>=0 && y<=7; x--, y++){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(x);
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        
+        }
+
+
+
+        //Vemos la diagonal superior izquierda
+        for(int x = posXActual -1, y = posYActual -1; x>=0 && y>=0; x--, y--){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(x);
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        
+        }
+
+
+
+
+        //Vemos la diagonal inferior derecha
+        for(int x = posXActual +1, y = posYActual +1; x<=7 && y<=7; x++, y++){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(x);
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        
+        }
+
+
+        return ls;
+
     }
 
 
@@ -63,17 +193,111 @@ public class ChessBoardService {
 
         List<Integer> posicion = new ArrayList<>();
 
-        for(int x=0;x<8;x++){
-            for(int y = 0; y<8;y++){
+        int posXActual = piece.getXPosition();
+        int posYActual = piece.getYPosition();
 
-                if(piece.getXPosition() == x || piece.getYPosition() == y){
-                    posicion.add(x);
-                    posicion.add(y);
+        for(int posYNueva=posYActual-1;posYNueva>=0;posYNueva--){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXActual, posYNueva);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(posXActual);
+                    posicion.add(posYNueva);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
+
+                    break;
                 }
+            }else{
+                posicion.add(posXActual);
+                posicion.add(posYNueva);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
             }
         }
+
+
+
+        for(int posYNueva=posYActual+1;posYNueva<=7;posYNueva++){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXActual, posYNueva);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(posXActual);
+                    posicion.add(posYNueva);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(posXActual);
+                posicion.add(posYNueva);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        }
+
+
+
+        
+        for(int posXNueva=posXActual-1;posXNueva>=0;posXNueva--){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXNueva, posYActual);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(posXNueva);
+                    posicion.add(posYActual);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(posXNueva);
+                posicion.add(posYActual);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        }
+
+
+        for(int posXNueva=posXActual+1;posXNueva<=7;posXNueva++){
+
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXNueva, posYActual);
+
+            if(piezaPosicion.isPresent()){
+                if(piezaPosicion.get().color.equals(piece.getColor())){
+                    break;
+                }else{
+                    posicion.add(posXNueva);
+                    posicion.add(posYActual);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
+
+                    break;
+                }
+            }else{
+                posicion.add(posXNueva);
+                posicion.add(posYActual);
+                ls.add(new ArrayList<>(posicion));
+                posicion.clear();
+            }
+        }
+
+
+
+
+
 
 
         return ls;
@@ -92,14 +316,25 @@ public class ChessBoardService {
                 if(Math.abs(piece.getXPosition() - x) == 2 && Math.abs(piece.getYPosition() - y) == 1 || 
                 Math.abs(piece.getXPosition() - x) == 1 && Math.abs(piece.getYPosition() - y) == 2){
 
+                    Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y);
+
+                    if(piezaPosicion.isPresent()){
+
+                        if(piezaPosicion.get().color.equals(piece.getColor())){
+                            continue;
+                        }
+                    }
+                        
                     posicion.add(x);
                     posicion.add(y);
                     ls.add(new ArrayList<>(posicion));
 
                     posicion.clear();
+                    
                 }
             }
-        }
+
+        }       
 
 
         return ls;
