@@ -2,7 +2,6 @@ package com.samples.ajedrez.game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,30 @@ public class GameController {
             participantes.add(player);
             game.setPlayer(participantes);
             game.setNumeroJugadores(1);
+
+            ChessBoard board = new ChessBoard();
+
+            this.gameService.inicializacionTablero(board);
+
+            game.setChessBoard(board);
+
             this.gameService.saveGame(game);
+
+            int numero = (int) (Math.random() * 2);
+
+            if(numero == 0){
+
+                player.setColorPartida("WHITE");
+
+            }else{
+                player.setColorPartida("BLACK");
+
+            }
+
+
+            this.gameService.savePlayer(player);
+
+            
 
             return game.getId().toString();
         
@@ -75,6 +97,18 @@ public class GameController {
         Player player = this.gameService.jugadorSesion();
 
         if(player!=null && game.getNumeroJugadores()<2 && !participantes.contains(player)){
+
+            String colorJugadorUnido = participantes.get(0).getColorPartida();
+
+            if(colorJugadorUnido.equals("WHITE")){
+                player.setColorPartida("BLACK");
+            }else{
+                player.setColorPartida("WHITE");
+            }
+
+            this.gameService.savePlayer(player);
+
+
             participantes.add(player);
 
             game.setPlayer(participantes);
@@ -92,9 +126,23 @@ public class GameController {
 
 
     @GetMapping("/{gameId}")
-    public Optional<ChessBoard> inicioPartida(@PathVariable int gameId){
+    public List<?> inicioPartida(@PathVariable int gameId){
 
-        return this.gameService.findBoardById(1);
+        List<Object> partida = new ArrayList<>();
+
+        ChessBoard tablero = this.gameService.findGameById(gameId).getChessBoard();
+
+        partida.add(tablero);
+
+        String colorJugador = this.gameService.jugadorSesion().getColorPartida();
+        partida.add(colorJugador);
+
+
+        return partida;
+
+
+
+        
         
 
     }
@@ -115,7 +163,7 @@ public class GameController {
 
 
     @PostMapping("/move")
-    public String movimiento(@RequestBody Piece piece){
+    public void movimiento(@RequestBody Piece piece){
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
@@ -123,12 +171,22 @@ public class GameController {
         System.out.println(posX);
         Integer posY = piece.getYPosition();
 
-        pieza.setXPosition(posX);
-        pieza.setYPosition(posY);
+        List<List<Integer>> listaMovimientos = listaMovimientos(piece);
 
-        this.gameService.savePiece(pieza);
+        List<Integer> movimiento = new ArrayList<>();
+
+        movimiento.add(posX);
+        movimiento.add(posY);
+
+        if(listaMovimientos.contains(movimiento)){
+            pieza.setXPosition(posX);
+            pieza.setYPosition(posY);
+
+            this.gameService.savePiece(pieza);
         
-        return "OK";
+        }
+
+        
         
 
     }

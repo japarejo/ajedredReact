@@ -1,6 +1,7 @@
 package com.samples.ajedrez.chess;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.validator.constraints.Range;
 
@@ -24,6 +25,7 @@ public class Piece extends BaseEntity {
     int yPosition;
     
     @ManyToOne
+    @JoinColumn(name = "board_id")
     @JsonIgnore
     ChessBoard board;
 }

@@ -14,7 +14,9 @@ function Game() {
 
     const [pieces,setPieces] = useState([]);
 
-    const [done,setDone] = useState("false");
+    const[color,setColor] = useState();
+
+    const [inicializado,setInicializado] = useState("false");
 
     const[reload,setReload] = useState("false");
 
@@ -41,7 +43,7 @@ function Game() {
     
 
 
-    const DrawBoard = () => {
+    const DrawBoard = async() => {
         
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -49,7 +51,7 @@ function Game() {
        
         image = document.getElementById("source");
 
-
+    
         ctx.drawImage(image,0,0,800,800);
 
 
@@ -57,8 +59,6 @@ function Game() {
 
         if(form.id !=0){
             movimientos.map(movimiento =>{
-                
-                var ctx = canvas.getContext("2d");
         
                 ctx.fillStyle = '#b0c4de';
                 ctx.fillRect(movimiento[0]*100, movimiento[1]*100,100,100);
@@ -70,7 +70,6 @@ function Game() {
 
         pieces.map(piece =>{
             var pieza = document.getElementById(piece.type + "-" + piece.color);
-            var ctx = canvas.getContext("2d");
 
 
             
@@ -78,13 +77,17 @@ function Game() {
                 ctx.fillStyle = '#FF0000';
                 ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
             }
+
+            
+           
             
             ctx.drawImage(pieza,piece.xposition*100,piece.yposition*100,100,100);
 
-
             })
 
-            window.addEventListener("mousedown",oMousePos);
+        
+        window.addEventListener("click",oMousePos);
+
 
     }
 
@@ -101,9 +104,9 @@ function Game() {
         if(form.id!=0){
             movimientos.map(movimiento =>{
 
-                if(movimiento[0]== x && movimiento[1]== y){
+                if(movimiento[0]=== x && movimiento[1]=== y){
                     setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                    window.removeEventListener("mousedown",oMousePos);
+                    window.removeEventListener("click",oMousePos);
 
                     
                 }
@@ -114,9 +117,9 @@ function Game() {
         pieces.map(piece =>{
 
 
-            if(piece.xposition == x && piece.yposition == y){
+            if(piece.xposition === x && piece.yposition === y && piece.color ===color){
                 setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                window.removeEventListener("mousedown",oMousePos);
+                window.removeEventListener("click",oMousePos);
             
 
             }
@@ -136,20 +139,21 @@ function Game() {
 
     
     
-    function tablero() {
+    const tablero = async() => {
         const token = localStorage.getItem("jwtToken");
 
         let url = "http://localhost:8080" + sampleLocation.pathname;
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
-            setPieces(response.data.pieces);
-            setDone("true");
+            setPieces(response.data[0].pieces);
+            setColor(response.data[1]);
+            setInicializado("true");
             })
 
     }
 
 
-    const listaMovimientos = () =>{
+    const listaMovimientos = async() =>{
 
         const token = localStorage.getItem("jwtToken");
         
@@ -162,12 +166,14 @@ function Game() {
 
 
     
-    const handleButton =() => {
+    const handleButton = async() => {
 
 
         const token = localStorage.getItem("jwtToken");
         
         let url = "http://localhost:8080/games/move";
+
+        
             
                     
                         
@@ -178,8 +184,13 @@ function Game() {
                         }
             
                     })
+
+        
+        //window.location.reload();
                     
-            setReload("true");
+        setReload("true");
+
+        
             
             
                 
@@ -246,9 +257,11 @@ function Game() {
             <img id="PAWN-WHITE" src={require('../../assets/img/PAWN-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="TOWER-WHITE" src={require('../../assets/img/TOWER-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="TOWER-BLACK" src={require('../../assets/img/TOWER-BLACK.png')} alt="alt" style={{display:'none'}}/>
+            <img id="QUEEN-WHITE" src={require('../../assets/img/QUEEN-WHITE.png')} alt="alt" style={{display:'none'}}/>
 
-            {done === "true" &&
+            {inicializado === "true" &&
             <div>
+                
                 <DrawBoard /> 
 
             </div>

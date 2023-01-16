@@ -36,6 +36,10 @@ public class Player extends BaseEntity {
 	@Digits(fraction = 0, integer = 9)
 	private String telephone;
 
+
+	@Column(name="color")
+	private String colorPartida;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;

@@ -11,7 +11,7 @@ public interface PieceRepository extends CrudRepository<Piece,Integer> {
 
     Piece findById(int id) throws DataAccessException;
 
-    @Query("SELECT piece FROM Piece piece WHERE piece.xPosition = :x AND piece.yPosition = :y")
-	Optional<Piece> existePiezaPosicion(int x, int y) throws DataAccessException;
+    @Query("SELECT piece FROM Piece piece WHERE piece.xPosition = :x AND piece.yPosition = :y AND piece.board.id = :boardId")
+	Optional<Piece> existePiezaPosicion(int x, int y,int boardId) throws DataAccessException;
     
 }

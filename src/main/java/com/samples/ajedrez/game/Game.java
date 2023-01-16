@@ -2,14 +2,18 @@ package com.samples.ajedrez.game;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.samples.ajedrez.chess.ChessBoard;
 import com.samples.ajedrez.model.BaseEntity;
 import com.samples.ajedrez.player.Player;
 
@@ -42,6 +46,12 @@ public class Game extends BaseEntity {
 	@ManyToMany
 	@JsonIgnore
 	private List<Player> player;
+
+
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "chessboard_id", referencedColumnName = "id")
+	private ChessBoard chessBoard;
 
 
 }
