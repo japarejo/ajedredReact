@@ -57,8 +57,8 @@ public class GameService {
 	}
 
 
-	public void savePlayer(Player player){
-		this.playerService.savePlayer(player);
+	public void updatePlayer(Player player){
+		this.playerService.updatePlayer(player);
 	}
 
 
@@ -94,8 +94,8 @@ public class GameService {
 
 		piece1.setColor("BLACK");
 		piece1.setType("HORSE");
-		piece1.setXPosition(0);
-		piece1.setYPosition(2);
+		piece1.setXPosition(1);
+		piece1.setYPosition(0);
 		piece1.setBoard(board);
 
 		Piece piece2 = new Piece();
@@ -103,11 +103,8 @@ public class GameService {
 		piece2.setColor("WHITE");
 		piece2.setType("QUEEN");
 		piece2.setXPosition(4);
-		piece2.setYPosition(4);
+		piece2.setYPosition(7);
 		piece2.setBoard(board);
-
-		this.boardService.savePiece(piece1);
-		this.boardService.savePiece(piece2);
 
 
 		Piece piece3 = new Piece();
@@ -124,7 +121,7 @@ public class GameService {
 		piece4.setColor("WHITE");
 		piece4.setType("KING");
 		piece4.setXPosition(3);
-		piece4.setYPosition(5);
+		piece4.setYPosition(7);
 		piece4.setBoard(board);
 
 		Piece piece5 = new Piece();
@@ -135,12 +132,49 @@ public class GameService {
 		piece5.setYPosition(6);
 		piece5.setBoard(board);
 
+		Piece piece6 = new Piece();
+
+		piece6.setColor("WHITE");
+		piece6.setType("TOWER");
+		piece6.setXPosition(7);
+		piece6.setYPosition(7);
+		piece6.setBoard(board);
+
+		Piece piece7 = new Piece();
+
+		piece7.setColor("BLACK");
+		piece7.setType("TOWER");
+		piece7.setXPosition(0);
+		piece7.setYPosition(0);
+		piece7.setBoard(board);
+
+
+		Piece piece8 = new Piece();
+
+		piece8.setColor("BLACK");
+		piece8.setType("BISHOP");
+		piece8.setXPosition(5);
+		piece8.setYPosition(0);
+		piece8.setBoard(board);
+
+		Piece piece9 = new Piece();
+
+		piece9.setColor("BLACK");
+		piece9.setType("KING");
+		piece9.setXPosition(4);
+		piece9.setYPosition(0);
+		piece9.setBoard(board);
+
+
 		this.boardService.savePiece(piece1);
 		this.boardService.savePiece(piece2);
 		this.boardService.savePiece(piece3);
 		this.boardService.savePiece(piece4);
 		this.boardService.savePiece(piece5);
-
+		this.boardService.savePiece(piece6);
+		this.boardService.savePiece(piece7);
+		this.boardService.savePiece(piece8);
+		this.boardService.savePiece(piece9);
 	}
 
 }

@@ -95,4 +95,11 @@ public class PlayerService {
 
 
 	}
+
+
+
+	@Transactional
+	public void updateColorPlayer(Player player){
+		playerRepository.save(player);
+	}
 }

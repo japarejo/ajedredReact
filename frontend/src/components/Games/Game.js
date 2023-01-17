@@ -18,7 +18,6 @@ function Game() {
 
     const [inicializado,setInicializado] = useState("false");
 
-    const[reload,setReload] = useState("false");
 
 
     const[movimientos,setMovimientos] = useState([]);
@@ -43,7 +42,7 @@ function Game() {
     
 
 
-    const DrawBoard = async() => {
+    const DrawBoard = () => {
         
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -61,7 +60,12 @@ function Game() {
             movimientos.map(movimiento =>{
         
                 ctx.fillStyle = '#b0c4de';
-                ctx.fillRect(movimiento[0]*100, movimiento[1]*100,100,100);
+
+                if(color === "BLACK"){
+                    ctx.fillRect(700-(movimiento[0]*100), 700-(movimiento[1]*100),100,100);
+                }else{
+                    ctx.fillRect(movimiento[0]*100, movimiento[1]*100,100,100);
+                }
                     
                 })
         }
@@ -75,13 +79,24 @@ function Game() {
             
             if(piece.id == form.id){
                 ctx.fillStyle = '#FF0000';
-                ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
+                if(color === "BLACK"){
+                    ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
+                }else{
+                    ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
+                }
             }
 
             
-           
+            if(color === "BLACK"){
+                ctx.drawImage(pieza,700-(piece.xposition*100),700-(piece.yposition*100),100,100);
+            }else{
+                ctx.drawImage(pieza,piece.xposition*100,piece.yposition*100,100,100);
+            }
             
-            ctx.drawImage(pieza,piece.xposition*100,piece.yposition*100,100,100);
+            
+            
+            
+            
 
             })
 
@@ -104,25 +119,40 @@ function Game() {
         if(form.id!=0){
             movimientos.map(movimiento =>{
 
-                if(movimiento[0]=== x && movimiento[1]=== y){
-                    setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                    window.removeEventListener("click",oMousePos);
-
-                    
+                if(color==="BLACK"){
+                    if(7-movimiento[0]=== x && 7-movimiento[1]=== y){
+                        setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
+                        window.removeEventListener("click",oMousePos);
+      
+                    }
+                }else{
+                    if(movimiento[0]=== x && movimiento[1]=== y){
+                        setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
+                        window.removeEventListener("click",oMousePos);
+      
+                    }
                 }
+
+                
             })
 
         }
 
         pieces.map(piece =>{
 
-
-            if(piece.xposition === x && piece.yposition === y && piece.color ===color){
-                setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                window.removeEventListener("click",oMousePos);
+            if(color==="BLACK"){
+                if(7-piece.xposition === x && 7-piece.yposition === y && piece.color ===color){
+                    setForm({id:piece.id,xposition:"-1",yposition:"-1"});
+                    window.removeEventListener("click",oMousePos);
+                }
             
-
+            }else{
+                if(piece.xposition === x && piece.yposition === y && piece.color ===color){
+                    setForm({id:piece.id,xposition:"-1",yposition:"-1"});
+                    window.removeEventListener("click",oMousePos);
+                }
             }
+            
 
 
         })
@@ -139,7 +169,7 @@ function Game() {
 
     
     
-    const tablero = async() => {
+    const tablero = () => {
         const token = localStorage.getItem("jwtToken");
 
         let url = "http://localhost:8080" + sampleLocation.pathname;
@@ -153,7 +183,7 @@ function Game() {
     }
 
 
-    const listaMovimientos = async() =>{
+    const listaMovimientos = () =>{
 
         const token = localStorage.getItem("jwtToken");
         
@@ -166,7 +196,7 @@ function Game() {
 
 
     
-    const handleButton = async() => {
+    const handleButton = () => {
 
 
         const token = localStorage.getItem("jwtToken");
@@ -186,13 +216,8 @@ function Game() {
                     })
 
         
-        //window.location.reload();
+        window.location.reload();
                     
-        setReload("true");
-
-        
-            
-            
                 
         }
 
@@ -207,6 +232,7 @@ function Game() {
 
     useEffect(() => {
         tablero();
+        setInterval(tablero,1000);
 
         if(form.id!=0){
             listaMovimientos();
@@ -220,12 +246,12 @@ function Game() {
         
 
         return () => {
-            setReload("false");
             setForm({id:"0"});
+            clearInterval(tablero);
         }
 
         
-    },[form.id,form.xposition,reload])
+    },[form.id,form.xposition])
 
 
 

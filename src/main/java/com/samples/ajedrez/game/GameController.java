@@ -68,7 +68,7 @@ public class GameController {
             }
 
 
-            this.gameService.savePlayer(player);
+            this.gameService.updatePlayer(player);
 
             
 
@@ -106,7 +106,7 @@ public class GameController {
                 player.setColorPartida("WHITE");
             }
 
-            this.gameService.savePlayer(player);
+            this.gameService.updatePlayer(player);
 
 
             participantes.add(player);
@@ -126,7 +126,7 @@ public class GameController {
 
 
     @GetMapping("/{gameId}")
-    public List<?> inicioPartida(@PathVariable int gameId){
+    public List<Object> inicioPartida(@PathVariable int gameId){
 
         List<Object> partida = new ArrayList<>();
 
