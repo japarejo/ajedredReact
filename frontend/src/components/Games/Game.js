@@ -16,6 +16,8 @@ function Game() {
 
     const[color,setColor] = useState();
 
+    const[turn,setTurn] = useState();
+
     const [inicializado,setInicializado] = useState("false");
 
 
@@ -100,9 +102,9 @@ function Game() {
 
             })
 
-        
-        window.addEventListener("click",oMousePos);
-
+        if(color === turn){
+            window.addEventListener("click",oMousePos);
+        }
 
     }
 
@@ -176,6 +178,7 @@ function Game() {
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
             setPieces(response.data[0].pieces);
+            setTurn(response.data[0].turn);
             setColor(response.data[1]);
             setInicializado("true");
             })

@@ -50,6 +50,8 @@ public class GameController {
 
             ChessBoard board = new ChessBoard();
 
+            board.setTurn("WHITE");
+
             this.gameService.inicializacionTablero(board);
 
             game.setChessBoard(board);
@@ -179,10 +181,25 @@ public class GameController {
         movimiento.add(posY);
 
         if(listaMovimientos.contains(movimiento)){
+
+            this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
             pieza.setXPosition(posX);
             pieza.setYPosition(posY);
 
             this.gameService.savePiece(pieza);
+
+            ChessBoard tablero = pieza.getBoard();
+
+            if(tablero.getTurn().equals("WHITE")){
+                tablero.setTurn("BLACK");
+            
+            }else{
+                tablero.setTurn("WHITE");
+            }
+
+            this.gameService.saveBoard(tablero);
+
+
         
         }
 

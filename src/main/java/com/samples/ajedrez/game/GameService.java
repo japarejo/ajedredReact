@@ -79,10 +79,20 @@ public class GameService {
 	}
 
 
+	public void saveBoard(ChessBoard board){
+		this.boardService.saveChessBoard(board);
+	}
+
+
 
 	public List<List<Integer>> listaMovimientos(Piece piece){
 
 		return this.boardService.listaMovimientos(piece);
+	}
+
+
+	public void comprobarCasilla(int x, int y, int chessBoardId){
+		this.boardService.comprobarCasilla(x, y, chessBoardId);
 	}
 
 

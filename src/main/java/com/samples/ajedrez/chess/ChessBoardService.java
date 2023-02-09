@@ -36,6 +36,20 @@ public class ChessBoardService {
     }
 
 
+    public void comprobarCasilla(int x, int y, int chessBoardId){
+
+        Optional<Piece> piezaComer = pieceRepository.existePiezaPosicion(x, y, chessBoardId);
+
+        if(piezaComer.isPresent()){
+            pieceRepository.remove(piezaComer.get().getId());
+
+        }
+
+
+        }
+    
+
+
 
 
     public List<List<Integer>> listaMovimientos(Piece piece){
