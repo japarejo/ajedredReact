@@ -28,5 +28,9 @@ public class ChessBoard extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "board", fetch = FetchType.EAGER)
     List<Piece> pieces;
+
+
+    @Column(name= "jaque")
+    private Boolean jaque;
     
 }

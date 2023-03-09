@@ -18,6 +18,15 @@ function Game() {
 
     const[turn,setTurn] = useState();
 
+    const[jaque,setJaque] = useState();
+
+    const[time,setTime] = useState();
+
+    const[myTurn, setMyTurn] = useState(false);
+
+    const[finPartida, setFinPartida] = useState();
+
+
     const [inicializado,setInicializado] = useState("false");
 
 
@@ -77,6 +86,17 @@ function Game() {
         pieces.map(piece =>{
             var pieza = document.getElementById(piece.type + "-" + piece.color);
 
+            if(jaque && !finPartida){
+                if(piece.type === "KING" && piece.color === turn){
+                    ctx.fillStyle = '#52A77E';
+                    if(color === "BLACK"){
+                        ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
+                    }else{
+                        ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
+                    }
+                }
+            }
+
 
             
             if(piece.id == form.id){
@@ -102,7 +122,7 @@ function Game() {
 
             })
 
-        if(color === turn){
+        if(color === turn && !finPartida){
             window.addEventListener("click",oMousePos);
         }
 
@@ -167,6 +187,19 @@ function Game() {
 
 
 
+
+    function InicioTurno ()  {
+        const token = localStorage.getItem("jwtToken");
+
+        let url = "http://localhost:8080" + sampleLocation.pathname + "/startTurn";
+        axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}});
+
+        
+
+        
+
+    }
+
     
 
     
@@ -177,10 +210,21 @@ function Game() {
         let url = "http://localhost:8080" + sampleLocation.pathname;
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
+            console.log(response.data[0].jaque);
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
+            setJaque(response.data[0].jaque);
             setColor(response.data[1]);
+            setTime(response.data[2]);
+            setFinPartida(response.data[3]);
             setInicializado("true");
+
+            setMyTurn(response.data[0].turn === response.data[1]);
+
+            if(response.data[3] === true){
+                alert("Has perdido la partida");
+                window.location.href(sampleLocation.pathname);
+            }
             })
 
     }
@@ -204,25 +248,28 @@ function Game() {
 
         const token = localStorage.getItem("jwtToken");
         
-        let url = "http://localhost:8080/games/move";
+        let url = "http://localhost:8080" + sampleLocation.pathname + "/move";
 
         
             
-                    
-                        
-        axios.post(url,form,
-                    {
-                        headers: {
-                            "Authorization": `Bearer  ${token}`
-                        }
-            
-                    })
+        axios.post(url,form,{headers: {"Authorization": `Bearer  ${token}`}})
+            .then(response =>{
+                setMyTurn(false);
+                //setPieces(response.data[0].pieces);
+                setTurn(response.data[0].turn);
 
+                setFinPartida(response.data[1]);
+
+                if(response.data[1] === true){
+                    alert("Has ganado la partida");
+                    window.location.replace(sampleLocation.pathname);
+                }
+
+            })
         
-        window.location.reload();
-                    
-                
-        }
+    
+    
+    }
 
     
 
@@ -235,7 +282,14 @@ function Game() {
 
     useEffect(() => {
         tablero();
-        setInterval(tablero,1000);
+
+        const interval = setInterval(() => {
+            if (!myTurn && !finPartida) {
+                tablero();
+            }
+
+        },1000)
+        
 
         if(form.id!=0){
             listaMovimientos();
@@ -250,11 +304,11 @@ function Game() {
 
         return () => {
             setForm({id:"0"});
-            clearInterval(tablero);
+            clearInterval(interval);
         }
 
         
-    },[form.id,form.xposition])
+    },[form.id,form.xposition,myTurn,finPartida])
 
 
 
@@ -293,10 +347,19 @@ function Game() {
                 
                 <DrawBoard /> 
 
+                {turn === color &&
+
+            <div>
+
+                <InicioTurno />
             </div>
-                
-                
+                }
+
+            <h1>{Math.floor(time/60)}:{time%60 < 10? '0' + time%60: time%60}</h1>
+            </div>
             }
+
+            
 
             </div>
             

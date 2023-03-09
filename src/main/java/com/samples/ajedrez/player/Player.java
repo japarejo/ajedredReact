@@ -1,5 +1,8 @@
 package com.samples.ajedrez.player;
 
+
+import java.time.Instant;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +11,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
-
 
 import com.samples.ajedrez.model.BaseEntity;
 import com.samples.ajedrez.user.User;
@@ -40,7 +42,16 @@ public class Player extends BaseEntity {
 	@Column(name="color")
 	private String colorPartida;
 
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
+
+
+	@Column(name = "time")
+	private Integer time;
+
+
+	@Column(name = "start_turn")
+	private Instant inicioTurno;
 }

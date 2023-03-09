@@ -3,6 +3,8 @@ package com.samples.ajedrez.chess;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,63 @@ public class ChessBoardService {
         }
 
 
-        }
+    }
+
+
+
+    public Boolean esJaque(String color,Piece pieza){
+
+
+
+        List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
+
+        Piece reyContrario = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId());
+
+        List<Integer> posicionReyContrario = new ArrayList<>();
+
+        posicionReyContrario.add(reyContrario.getXPosition());
+        posicionReyContrario.add(reyContrario.getYPosition());
+
+        Boolean res = piezasJugador.stream().anyMatch(x-> listaMovimientos(x).contains(posicionReyContrario));
+
+
+
+        return res;
+    }
+
+
+
+    public Boolean esJaqueMate(String color, Piece pieza){
+
+        List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
+
+        List<List<List<Integer>>> movimientosJugador = piezasJugador.stream().collect(Collectors.mapping(x->listaMovimientos(x),Collectors.toList()));
+
+
+        System.out.println("-------------------" + movimientosJugador);
+
+        Piece reyContrario = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId());
+
+        List<List<Integer>> movimientosReyContrario = listaMovimientos(reyContrario);
+
+
+        System.out.println("------------------------" + movimientosReyContrario);
+
+
+        Boolean res = movimientosReyContrario.stream().allMatch(movimiento -> movimientosJugador.stream()
+                                                                        .anyMatch(x-> x.contains(movimiento)));                                                       
+
+
+        return res;
+
+
+
+        
+
+
+
+
+    }
     
 
 
@@ -139,13 +197,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(x);
                     posicion.add(y);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(x);
@@ -166,13 +229,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(x);
                     posicion.add(y);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(x);
@@ -193,13 +261,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(x);
                     posicion.add(y);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(x);
@@ -221,13 +294,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(x);
                     posicion.add(y);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(x);
+                    posicion.add(y);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(x);
@@ -264,13 +342,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(posXActual);
                     posicion.add(posYNueva);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(posXActual);
+                    posicion.add(posYNueva);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(posXActual);
@@ -290,13 +373,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(posXActual);
                     posicion.add(posYNueva);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(posXActual);
+                    posicion.add(posYNueva);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(posXActual);
@@ -318,13 +406,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(posXNueva);
                     posicion.add(posYActual);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(posXNueva);
+                    posicion.add(posYActual);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(posXNueva);
@@ -344,13 +437,18 @@ public class ChessBoardService {
             if(piezaPosicion.isPresent()){
                 if(piezaPosicion.get().color.equals(piece.getColor())){
                     break;
-                }else{
+                }else if(!piezaPosicion.get().getType().equals("KING")){
                     posicion.add(posXNueva);
                     posicion.add(posYActual);
                     ls.add(new ArrayList<>(posicion));
                     posicion.clear();
 
                     break;
+                }else{
+                    posicion.add(posXNueva);
+                    posicion.add(posYActual);
+                    ls.add(new ArrayList<>(posicion));
+                    posicion.clear();
                 }
             }else{
                 posicion.add(posXNueva);

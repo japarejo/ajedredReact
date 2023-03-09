@@ -1,5 +1,6 @@
 package com.samples.ajedrez.chess;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -22,5 +23,14 @@ public interface PieceRepository extends CrudRepository<Piece,Integer> {
     @Query("DELETE FROM Piece piece WHERE piece.id = :pieceId")
     @Transactional
 	public void remove(int pieceId) throws DataAccessException;
+
+
+
+    @Query("SELECT piece FROM Piece piece WHERE piece.color = :color AND piece.board.id = :boardId")
+    List<Piece> piezasJugador(String color, int boardId) throws DataAccessException;
+
+
+    @Query("SELECT piece FROM Piece piece WHERE piece.color != :color AND piece.board.id = :boardId AND piece.type = 'KING'")
+    Piece piezaReyContrario(String color, int boardId) throws DataAccessException;
     
 }

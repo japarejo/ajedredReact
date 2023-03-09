@@ -1,5 +1,6 @@
 package com.samples.ajedrez.game;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,9 @@ import com.samples.ajedrez.user.UserService;
 
 @Service
 public class GameService {
+
+
+	private Boolean turno;
 
     private GameRepository gameRepository;
 	private PlayerService playerService;
@@ -62,6 +66,11 @@ public class GameService {
 	}
 
 
+	public void updateTurnPlayer(Player player){
+		this.playerService.updateTurnPlayer(player);
+	}
+
+
 	public Optional<ChessBoard> findBoardById(Integer id){
 		return this.boardService.findById(id);
 	}
@@ -84,6 +93,14 @@ public class GameService {
 	}
 
 
+	public Boolean esJaque(String color, Piece pieza){
+		return this.boardService.esJaque(color, pieza);
+	}
+
+
+	public Boolean esJaqueMate(String color, Piece pieza){
+		return this.boardService.esJaqueMate(color, pieza);
+	}
 
 	public List<List<Integer>> listaMovimientos(Piece piece){
 

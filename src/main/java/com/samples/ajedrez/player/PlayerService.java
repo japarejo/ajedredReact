@@ -99,7 +99,7 @@ public class PlayerService {
 
 
 	@Transactional
-	public void updateColorPlayer(Player player){
+	public void updateTurnPlayer(Player player){
 		playerRepository.save(player);
 	}
 }

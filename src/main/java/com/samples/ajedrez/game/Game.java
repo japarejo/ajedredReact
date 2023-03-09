@@ -54,4 +54,8 @@ public class Game extends BaseEntity {
 	private ChessBoard chessBoard;
 
 
+	@Column(name = "finPartida")
+	private Boolean finPartida;
+
+
 }

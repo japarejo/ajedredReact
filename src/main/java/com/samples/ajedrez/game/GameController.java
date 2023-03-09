@@ -1,8 +1,10 @@
 package com.samples.ajedrez.game;
 
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,6 +25,8 @@ import com.samples.ajedrez.player.Player;
 public class GameController {
 
     private final GameService gameService;
+
+
 
 	@Autowired
 	public GameController(GameService gameService) {
@@ -52,13 +56,18 @@ public class GameController {
 
             board.setTurn("WHITE");
 
+            board.setJaque(false);
+
             this.gameService.inicializacionTablero(board);
 
             game.setChessBoard(board);
 
+            game.setFinPartida(false);
+
             this.gameService.saveGame(game);
 
             int numero = (int) (Math.random() * 2);
+
 
             if(numero == 0){
 
@@ -68,6 +77,8 @@ public class GameController {
                 player.setColorPartida("BLACK");
 
             }
+
+            player.setTime(game.getTiempo()*60);
 
 
             this.gameService.updatePlayer(player);
@@ -92,7 +103,7 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}/join")
-    public String joinPlayer(@PathVariable int gameId){
+    public String joinPlayer(@PathVariable int gameId) throws SQLException{
         Game game = this.gameService.findGameById(gameId);
         List<Player>participantes = game.getPlayer();
 
@@ -102,12 +113,16 @@ public class GameController {
 
             String colorJugadorUnido = participantes.get(0).getColorPartida();
 
+
             if(colorJugadorUnido.equals("WHITE")){
                 player.setColorPartida("BLACK");
             }else{
                 player.setColorPartida("WHITE");
             }
 
+
+            player.setTime(game.getTiempo()*60);
+            
             this.gameService.updatePlayer(player);
 
 
@@ -132,22 +147,56 @@ public class GameController {
 
         List<Object> partida = new ArrayList<>();
 
-        ChessBoard tablero = this.gameService.findGameById(gameId).getChessBoard();
+        Game game = this.gameService.findGameById(gameId);
+
+        ChessBoard tablero = game.getChessBoard();
 
         partida.add(tablero);
 
         String colorJugador = this.gameService.jugadorSesion().getColorPartida();
         partida.add(colorJugador);
 
+        Player player = this.gameService.jugadorSesion();
+
+        partida.add(player.getTime());
+
+        partida.add(game.getFinPartida());
 
         return partida;
 
-
-
-        
-        
-
     }
+
+
+    @GetMapping("/{gameId}/startTurn")
+    public String inicioTurno(@PathVariable int gameId){
+
+        Instant inicio = Instant.now();
+
+        Player player = this.gameService.jugadorSesion();
+
+        if(player.getInicioTurno() == null){
+
+            Game game = this.gameService.findGameById(gameId);
+
+            for(Player jugador: game.getPlayer()){
+
+                if(!jugador.equals(player)){
+                    jugador.setInicioTurno(null);
+                    this.gameService.updateTurnPlayer(jugador);
+                }
+            }
+
+            player.setInicioTurno(inicio);
+
+            this.gameService.updateTurnPlayer(player);
+        }
+
+        return "OK";
+    }
+
+
+    
+    
 
 
 
@@ -164,8 +213,10 @@ public class GameController {
     }
 
 
-    @PostMapping("/move")
-    public void movimiento(@RequestBody Piece piece){
+    @PostMapping("/{gameId}/move")
+    public List<Object> movimiento(@PathVariable int gameId,@RequestBody Piece piece) throws InterruptedException{
+
+        
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
@@ -182,6 +233,23 @@ public class GameController {
 
         if(listaMovimientos.contains(movimiento)){
 
+            Player player = this.gameService.jugadorSesion();
+            
+            Instant finTurno = Instant.now();
+
+            Instant inicioTurno = player.getInicioTurno();
+
+            Duration duracion = Duration.between(inicioTurno, finTurno);
+
+            int segundos = (int) duracion.getSeconds();
+
+
+            int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+            player.setTime(tiempoRestante);
+
+            this.gameService.updatePlayer(player);
+
             this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
             pieza.setXPosition(posX);
             pieza.setYPosition(posY);
@@ -189,6 +257,23 @@ public class GameController {
             this.gameService.savePiece(pieza);
 
             ChessBoard tablero = pieza.getBoard();
+
+            Game game = this.gameService.findGameById(gameId);
+
+            Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
+
+            tablero.setJaque(esJaque);
+
+            if(esJaque){
+                Boolean esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
+
+                if(esJaqueMate){
+                    
+                    game.setFinPartida(true);
+
+                    this.gameService.saveGame(game);
+                }
+            }
 
             if(tablero.getTurn().equals("WHITE")){
                 tablero.setTurn("BLACK");
@@ -199,14 +284,31 @@ public class GameController {
 
             this.gameService.saveBoard(tablero);
 
+            List<Object> partida = new ArrayList<>();
+
+            partida.add(tablero);
+
+            partida.add(game.getFinPartida());
+
+            return partida;
 
         
+        } else{
+
+            ChessBoard tablero = pieza.getBoard();
+            List<Object> partida = new ArrayList<>();
+
+            partida.add(tablero);
+
+            return partida;
+
         }
 
-        
-        
-
     }
+
+
+
+    
 
 
 
@@ -219,6 +321,7 @@ public class GameController {
         return pl;
 
 }
+
 
 
 
