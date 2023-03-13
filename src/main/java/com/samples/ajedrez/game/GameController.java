@@ -58,6 +58,8 @@ public class GameController {
 
             board.setJaque(false);
 
+            board.setJaqueMate(false);
+
             this.gameService.inicializacionTablero(board);
 
             game.setChessBoard(board);
@@ -79,6 +81,8 @@ public class GameController {
             }
 
             player.setTime(game.getTiempo()*60);
+
+            player.setInicioTurno(null);
 
 
             this.gameService.updatePlayer(player);
@@ -122,6 +126,8 @@ public class GameController {
 
 
             player.setTime(game.getTiempo()*60);
+
+            player.setInicioTurno(null);
             
             this.gameService.updatePlayer(player);
 
@@ -158,9 +164,13 @@ public class GameController {
 
         Player player = this.gameService.jugadorSesion();
 
+        Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
+
         partida.add(player.getTime());
 
         partida.add(game.getFinPartida());
+
+        partida.add(jugadorRival.getTime());
 
         return partida;
 
@@ -175,23 +185,79 @@ public class GameController {
         Player player = this.gameService.jugadorSesion();
 
         if(player.getInicioTurno() == null){
-
-            Game game = this.gameService.findGameById(gameId);
-
-            for(Player jugador: game.getPlayer()){
-
-                if(!jugador.equals(player)){
-                    jugador.setInicioTurno(null);
-                    this.gameService.updateTurnPlayer(jugador);
-                }
-            }
-
             player.setInicioTurno(inicio);
 
             this.gameService.updateTurnPlayer(player);
+
+           
+        }
+
+        Game game = this.gameService.findGameById(gameId);
+
+        for(Player jugador: game.getPlayer()){
+
+            if(!jugador.equals(player)){
+                jugador.setInicioTurno(null);
+                this.gameService.updateTurnPlayer(jugador);
+            }
         }
 
         return "OK";
+    }
+
+
+
+
+    @GetMapping("/{gameId}/endTime")
+    public List<Object> comprobarFinTiempo(@PathVariable int gameId){
+
+        Instant instanteActual = Instant.now();
+
+        Player player = this.gameService.jugadorSesion();
+
+        Game game = this.gameService.findGameById(gameId);
+
+        Instant inicioTurno = player.getInicioTurno();
+        Duration duracion = Duration.between(inicioTurno, instanteActual);
+        int segundos = (int) duracion.getSeconds();
+        int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+        ChessBoard tablero = game.getChessBoard();
+
+        if(tiempoRestante == 0){
+            game.setFinPartida(true);
+
+            this.gameService.saveGame(game);
+
+            
+
+            if(tablero.getTurn().equals("WHITE")){
+                tablero.setTurn("BLACK");
+            
+            }else{
+                tablero.setTurn("WHITE");
+            }
+    
+            this.gameService.saveBoard(tablero);
+            
+        }
+
+        player.setTime(tiempoRestante);
+
+        this.gameService.updatePlayer(player);
+
+        List<Object> partida = new ArrayList<>();
+
+        partida.add(tablero);
+
+        partida.add(game.getFinPartida());
+
+        partida.add(player.getTime());
+
+
+        return partida;
+
+        
     }
 
 
@@ -250,6 +316,12 @@ public class GameController {
 
             this.gameService.updatePlayer(player);
 
+            Boolean esFinPartidaTiempo = false;
+
+            if(tiempoRestante == 0){
+                esFinPartidaTiempo = true;
+            }
+
             this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
             pieza.setXPosition(posX);
             pieza.setYPosition(posY);
@@ -260,27 +332,42 @@ public class GameController {
 
             Game game = this.gameService.findGameById(gameId);
 
-            Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
+            if(esFinPartidaTiempo){
+                game.setFinPartida(true);
+            }
 
-            tablero.setJaque(esJaque);
+            if(!esFinPartidaTiempo){
+                Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
+            
+                Boolean esJaqueMate = false;
 
-            if(esJaque){
-                Boolean esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
+                tablero.setJaque(esJaque);
 
-                if(esJaqueMate){
+                if(esJaque){
+                    esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
+
+                    tablero.setJaqueMate(esJaqueMate);
+
+                    if(esJaqueMate){
                     
-                    game.setFinPartida(true);
+                        game.setFinPartida(true);
 
-                    this.gameService.saveGame(game);
+                    }
                 }
             }
 
+            this.gameService.saveGame(game);
+
+           
             if(tablero.getTurn().equals("WHITE")){
-                tablero.setTurn("BLACK");
-            
+                    tablero.setTurn("BLACK");
+                
             }else{
                 tablero.setTurn("WHITE");
             }
+        
+
+            
 
             this.gameService.saveBoard(tablero);
 
@@ -289,6 +376,8 @@ public class GameController {
             partida.add(tablero);
 
             partida.add(game.getFinPartida());
+
+            partida.add(player.getTime());
 
             return partida;
 

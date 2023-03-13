@@ -23,7 +23,7 @@ class ListGame extends React.Component{
         
     }
 
-    unirsePartida(id){
+    unirsePartida(id,tiempo){
         const token = localStorage.getItem("jwtToken");
 
         let url = "http://localhost:8080/games/" + id + "/join";
@@ -37,6 +37,7 @@ class ListGame extends React.Component{
 
             }).then( response =>{
                 if(response.data==='OK'){
+                    localStorage.setItem("time",tiempo * 60);
                     window.location.replace("/games/" + id);
                 }
                 })
@@ -115,7 +116,7 @@ class ListGame extends React.Component{
                             
                            
                             <td>
-                               {value.numeroJugadores===1?<Button color="primary" onClick={() => this.unirsePartida(value.id)}> Unirse</Button>:''}
+                               {value.numeroJugadores===1?<Button color="primary" onClick={() => this.unirsePartida(value.id,value.tiempo)}> Unirse</Button>:''}
                                {value.espectadores===true?<Button color="success" onClick={() => this.espectador(value.id)}> Espectador</Button>:''}
                             </td>
                             

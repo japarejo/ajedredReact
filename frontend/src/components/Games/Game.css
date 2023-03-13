@@ -1,0 +1,33 @@
+.timeTurn {
+    position: absolute;
+    top: 800px;
+    left: 60%;
+    transform: translateX(-10%);
+    border: 5px solid dodgerblue;
+  }
+
+
+.timeTurnOpponent {
+    position: absolute;
+    top: 800px;
+    left: 60%;
+    transform: translateX(-10%);
+  }
+
+
+  .timeOpponent {
+  position: absolute;
+  top: 100px;
+  left: 60%;
+  transform: translateX(-10%);
+}
+
+
+
+.timeOpponentTurn {
+  position: absolute;
+  top: 100px;
+  left: 60%;
+  transform: translateX(-10%);
+  border: 5px solid dodgerblue;
+}

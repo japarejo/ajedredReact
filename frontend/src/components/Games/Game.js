@@ -7,7 +7,7 @@ import { useLocation} from "react-router-dom"
 import NavBar from '../../Navbar';
 
 
-
+import './Game.css'; 
 
 
 function Game() {
@@ -22,9 +22,11 @@ function Game() {
 
     const[time,setTime] = useState();
 
+    const[timeOpponent, setTimeOpponent] = useState();
+
     const[myTurn, setMyTurn] = useState(false);
 
-    const[finPartida, setFinPartida] = useState();
+    const[finPartida, setFinPartida] = useState(false);
 
 
     const [inicializado,setInicializado] = useState("false");
@@ -67,10 +69,10 @@ function Game() {
 
 
 
-        if(form.id !=0){
+        if(form.id !=0 && myTurn && !finPartida){
             movimientos.map(movimiento =>{
         
-                ctx.fillStyle = '#b0c4de';
+                ctx.fillStyle = '#00BFFF40';
 
                 if(color === "BLACK"){
                     ctx.fillRect(700-(movimiento[0]*100), 700-(movimiento[1]*100),100,100);
@@ -88,7 +90,7 @@ function Game() {
 
             if(jaque && !finPartida){
                 if(piece.type === "KING" && piece.color === turn){
-                    ctx.fillStyle = '#52A77E';
+                    ctx.fillStyle = '#FF000040';
                     if(color === "BLACK"){
                         ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
                     }else{
@@ -99,8 +101,8 @@ function Game() {
 
 
             
-            if(piece.id == form.id){
-                ctx.fillStyle = '#FF0000';
+            if(piece.id == form.id && piece.color === turn && !finPartida){
+                ctx.fillStyle = '#00FF0040';
                 if(color === "BLACK"){
                     ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
                 }else{
@@ -116,13 +118,10 @@ function Game() {
             }
             
             
-            
-            
-            
+        })
 
-            })
 
-        if(color === turn && !finPartida){
+        if(myTurn){
             window.addEventListener("click",oMousePos);
         }
 
@@ -188,43 +187,100 @@ function Game() {
 
 
 
-    function InicioTurno ()  {
+    async function InicioTurno()  {
         const token = localStorage.getItem("jwtToken");
 
         let url = "http://localhost:8080" + sampleLocation.pathname + "/startTurn";
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}});
-
         
 
-        
+    }
 
+
+
+    const finTiempo = () => {
+        const token = localStorage.getItem("jwtToken");
+
+        let url = "http://localhost:8080" + sampleLocation.pathname + "/endTime";
+        axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
+        .then( response =>{
+
+            setFinPartida(response.data[1]);
+
+            setTime(response.data[2]);
+
+            console.log(response.data[2]);
+
+            if(response.data[1] === true){
+                localStorage.setItem("time", 0);
+
+                setTurn(response.data[0].turn);
+
+                console.log(response.data[0].turn);
+                setMyTurn(false);
+
+                document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
+
+            } else if(response.data[2] > 0){
+                localStorage.setItem("time",response.data[2]);
+            }
+
+
+        })
     }
 
     
 
     
     
-    const tablero = () => {
+    const partida = () => {
         const token = localStorage.getItem("jwtToken");
 
         let url = "http://localhost:8080" + sampleLocation.pathname;
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
-            console.log(response.data[0].jaque);
+            console.log(response.data[0].turn);
+            //setTime(localStorage.getItem("time"));
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
             setJaque(response.data[0].jaque);
             setColor(response.data[1]);
-            setTime(response.data[2]);
+            setTime(localStorage.getItem("time"));
             setFinPartida(response.data[3]);
+            setTimeOpponent(response.data[4]);
             setInicializado("true");
 
             setMyTurn(response.data[0].turn === response.data[1]);
 
-            if(response.data[3] === true){
-                alert("Has perdido la partida");
-                window.location.href(sampleLocation.pathname);
+            if(response.data[0].jaqueMate === true && response.data[0].turn === response.data[1]){
+                document.getElementById("msg").innerHTML = "¡¡Has perdido la partida!!";
+
+            }else if(response.data[0].jaqueMate === true && response.data[0].turn !== response.data[1]){
+
+                document.getElementById("msg").innerHTML = "¡¡Has ganado la partida!!";
+            
+            } else if(response.data[3] === true && response.data[0].turn === response.data[1]){
+                document.getElementById("msg").innerHTML = "¡¡Has ganado la partida por tiempo!!";
+            
+            }else if(response.data[3] === true && response.data[0].turn !== response.data[1]){
+                document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
             }
+            })
+
+    }
+
+
+
+
+    const refresco = () => {
+        const token = localStorage.getItem("jwtToken");
+
+        let url = "http://localhost:8080" + sampleLocation.pathname;
+        axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
+        .then( response =>{
+            setPieces(response.data[0].pieces);
+            setTurn(response.data[0].turn);
+            setMyTurn(response.data[0].turn === response.data[1]);
             })
 
     }
@@ -243,7 +299,7 @@ function Game() {
 
 
     
-    const handleButton = () => {
+    const mover = () => {
 
 
         const token = localStorage.getItem("jwtToken");
@@ -254,15 +310,13 @@ function Game() {
             
         axios.post(url,form,{headers: {"Authorization": `Bearer  ${token}`}})
             .then(response =>{
-                setMyTurn(false);
-                //setPieces(response.data[0].pieces);
                 setTurn(response.data[0].turn);
-
+                setMyTurn(false);
                 setFinPartida(response.data[1]);
+                //setTime(response.data[2]);
 
-                if(response.data[1] === true){
-                    alert("Has ganado la partida");
-                    window.location.replace(sampleLocation.pathname);
+                if(response.data[2]>=0){
+                    localStorage.setItem("time",response.data[2]);
                 }
 
             })
@@ -281,11 +335,28 @@ function Game() {
 
 
     useEffect(() => {
-        tablero();
+        partida();
+
+        if(myTurn){
+            
+            InicioTurno();
+        }
+            
+        const descontarTiempo = setInterval(() => {
+            if (myTurn && !finPartida) {
+                if(localStorage.getItem("time")>0){
+                    setTime(time => time -1);
+                    localStorage.setItem("time",localStorage.getItem("time")-1);
+                }else if(localStorage.getItem("time") == 0){
+                    finTiempo();
+                }
+            }
+
+        },1000)
 
         const interval = setInterval(() => {
             if (!myTurn && !finPartida) {
-                tablero();
+                refresco();
             }
 
         },1000)
@@ -295,7 +366,7 @@ function Game() {
             listaMovimientos();
 
             if(form.xposition != "-1"){
-                handleButton();
+                mover();
             }
         }
 
@@ -305,6 +376,7 @@ function Game() {
         return () => {
             setForm({id:"0"});
             clearInterval(interval);
+            clearInterval(descontarTiempo);
         }
 
         
@@ -342,20 +414,48 @@ function Game() {
             <img id="TOWER-BLACK" src={require('../../assets/img/TOWER-BLACK.png')} alt="alt" style={{display:'none'}}/>
             <img id="QUEEN-WHITE" src={require('../../assets/img/QUEEN-WHITE.png')} alt="alt" style={{display:'none'}}/>
 
+            <h1 id="msg"></h1>
+
             {inicializado === "true" &&
             <div>
                 
                 <DrawBoard /> 
 
-                {turn === color &&
 
-            <div>
+            {myTurn && !finPartida &&
 
-                <InicioTurno />
-            </div>
-                }
+                <div>
+                <h1 className="timeTurn"> {Math.floor(time/60)}:{time%60 < 10? '0' + time%60: time%60}</h1>
 
-            <h1>{Math.floor(time/60)}:{time%60 < 10? '0' + time%60: time%60}</h1>
+                <h1 className="timeOpponent"> {Math.floor(timeOpponent/60)}:{timeOpponent%60 < 10? '0' + timeOpponent%60: timeOpponent%60}</h1>
+
+                </div>
+
+            }
+
+            {!myTurn && !finPartida &&
+
+                <div>
+                <h1 className="timeTurnOpponent"> {Math.floor(time/60)}:{time%60 < 10? '0' + time%60: time%60}</h1>
+
+                <h1 className="timeOpponentTurn"> {Math.floor(timeOpponent/60)}:{timeOpponent%60 < 10? '0' + timeOpponent%60: timeOpponent%60}</h1>
+
+                </div>
+
+            }
+
+
+            {finPartida &&
+
+                <div>
+                <h1 className="timeTurnOpponent"> {Math.floor(time/60)}:{time%60 < 10? '0' + time%60: time%60}</h1>
+
+                <h1 className="timeOpponent"> {Math.floor(timeOpponent/60)}:{timeOpponent%60 < 10? '0' + timeOpponent%60: timeOpponent%60}</h1>
+
+                </div>
+
+            }
+
             </div>
             }
 

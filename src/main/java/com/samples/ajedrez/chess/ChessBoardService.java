@@ -80,15 +80,9 @@ public class ChessBoardService {
 
         List<List<List<Integer>>> movimientosJugador = piezasJugador.stream().collect(Collectors.mapping(x->listaMovimientos(x),Collectors.toList()));
 
-
-        System.out.println("-------------------" + movimientosJugador);
-
         Piece reyContrario = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId());
 
         List<List<Integer>> movimientosReyContrario = listaMovimientos(reyContrario);
-
-
-        System.out.println("------------------------" + movimientosReyContrario);
 
 
         Boolean res = movimientosReyContrario.stream().allMatch(movimiento -> movimientosJugador.stream()

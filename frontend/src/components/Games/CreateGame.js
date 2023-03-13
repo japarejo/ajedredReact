@@ -37,6 +37,11 @@ class CreateGame extends React.Component{
         }
       })
 
+      if(e.target.name === 'tiempo'){
+        localStorage.setItem("time",e.target.value*60);
+      }
+      
+
     }
 
     handleButton =() => {
@@ -55,6 +60,8 @@ class CreateGame extends React.Component{
         }).then( response =>{
             if(response.status===200){
                 const id = response.data;
+
+                localStorage.setItem("time",this.state.form.tiempo * 60);
                 this.props.navigate("/games/"+ id + "/awaitGame");
 
             }
