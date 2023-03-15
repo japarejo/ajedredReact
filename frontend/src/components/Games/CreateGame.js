@@ -36,10 +36,6 @@ class CreateGame extends React.Component{
           [e.target.name]: e.target.value
         }
       })
-
-      if(e.target.name === 'tiempo'){
-        localStorage.setItem("time",e.target.value*60);
-      }
       
 
     }
@@ -62,6 +58,7 @@ class CreateGame extends React.Component{
                 const id = response.data;
 
                 localStorage.setItem("time",this.state.form.tiempo * 60);
+                localStorage.setItem("timeOpponent",this.state.form.tiempo * 60);
                 this.props.navigate("/games/"+ id + "/awaitGame");
 
             }

@@ -270,6 +270,7 @@ public class GameController {
     public List<List<Integer>> listaMovimientos(@RequestBody Piece piece){
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
+        
 
     
         return this.gameService.listaMovimientos(pieza);
@@ -378,6 +379,10 @@ public class GameController {
             partida.add(game.getFinPartida());
 
             partida.add(player.getTime());
+            
+            Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
+
+            partida.add(jugadorRival.getTime());
 
             return partida;
 

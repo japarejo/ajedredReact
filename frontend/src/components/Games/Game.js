@@ -247,7 +247,7 @@ function Game() {
             setColor(response.data[1]);
             setTime(localStorage.getItem("time"));
             setFinPartida(response.data[3]);
-            setTimeOpponent(response.data[4]);
+            setTimeOpponent(localStorage.getItem("timeOpponent"));
             setInicializado("true");
 
             setMyTurn(response.data[0].turn === response.data[1]);
@@ -281,6 +281,14 @@ function Game() {
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
             setMyTurn(response.data[0].turn === response.data[1]);
+
+            if(response.data[0].turn !== response.data[1]){
+
+                if(localStorage.getItem("timeOpponent")>0){
+                    setTimeOpponent(timeOpponent => timeOpponent -1);
+                    localStorage.setItem("timeOpponent",localStorage.getItem("timeOpponent")-1);
+                }
+            }
             })
 
     }
@@ -319,6 +327,10 @@ function Game() {
                     localStorage.setItem("time",response.data[2]);
                 }
 
+                if(response.data[3]>=0){
+                    localStorage.setItem("timeOpponent",response.data[3]);
+                }
+
             })
         
     
@@ -350,13 +362,10 @@ function Game() {
                 }else if(localStorage.getItem("time") == 0){
                     finTiempo();
                 }
-            }
+            } else if(!myTurn && !finPartida) {
 
-        },1000)
-
-        const interval = setInterval(() => {
-            if (!myTurn && !finPartida) {
                 refresco();
+                
             }
 
         },1000)
@@ -375,7 +384,7 @@ function Game() {
 
         return () => {
             setForm({id:"0"});
-            clearInterval(interval);
+            //clearInterval(interval);
             clearInterval(descontarTiempo);
         }
 

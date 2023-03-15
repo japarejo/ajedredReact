@@ -73,7 +73,7 @@ public class ChessBoardService {
     }
 
 
-
+    
     public Boolean esJaqueMate(String color, Piece pieza){
 
         List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
@@ -85,15 +85,121 @@ public class ChessBoardService {
         List<List<Integer>> movimientosReyContrario = listaMovimientos(reyContrario);
 
 
-        Boolean res = movimientosReyContrario.stream().allMatch(movimiento -> movimientosJugador.stream()
-                                                                        .anyMatch(x-> x.contains(movimiento)));                                                       
+        Boolean res = movimientosReyContrario.stream().allMatch(movimiento -> movimientosJugador.stream().anyMatch(x-> x.contains(movimiento)));
 
+        //si el rey esta inmovilizado, tenemos que ver si alguna pieza puede cortarlo
+        if(res){
+            List<Integer> posicionReyContrario = new ArrayList<>();
 
+            posicionReyContrario.add(reyContrario.getXPosition());
+            posicionReyContrario.add(reyContrario.getYPosition());
+
+            List<Piece> piezasAtacante = piezasJugador.stream().filter(x->listaMovimientos(x).contains(posicionReyContrario)).collect(Collectors.toList());
+
+            // Si hay mas de una pieza amenazando al rey, y el rey no puede moverse, es jaque mate.
+            if(piezasAtacante.size() == 1){
+                Piece piezaAtacante = piezasAtacante.get(0);
+
+                if(piezaAtacante.getType().equals("TOWER") || piezaAtacante.getType().equals("BISHOP") || piezaAtacante.getType().equals("QUEEN")){
+                    res = anularJaque(piezaAtacante,reyContrario);
+                
+                } else if(piezaAtacante.getType().equals("BISHOP")){
+                    List<Integer> posicionPiezaAtacante = new ArrayList<>();
+
+                    posicionPiezaAtacante.add(piezaAtacante.getXPosition());
+                    posicionPiezaAtacante.add(piezaAtacante.getYPosition());
+
+                    List<Piece> piezasJugadorDefensor = this.pieceRepository.piezasJugador(reyContrario.getColor(), reyContrario.getBoard().getId());
+
+                    // Si devuelve true es que alguna pieza que no sea el rey se puede comer a la pieza atacante. por tanto devolvemos false para indicar que no es jaque mate
+
+                    res = !piezasJugadorDefensor.stream().filter(piezaDefensor -> !piezaDefensor.getType().equals("KING")).anyMatch(piezaDefensor-> listaMovimientos(piezaDefensor).contains(posicionPiezaAtacante));
+                    
+
+            }
+
+        }
+
+    }
+                                                                        
         return res;
 
+    }
 
 
-        
+    //Analizamos si alguna de las piezas puede interponerse o comerse a la pieza atacante
+    public Boolean anularJaque(Piece piezaAtacante, Piece reyContrario){
+
+        List<List<Integer>> ls = new ArrayList<>();
+        List<Integer> posicion = new ArrayList<>();
+
+        posicion.add(piezaAtacante.getXPosition());
+        posicion.add(piezaAtacante.getYPosition());
+        ls.add(new ArrayList<>(posicion));
+        posicion.clear();
+
+
+        //Vemos si el jaque se produce por la fila
+        if (piezaAtacante.getYPosition() == reyContrario.getYPosition()){
+            int inicioIntermedio = Math.min(piezaAtacante.getXPosition(), reyContrario.getXPosition()) + 1;
+            int finIntermedio = Math.max(piezaAtacante.getXPosition(), reyContrario.getXPosition()) - 1;
+
+            for(int x = inicioIntermedio; x<= finIntermedio; x++){
+
+                posicion.add(x);
+                posicion.add(piezaAtacante.getYPosition());
+                ls.add(new ArrayList<>(posicion));
+
+                posicion.clear();
+            }
+
+        }
+
+
+        //Vemos si se produce por la columna
+        else if (piezaAtacante.getXPosition() == reyContrario.getXPosition()){
+            int inicioIntermedio = Math.min(piezaAtacante.getYPosition(), reyContrario.getYPosition()) + 1;
+            int finIntermedio = Math.max(piezaAtacante.getYPosition(), reyContrario.getYPosition()) - 1;
+
+            for(int y = inicioIntermedio; y<= finIntermedio; y++){
+
+                posicion.add(piezaAtacante.getXPosition());
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+
+                posicion.clear();
+            }
+
+        }
+
+
+        //Vemos si se produce por la diagonal
+        else if (Math.abs(piezaAtacante.getXPosition() - reyContrario.getYPosition()) == Math.abs(piezaAtacante.getYPosition() - reyContrario.getYPosition())){
+
+            int inicioEjeX = Math.min(piezaAtacante.getXPosition(), reyContrario.getXPosition()) + 1 ;
+            int finEjeX = Math.max(piezaAtacante.getXPosition(), reyContrario.getXPosition()) - 1 ;
+
+            int inicioEjeY = Math.min(piezaAtacante.getYPosition(), reyContrario.getYPosition()) + 1 ;
+            int finEjeY = Math.max(piezaAtacante.getYPosition(), reyContrario.getYPosition()) - 1 ;
+
+            for(int x = inicioEjeX, y = inicioEjeY; x<= finEjeX && y<=finEjeY; x++,y++){
+                
+                posicion.add(x);
+                posicion.add(y);
+                ls.add(new ArrayList<>(posicion));
+
+                posicion.clear();
+            }
+
+
+        }
+
+
+        List<Piece> piezasJugadorDefensor = this.pieceRepository.piezasJugador(reyContrario.getColor(), reyContrario.getBoard().getId());
+
+        Boolean res = !ls.stream().anyMatch(movimiento -> piezasJugadorDefensor.stream().filter(piezaDefensor -> !piezaDefensor.getType().equals("KING")).anyMatch(pieza-> listaMovimientos(pieza).contains(movimiento)));
+
+        return res;
 
 
 

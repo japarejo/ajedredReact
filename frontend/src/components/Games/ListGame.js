@@ -38,6 +38,7 @@ class ListGame extends React.Component{
             }).then( response =>{
                 if(response.data==='OK'){
                     localStorage.setItem("time",tiempo * 60);
+                    localStorage.setItem("timeOpponent",tiempo*60);
                     window.location.replace("/games/" + id);
                 }
                 })
