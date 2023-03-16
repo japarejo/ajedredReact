@@ -103,7 +103,7 @@ public class ChessBoardService {
                 if(piezaAtacante.getType().equals("TOWER") || piezaAtacante.getType().equals("BISHOP") || piezaAtacante.getType().equals("QUEEN")){
                     res = anularJaque(piezaAtacante,reyContrario);
                 
-                } else if(piezaAtacante.getType().equals("BISHOP")){
+                } else if(piezaAtacante.getType().equals("HORSE") || piezaAtacante.getType().equals("PAWN")){
                     List<Integer> posicionPiezaAtacante = new ArrayList<>();
 
                     posicionPiezaAtacante.add(piezaAtacante.getXPosition());
