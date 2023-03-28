@@ -29,8 +29,16 @@ public interface PieceRepository extends CrudRepository<Piece,Integer> {
     @Query("SELECT piece FROM Piece piece WHERE piece.color = :color AND piece.board.id = :boardId")
     List<Piece> piezasJugador(String color, int boardId) throws DataAccessException;
 
+    @Query("SELECT piece FROM Piece piece WHERE piece.color != :color AND piece.board.id = :boardId")
+    List<Piece> piezasRival(String color, int boardId) throws DataAccessException;
+
+
 
     @Query("SELECT piece FROM Piece piece WHERE piece.color != :color AND piece.board.id = :boardId AND piece.type = 'KING'")
     Piece piezaReyContrario(String color, int boardId) throws DataAccessException;
+
+
+    @Query("SELECT piece FROM Piece piece WHERE piece.color = :color AND piece.board.id = :boardId AND piece.type = 'KING'")
+    Piece piezaRey(String color, int boardId) throws DataAccessException;
     
 }

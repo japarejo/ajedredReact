@@ -17,10 +17,14 @@ import lombok.Setter;
 
 public class Piece extends BaseEntity {
 
+
     String type;
+    
     String color;
+    
     @Range(min=0,max=7)
     int xPosition;
+    
     @Range(min=0,max=7)
     int yPosition;
     

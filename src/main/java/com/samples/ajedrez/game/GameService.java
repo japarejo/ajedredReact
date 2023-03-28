@@ -93,18 +93,18 @@ public class GameService {
 	}
 
 
-	public Boolean esJaque(String color, Piece pieza){
+	/* public Boolean esJaque(String color, Piece pieza){
 		return this.boardService.esJaque(color, pieza);
 	}
 
 
 	public Boolean esJaqueMate(String color, Piece pieza){
 		return this.boardService.esJaqueMate(color, pieza);
-	}
+	} */
 
-	public List<List<Integer>> listaMovimientos(Piece piece){
+	public List<List<Integer>> listaMovimientos(Piece piece, int[][] tablero){
 
-		return this.boardService.listaMovimientos(piece);
+		return this.boardService.listaMovimientos(piece,tablero);
 	}
 
 

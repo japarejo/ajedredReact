@@ -270,10 +270,23 @@ public class GameController {
     public List<List<Integer>> listaMovimientos(@RequestBody Piece piece){
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
+
+        //Si es blanca, metemos 10, si es negra 11. Si no hay, sera 0
+        int[][] tablero = new int[8][8];
+
+        for(Piece p: pieza.getBoard().getPieces()){
+            
+            if(p.getColor().equals("WHITE")){
+                tablero[p.getXPosition()][p.getYPosition()] = 10;
+            }else{
+                tablero[p.getXPosition()][p.getYPosition()] = 11;
+            }
+            
+        }
         
 
     
-        return this.gameService.listaMovimientos(pieza);
+        return this.gameService.listaMovimientos(pieza,tablero);
 
 
 
@@ -291,112 +304,102 @@ public class GameController {
         System.out.println(posX);
         Integer posY = piece.getYPosition();
 
-        List<List<Integer>> listaMovimientos = listaMovimientos(piece);
-
         List<Integer> movimiento = new ArrayList<>();
 
         movimiento.add(posX);
         movimiento.add(posY);
 
-        if(listaMovimientos.contains(movimiento)){
+        
 
-            Player player = this.gameService.jugadorSesion();
+        Player player = this.gameService.jugadorSesion();
             
-            Instant finTurno = Instant.now();
+        Instant finTurno = Instant.now();
 
-            Instant inicioTurno = player.getInicioTurno();
+        Instant inicioTurno = player.getInicioTurno();
 
-            Duration duracion = Duration.between(inicioTurno, finTurno);
+        Duration duracion = Duration.between(inicioTurno, finTurno);
 
-            int segundos = (int) duracion.getSeconds();
+        int segundos = (int) duracion.getSeconds();
 
 
-            int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+        int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
 
-            player.setTime(tiempoRestante);
+        player.setTime(tiempoRestante);
 
-            this.gameService.updatePlayer(player);
+        this.gameService.updatePlayer(player);
 
-            Boolean esFinPartidaTiempo = false;
+        Boolean esFinPartidaTiempo = false;
 
-            if(tiempoRestante == 0){
-                esFinPartidaTiempo = true;
-            }
+        if(tiempoRestante == 0){
+            esFinPartidaTiempo = true;
+        }
 
-            this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
-            pieza.setXPosition(posX);
-            pieza.setYPosition(posY);
+        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
+        pieza.setXPosition(posX);
+        pieza.setYPosition(posY);
 
-            this.gameService.savePiece(pieza);
+        this.gameService.savePiece(pieza);
 
-            ChessBoard tablero = pieza.getBoard();
+        ChessBoard tablero = pieza.getBoard();
 
-            Game game = this.gameService.findGameById(gameId);
+        if(tablero.getTurn().equals("WHITE")){
+            tablero.setTurn("BLACK");
+                
+        }else{
+            tablero.setTurn("WHITE");
+        }
+        
 
-            if(esFinPartidaTiempo){
-                game.setFinPartida(true);
-            }
+        this.gameService.saveBoard(tablero);
 
-            if(!esFinPartidaTiempo){
-                Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
+
+
+        Game game = this.gameService.findGameById(gameId);
+
+        if(esFinPartidaTiempo){
+            game.setFinPartida(true);
+        }
+
+       /*  if(!esFinPartidaTiempo){
+            Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
             
-                Boolean esJaqueMate = false;
+            Boolean esJaqueMate = false;
 
-                tablero.setJaque(esJaque);
+            tablero.setJaque(esJaque);
 
-                if(esJaque){
-                    esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
+            if(esJaque){
+                esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
 
-                    tablero.setJaqueMate(esJaqueMate);
+                tablero.setJaqueMate(esJaqueMate);
 
-                    if(esJaqueMate){
+                if(esJaqueMate){
                     
-                        game.setFinPartida(true);
+                    game.setFinPartida(true);
 
-                    }
                 }
             }
+        } */
 
-            this.gameService.saveGame(game);
+        this.gameService.saveBoard(tablero);
 
-           
-            if(tablero.getTurn().equals("WHITE")){
-                    tablero.setTurn("BLACK");
-                
-            }else{
-                tablero.setTurn("WHITE");
-            }
-        
+        this.gameService.saveGame(game);
 
+
+        List<Object> partida = new ArrayList<>();
+
+        partida.add(tablero);
+
+        partida.add(game.getFinPartida());
+
+        partida.add(player.getTime());
             
+        Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
 
-            this.gameService.saveBoard(tablero);
+        partida.add(jugadorRival.getTime());
 
-            List<Object> partida = new ArrayList<>();
-
-            partida.add(tablero);
-
-            partida.add(game.getFinPartida());
-
-            partida.add(player.getTime());
-            
-            Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
-
-            partida.add(jugadorRival.getTime());
-
-            return partida;
+        return partida;
 
         
-        } else{
-
-            ChessBoard tablero = pieza.getBoard();
-            List<Object> partida = new ArrayList<>();
-
-            partida.add(tablero);
-
-            return partida;
-
-        }
 
     }
 

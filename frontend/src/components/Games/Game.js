@@ -88,16 +88,15 @@ function Game() {
         pieces.map(piece =>{
             var pieza = document.getElementById(piece.type + "-" + piece.color);
 
-            if(jaque && !finPartida){
-                if(piece.type === "KING" && piece.color === turn){
-                    ctx.fillStyle = '#FF000040';
-                    if(color === "BLACK"){
-                        ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
-                    }else{
-                        ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
-                    }
+            if(jaque && !finPartida && piece.color === turn && piece.type === "KING"){
+                ctx.fillStyle = '#FF000040';
+                if(color === "BLACK"){
+                    ctx.fillRect(700-(piece.xposition*100), 700-(piece.yposition*100), 100, 100);
+                }else{
+                    ctx.fillRect(piece.xposition*100, piece.yposition*100, 100, 100);
                 }
             }
+            
 
 
             
@@ -120,11 +119,6 @@ function Game() {
             
         })
 
-
-        if(myTurn){
-            window.addEventListener("click",oMousePos);
-        }
-
     }
 
 
@@ -143,13 +137,13 @@ function Game() {
                 if(color==="BLACK"){
                     if(7-movimiento[0]=== x && 7-movimiento[1]=== y){
                         setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                        window.removeEventListener("click",oMousePos);
+                        //window.removeEventListener("click",oMousePos);
       
                     }
                 }else{
                     if(movimiento[0]=== x && movimiento[1]=== y){
                         setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                        window.removeEventListener("click",oMousePos);
+                        //window.removeEventListener("click",oMousePos);
       
                     }
                 }
@@ -164,13 +158,13 @@ function Game() {
             if(color==="BLACK"){
                 if(7-piece.xposition === x && 7-piece.yposition === y && piece.color ===color){
                     setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                    window.removeEventListener("click",oMousePos);
+                    //window.removeEventListener("click",oMousePos);
                 }
             
             }else{
                 if(piece.xposition === x && piece.yposition === y && piece.color ===color){
                     setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                    window.removeEventListener("click",oMousePos);
+                    //window.removeEventListener("click",oMousePos);
                 }
             }
             
@@ -240,10 +234,10 @@ function Game() {
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
             console.log(response.data[0].turn);
+            setJaque(response.data[0].jaque);
             //setTime(localStorage.getItem("time"));
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
-            setJaque(response.data[0].jaque);
             setColor(response.data[1]);
             setTime(localStorage.getItem("time"));
             setFinPartida(response.data[3]);
@@ -280,7 +274,9 @@ function Game() {
         .then( response =>{
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
+            setJaque(response.data[0].jaque);
             setMyTurn(response.data[0].turn === response.data[1]);
+            setForm({id:"0"});
 
             if(response.data[0].turn !== response.data[1]){
 
@@ -319,8 +315,10 @@ function Game() {
         axios.post(url,form,{headers: {"Authorization": `Bearer  ${token}`}})
             .then(response =>{
                 setTurn(response.data[0].turn);
+                setJaque(response.data[0].jaque);
                 setMyTurn(false);
                 setFinPartida(response.data[1]);
+                setForm({id: "0",xposition:"-1",yposition:"-1"});
                 //setTime(response.data[2]);
 
                 if(response.data[2]>=0){
@@ -349,8 +347,9 @@ function Game() {
     useEffect(() => {
         partida();
 
+        //window.addEventListener("click",oMousePos);
+
         if(myTurn){
-            
             InicioTurno();
         }
             
@@ -383,8 +382,6 @@ function Game() {
         
 
         return () => {
-            setForm({id:"0"});
-            //clearInterval(interval);
             clearInterval(descontarTiempo);
         }
 
@@ -410,7 +407,7 @@ function Game() {
         <div className="container">
             <br></br>
 
-            <canvas id="canvas" width={800} height={800}> </canvas>
+            <canvas id="canvas" width={800} height={800} onClick = {oMousePos}> </canvas>
             <img id="source" src={require('../../assets/img/tablero.png')} alt="alt" style={{display:'none'}}/>
 
             <img id="HORSE-BLACK" src={require('../../assets/img/HORSE-BLACK.png')} alt="alt" style={{display:'none'}}/>

@@ -3,7 +3,6 @@ package com.samples.ajedrez.chess;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class ChessBoardService {
 
 
 
-    public Boolean esJaque(String color,Piece pieza){
+    /* public Boolean esJaque(String color,Piece pieza){
 
 
 
@@ -70,11 +69,11 @@ public class ChessBoardService {
 
 
         return res;
-    }
+    } */
 
 
     
-    public Boolean esJaqueMate(String color, Piece pieza){
+    /* public Boolean esJaqueMate(String color, Piece pieza){
 
         List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
 
@@ -124,11 +123,11 @@ public class ChessBoardService {
                                                                         
         return res;
 
-    }
+    } */
 
 
     //Analizamos si alguna de las piezas puede interponerse o comerse a la pieza atacante
-    public Boolean anularJaque(Piece piezaAtacante, Piece reyContrario){
+   /*  public Boolean anularJaque(Piece piezaAtacante, Piece reyContrario){
 
         List<List<Integer>> ls = new ArrayList<>();
         List<Integer> posicion = new ArrayList<>();
@@ -174,7 +173,7 @@ public class ChessBoardService {
 
 
         //Vemos si se produce por la diagonal
-        else if (Math.abs(piezaAtacante.getXPosition() - reyContrario.getYPosition()) == Math.abs(piezaAtacante.getYPosition() - reyContrario.getYPosition())){
+        else if (Math.abs(piezaAtacante.getXPosition() - reyContrario.getXPosition()) == Math.abs(piezaAtacante.getYPosition() - reyContrario.getYPosition())){
 
             int inicioEjeX = Math.min(piezaAtacante.getXPosition(), reyContrario.getXPosition()) + 1 ;
             int finEjeX = Math.max(piezaAtacante.getXPosition(), reyContrario.getXPosition()) - 1 ;
@@ -204,38 +203,38 @@ public class ChessBoardService {
 
 
 
-    }
+    } */
     
 
 
 
 
-    public List<List<Integer>> listaMovimientos(Piece piece){
+    public List<List<Integer>> listaMovimientos(Piece piece, int[][] tablero){
 
 
         List<List<Integer>> ls = new ArrayList<>();
 
         if(piece.getType().equals("PAWN")){
 
-            ls =  calculaMovimientoPeon(piece);
+            ls =  calculaMovimientoPeon(piece,tablero);
             
         } else if(piece.getType().equals("HORSE")){
 
-            ls = calculaMovimientoCaballo(piece);
+            ls = calculaMovimientoCaballo(piece,tablero);
         
         } else if(piece.getType().equals("TOWER")){
-            ls = calculaMovimientoTorre(piece);
+            ls = calculaMovimientoTorre(piece,tablero);
         
         } else if(piece.getType().equals("BISHOP")){
-            ls = calculaMovimientoAlfil(piece);
+            ls = calculaMovimientoAlfil(piece,tablero);
         
         } else if(piece.getType().equals("QUEEN")){
-            ls = calculaMovimientoAlfil(piece);
+            ls = calculaMovimientoAlfil(piece,tablero);
 
-            ls.addAll(calculaMovimientoTorre(piece));
+            ls.addAll(calculaMovimientoTorre(piece,tablero));
         
         } else if(piece.getType().equals("KING")){
-            ls = calculaMovimientoRey(piece);
+            ls = calculaMovimientoRey(piece,tablero);
         }
         
         return ls;
@@ -243,25 +242,26 @@ public class ChessBoardService {
 
 
 
-    private List<List<Integer>> calculaMovimientoRey(Piece piece) {
+    private List<List<Integer>> calculaMovimientoRey(Piece piece, int[][] tablero) {
 
         List<List<Integer>> ls = new ArrayList<>();
         List<Integer> posicion = new ArrayList<>();
+
+        int posX = piece.getXPosition();
+        int posY = piece.getYPosition();
+
+        int color = piece.getColor().equals("WHITE")? 10: 11;
 
 
         for(int x=0;x<8;x++){
             for(int y = 0; y<8;y++){
 
-                if(Math.abs(piece.getXPosition() - x) < 2 && Math.abs(piece.getYPosition() - y) < 2){
+                if(Math.abs(posX - x) < 2 && Math.abs(posY - y) < 2){
 
-                    Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
-
-                    if(piezaPosicion.isPresent()){
-
-                        if(piezaPosicion.get().color.equals(piece.getColor())){
+                    if(tablero[x][y] == color){
                             continue;
-                        }
                     }
+                    
                         
                     posicion.add(x);
                     posicion.add(y);
@@ -281,7 +281,7 @@ public class ChessBoardService {
     }
 
 
-    private List<List<Integer>> calculaMovimientoAlfil(Piece piece){
+    private List<List<Integer>> calculaMovimientoAlfil(Piece piece, int[][]tablero){
         
         List<List<Integer>> ls = new ArrayList<>();
         List<Integer> posicion = new ArrayList<>();
@@ -289,32 +289,26 @@ public class ChessBoardService {
         int posXActual = piece.getXPosition();
         int posYActual = piece.getYPosition();
 
+        int indiceColor = piece.getColor().equals("WHITE")? 10: 11;
+
+        String color = piece.getColor();
+
+        int indiceColorOpuesto = indiceColor == 10? 11: 10;
+
         //Vemos la diagonal superior derecha
         for(int x = posXActual +1, y = posYActual -1; x<=7 && y>=0; x++, y--){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
+            if(tablero[x][y] == indiceColor){
+                break;
+            
+            }
+            posicion.add(x);
+            posicion.add(y);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(x);
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[x][y] == indiceColorOpuesto){
+                break;
             }
         
         }
@@ -324,29 +318,17 @@ public class ChessBoardService {
         //Vemos la diagonal inferior izquierda
         for(int x = posXActual -1, y = posYActual +1; x>=0 && y<=7; x--, y++){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
+            if(tablero[x][y] == indiceColor){
+                break;
+            
+            }
+            posicion.add(x);
+            posicion.add(y);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(x);
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[x][y] == indiceColorOpuesto){
+                break;
             }
         
         }
@@ -356,29 +338,17 @@ public class ChessBoardService {
         //Vemos la diagonal superior izquierda
         for(int x = posXActual -1, y = posYActual -1; x>=0 && y>=0; x--, y--){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
+            if(tablero[x][y] == indiceColor){
+                break;
+            
+            }
+            posicion.add(x);
+            posicion.add(y);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(x);
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[x][y] == indiceColorOpuesto){
+                break;
             }
         
         }
@@ -389,35 +359,65 @@ public class ChessBoardService {
         //Vemos la diagonal inferior derecha
         for(int x = posXActual +1, y = posYActual +1; x<=7 && y<=7; x++, y++){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
+            if(tablero[x][y] == indiceColor){
+                break;
+            
+            }
+            posicion.add(x);
+            posicion.add(y);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(x);
-                    posicion.add(y);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(x);
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[x][y] == indiceColorOpuesto){
+                break;
             }
         
         }
 
+        List<List<Integer>> movimientosValidos =  new ArrayList<>(ls);
 
-        return ls;
+        if(piece.getColor().equals(piece.getBoard().getTurn())){
+            
+            List<Piece> piezasRival = this.pieceRepository.piezasRival(color,piece.getBoard().getId());
+
+            Piece posicionRey = this.pieceRepository.piezaRey(color, piece.getBoard().getId());
+
+            List<Integer> posRey = new ArrayList<>();
+
+            posRey.add(posicionRey.getXPosition());
+            posRey.add(posicionRey.getYPosition());
+
+            for(List<Integer>mov: ls){
+                
+                int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
+
+                tablero[mov.get(0)][mov.get(1)] = indiceColor;
+                tablero[posXActual][posYActual] = 0;
+
+                
+                for(Piece piezaRival: piezasRival){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                        
+                        if(listaMovimientos(piezaRival,tablero).contains(posRey)){
+                            
+                            movimientosValidos.remove(mov);
+                        }
+                    }
+                    
+                    
+                }
+
+                tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
+                tablero[posXActual][posYActual] = indiceColor;
+
+
+
+
+            }
+
+        }
+
+        return movimientosValidos;
 
     }
 
@@ -425,7 +425,7 @@ public class ChessBoardService {
 
 
 
-    private List<List<Integer>> calculaMovimientoTorre(Piece piece) {
+    private List<List<Integer>> calculaMovimientoTorre(Piece piece,int[][]tablero) {
         List<List<Integer>> ls = new ArrayList<>();
 
         List<Integer> posicion = new ArrayList<>();
@@ -433,64 +433,48 @@ public class ChessBoardService {
         int posXActual = piece.getXPosition();
         int posYActual = piece.getYPosition();
 
+
+        int indiceColor = piece.getColor().equals("WHITE")? 10: 11;
+
+        String color = piece.getColor();
+
+        int indiceColorOpuesto = indiceColor == 10? 11: 10;
+
         //Vemos la vertical hacia arriba
 
         for(int posYNueva=posYActual-1;posYNueva>=0;posYNueva--){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXActual, posYNueva,piece.getBoard().getId());
+            if(tablero[posXActual][posYNueva] == indiceColor){
+                break;
+            
+            }
+            posicion.add(posXActual);
+            posicion.add(posYNueva);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(posXActual);
-                    posicion.add(posYNueva);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(posXActual);
-                    posicion.add(posYNueva);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(posXActual);
-                posicion.add(posYNueva);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[posXActual][posYNueva] == indiceColorOpuesto){
+                break;
             }
         }
+        
 
 
         //Vemos la vertical hacia abajo
 
         for(int posYNueva=posYActual+1;posYNueva<=7;posYNueva++){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXActual, posYNueva,piece.getBoard().getId());
+            if(tablero[posXActual][posYNueva] == indiceColor){
+                break;
+            
+            }
+            posicion.add(posXActual);
+            posicion.add(posYNueva);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(posXActual);
-                    posicion.add(posYNueva);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(posXActual);
-                    posicion.add(posYNueva);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(posXActual);
-                posicion.add(posYNueva);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[posXActual][posYNueva] == indiceColorOpuesto){
+                break;
             }
         }
 
@@ -501,29 +485,17 @@ public class ChessBoardService {
 
         for(int posXNueva=posXActual-1;posXNueva>=0;posXNueva--){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXNueva, posYActual,piece.getBoard().getId());
+            if(tablero[posXNueva][posYActual] == indiceColor){
+                break;
+            
+            }
+            posicion.add(posXNueva);
+            posicion.add(posYActual);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(posXNueva);
-                    posicion.add(posYActual);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(posXNueva);
-                    posicion.add(posYActual);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(posXNueva);
-                posicion.add(posYActual);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[posXNueva][posYActual] == indiceColorOpuesto){
+                break;
             }
         }
 
@@ -532,62 +504,91 @@ public class ChessBoardService {
 
         for(int posXNueva=posXActual+1;posXNueva<=7;posXNueva++){
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posXNueva, posYActual,piece.getBoard().getId());
+            if(tablero[posXNueva][posYActual] == indiceColor){
+                break;
+            
+            }
+            posicion.add(posXNueva);
+            posicion.add(posYActual);
+            ls.add(new ArrayList<>(posicion));
+            posicion.clear();
 
-            if(piezaPosicion.isPresent()){
-                if(piezaPosicion.get().color.equals(piece.getColor())){
-                    break;
-                }else if(!piezaPosicion.get().getType().equals("KING")){
-                    posicion.add(posXNueva);
-                    posicion.add(posYActual);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-
-                    break;
-                }else{
-                    posicion.add(posXNueva);
-                    posicion.add(posYActual);
-                    ls.add(new ArrayList<>(posicion));
-                    posicion.clear();
-                }
-            }else{
-                posicion.add(posXNueva);
-                posicion.add(posYActual);
-                ls.add(new ArrayList<>(posicion));
-                posicion.clear();
+            if(tablero[posXNueva][posYActual] == indiceColorOpuesto){
+                break;
             }
         }
 
+        List<List<Integer>> movimientosValidos =  new ArrayList<>(ls);
+
+        if(piece.getColor().equals(piece.getBoard().getTurn())){
+            
+            List<Piece> piezasRival = this.pieceRepository.piezasRival(color,piece.getBoard().getId());
+
+            Piece posicionRey = this.pieceRepository.piezaRey(color, piece.getBoard().getId());
+
+            List<Integer> posRey = new ArrayList<>();
+
+            posRey.add(posicionRey.getXPosition());
+            posRey.add(posicionRey.getYPosition());
+
+            for(List<Integer>mov: ls){
+                
+                int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
+
+                tablero[mov.get(0)][mov.get(1)] = indiceColor;
+                tablero[posXActual][posYActual] = 0;
+
+                
+                for(Piece piezaRival: piezasRival){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                        
+                        if(listaMovimientos(piezaRival,tablero).contains(posRey)){
+                            
+                            movimientosValidos.remove(mov);
+                        }
+                    }
+                    
+                    
+                }
+
+                tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
+                tablero[posXActual][posYActual] = indiceColor;
 
 
 
 
+            }
 
+        }
 
-        return ls;
+        return movimientosValidos;
+
 
     }
 
 
-    private List<List<Integer>> calculaMovimientoCaballo(Piece piece) {
+    private List<List<Integer>> calculaMovimientoCaballo(Piece piece, int[][]tablero) {
         List<List<Integer>> ls = new ArrayList<>();
 
         List<Integer> posicion = new ArrayList<>();
 
+        int posX = piece.getXPosition();
+        int posY = piece.getYPosition();
+
+        int indiceColor = piece.getColor().equals("WHITE")? 10: 11;
+
+        String color = piece.getColor();
+
         for(int x=0;x<8;x++){
             for(int y = 0; y<8;y++){
 
-                if(Math.abs(piece.getXPosition() - x) == 2 && Math.abs(piece.getYPosition() - y) == 1 || 
-                Math.abs(piece.getXPosition() - x) == 1 && Math.abs(piece.getYPosition() - y) == 2){
+                if(Math.abs(posX - x) == 2 && Math.abs(posY - y) == 1 || 
+                Math.abs(posX - x) == 1 && Math.abs(posY - y) == 2){
 
-                    Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(x, y,piece.getBoard().getId());
-
-                    if(piezaPosicion.isPresent()){
-
-                        if(piezaPosicion.get().color.equals(piece.getColor())){
-                            continue;
-                        }
+                    if(tablero[x][y] == indiceColor){
+                        continue;
                     }
+            
                         
                     posicion.add(x);
                     posicion.add(y);
@@ -598,37 +599,81 @@ public class ChessBoardService {
                 }
             }
 
-        }       
+        }
 
 
-        return ls;
+        List<List<Integer>> movimientosValidos =  new ArrayList<>(ls);
+
+        if(piece.getColor().equals(piece.getBoard().getTurn())){
+            
+            List<Piece> piezasRival = this.pieceRepository.piezasRival(color,piece.getBoard().getId());
+
+            Piece posicionRey = this.pieceRepository.piezaRey(color, piece.getBoard().getId());
+
+            List<Integer> posRey = new ArrayList<>();
+
+            posRey.add(posicionRey.getXPosition());
+            posRey.add(posicionRey.getYPosition());
+
+            for(List<Integer>mov: ls){
+                
+                int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
+
+                tablero[mov.get(0)][mov.get(1)] = indiceColor;
+                tablero[posX][posY] = 0;
+
+                
+                for(Piece piezaRival: piezasRival){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                        
+                        if(listaMovimientos(piezaRival,tablero).contains(posRey)){
+                            
+                            movimientosValidos.remove(mov);
+                        }
+                    }
+                    
+                    
+                }
+
+                tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
+                tablero[posX][posY] = indiceColor;
+
+
+
+
+            }
+
+        }
+
+        return movimientosValidos;
     }
 
 
-    private List<List<Integer>> calculaMovimientoPeon(Piece piece){
+    private List<List<Integer>> calculaMovimientoPeon(Piece piece,int[][]tablero){
 
         List<List<Integer>> ls = new ArrayList<>();
 
         List<Integer> posicion = new ArrayList<>();
 
-        if(piece.getColor().equals("WHITE")){
+        String color = piece.getColor();
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(piece.getXPosition(), piece.getYPosition()-1,piece.getBoard().getId());
-            
+        int x = piece.getXPosition();
+        int y = piece.getYPosition();
 
-            if(!piezaPosicion.isPresent() && piece.getYPosition()-1 >= 0){
-                posicion.add(piece.getXPosition());
-                posicion.add(piece.getYPosition()-1);
+        if(color.equals("WHITE")){
+
+
+            if(y-1 >= 0 && tablero[x][y-1] == 0) {
+                posicion.add(x);
+                posicion.add(y-1);
                 ls.add(new ArrayList<>(posicion));
 
-                if(piece.getYPosition()==6){
+                if(y==6){
                     posicion.clear();
-                    
-                    Optional<Piece> piezaPosicion2 = this.pieceRepository.existePiezaPosicion(piece.getXPosition(), piece.getYPosition()-2,piece.getBoard().getId());
-
-                    if(!piezaPosicion2.isPresent()){
-                        posicion.add(piece.getXPosition());
-                        posicion.add(piece.getYPosition()-2);
+                
+                    if(tablero[x][y-2] == 0){
+                        posicion.add(x);
+                        posicion.add(y-2);
                         ls.add(new ArrayList<>(posicion));
                     }
                 }
@@ -637,22 +682,18 @@ public class ChessBoardService {
             }
 
 
-            Optional<Piece> piezaPosicionDiagonal1 = this.pieceRepository.existePiezaPosicion(piece.getXPosition()-1, piece.getYPosition()-1,piece.getBoard().getId());
-
-            if(piezaPosicionDiagonal1.isPresent() && !piezaPosicionDiagonal1.get().getColor().equals(piece.getColor())){
+            if(x-1>=0 && y-1>=0 && tablero[x-1][y-1] == 11){
                 posicion.clear();
-                posicion.add(piece.getXPosition()-1);
-                posicion.add(piece.getYPosition()-1);
+                posicion.add(x-1);
+                posicion.add(y-1);
                 ls.add(new ArrayList<>(posicion));
             }
 
 
-            Optional<Piece> piezaPosicionDiagonal2 = this.pieceRepository.existePiezaPosicion(piece.getXPosition()+1, piece.getYPosition()-1,piece.getBoard().getId());
-
-            if(piezaPosicionDiagonal2.isPresent() && !piezaPosicionDiagonal2.get().getColor().equals(piece.getColor())){
+            if(x+1<=7 && y-1>=0 && tablero[x+1][y-1] == 11){
                 posicion.clear();
-                posicion.add(piece.getXPosition()+1);
-                posicion.add(piece.getYPosition()-1);
+                posicion.add(x+1);
+                posicion.add(y-1);
                 ls.add(new ArrayList<>(posicion));
             }
 
@@ -662,47 +703,40 @@ public class ChessBoardService {
             
         }else{
 
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(piece.getXPosition(), piece.getYPosition()+1,piece.getBoard().getId());
 
-
-            if(!piezaPosicion.isPresent() && piece.getYPosition()+1 <= 7 ){
-                posicion.add(piece.getXPosition());
-                posicion.add(piece.getYPosition()+1);
+            if(y+1 <= 7 && tablero[x][y+1] == 0){
+                posicion.add(x);
+                posicion.add(y+1);
                 ls.add(new ArrayList<>(posicion));
 
                
             
-                if(piece.getYPosition()==1){
-                    posicion.clear(); 
-                    
-                    Optional<Piece> piezaPosicion2 = this.pieceRepository.existePiezaPosicion(piece.getXPosition(), piece.getYPosition()+2,piece.getBoard().getId());
+                if(y==1){
+                    posicion.clear();
 
-                    if(!piezaPosicion2.isPresent()){
+                    if(tablero[x][y+2] == 0){
 
-                        posicion.add(piece.getXPosition());
-                        posicion.add(piece.getYPosition()+2);
+                        posicion.add(x);
+                        posicion.add(y+2);
                         ls.add(new ArrayList<>(posicion));
                     }
                 }
             }
 
 
-            Optional<Piece> piezaPosicionDiagonal1 = this.pieceRepository.existePiezaPosicion(piece.getXPosition()+1, piece.getYPosition()+1,piece.getBoard().getId());
 
-            if(piezaPosicionDiagonal1.isPresent() && !piezaPosicionDiagonal1.get().getColor().equals(piece.getColor())){
+            if(x+1 <=7 && y+1<=7 && tablero[x+1][y+1] == 10){
                 posicion.clear();
-                posicion.add(piece.getXPosition()+1);
-                posicion.add(piece.getYPosition()+1);
+                posicion.add(x+1);
+                posicion.add(y+1);
                 ls.add(new ArrayList<>(posicion));
             }
 
 
-            Optional<Piece> piezaPosicionDiagonal2 = this.pieceRepository.existePiezaPosicion(piece.getXPosition()-1, piece.getYPosition()+1,piece.getBoard().getId());
-
-            if(piezaPosicionDiagonal2.isPresent() && !piezaPosicionDiagonal2.get().getColor().equals(piece.getColor())){
+           if(x-1 >=0 && y+1<=7 && tablero[x-1][y+1] == 10){
                 posicion.clear();
-                posicion.add(piece.getXPosition()-1);
-                posicion.add(piece.getYPosition()+1);
+                posicion.add(x-1);
+                posicion.add(y+1);
                 ls.add(new ArrayList<>(posicion));
             }
         }

@@ -1,5 +1,6 @@
 package com.samples.ajedrez.chess;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -18,7 +19,18 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class ChessBoard extends BaseEntity {
+public class ChessBoard extends BaseEntity{
+
+
+    public ChessBoard(){
+        
+    }
+
+    public ChessBoard(ChessBoard board){
+        this.jaque = board.getJaque();
+        this.jaqueMate = board.getJaqueMate();
+        this.turn = board.getTurn();
+    }
 
 
     @Column(name = "turn")
@@ -35,5 +47,8 @@ public class ChessBoard extends BaseEntity {
 
     @Column(name= "jaque_mate")
     private Boolean jaqueMate;
+
+
+    
     
 }
