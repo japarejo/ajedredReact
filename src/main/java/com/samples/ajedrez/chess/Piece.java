@@ -27,6 +27,8 @@ public class Piece extends BaseEntity {
     
     @Range(min=0,max=7)
     int yPosition;
+
+    Boolean piezaMovida;
     
     @ManyToOne
     @JoinColumn(name = "board_id")

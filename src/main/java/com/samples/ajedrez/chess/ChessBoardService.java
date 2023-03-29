@@ -3,8 +3,6 @@ package com.samples.ajedrez.chess;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,161 +48,58 @@ public class ChessBoardService {
     }
 
 
+    public Optional<Piece> piezaPosicion(int x, int y, int chessBoardId){
+        return pieceRepository.existePiezaPosicion(x, y, chessBoardId);
+    }
 
-    /* public Boolean esJaque(String color,Piece pieza){
+
+
+    public Boolean esJaque(String color,Piece pieza, int[][] tablero){
 
 
 
         List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
 
-        Piece reyContrario = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId());
+        Piece rey = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId()); //Miro si  despues de haber hecho el movimiento hay opcion de llegar al rey con alguna de mis piezas
 
-        List<Integer> posicionReyContrario = new ArrayList<>();
+        List<Integer> posRey = new ArrayList<>();
 
-        posicionReyContrario.add(reyContrario.getXPosition());
-        posicionReyContrario.add(reyContrario.getYPosition());
+        posRey.add(rey.getXPosition());
+        posRey.add(rey.getYPosition());
 
-        Boolean res = piezasJugador.stream().anyMatch(x-> listaMovimientos(x).contains(posicionReyContrario));
+        Boolean res = false;
+
+        for(Piece p: piezasJugador){
+            if(listaMovimientos(p, tablero).contains(posRey)){
+                res = true;
+                break;
+            }
+        }
 
 
 
         return res;
-    } */
+    }
 
 
     
-    /* public Boolean esJaqueMate(String color, Piece pieza){
+    public Boolean esJaqueMate(String color, Piece pieza, int[][] tablero){
 
-        List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
+        List<Piece> piezasRival = this.pieceRepository.piezasRival(color, pieza.getBoard().getId()); // Saco las piezas del oponente, que es al que le toca moverse
 
-        List<List<List<Integer>>> movimientosJugador = piezasJugador.stream().collect(Collectors.mapping(x->listaMovimientos(x),Collectors.toList()));
+        Boolean res = true;
 
-        Piece reyContrario = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId());
-
-        List<List<Integer>> movimientosReyContrario = listaMovimientos(reyContrario);
-
-
-        Boolean res = movimientosReyContrario.stream().allMatch(movimiento -> movimientosJugador.stream().anyMatch(x-> x.contains(movimiento)));
-
-        //si el rey esta inmovilizado, tenemos que ver si alguna pieza puede cortarlo
-        if(res){
-            List<Integer> posicionReyContrario = new ArrayList<>();
-
-            posicionReyContrario.add(reyContrario.getXPosition());
-            posicionReyContrario.add(reyContrario.getYPosition());
-
-            List<Piece> piezasAtacante = piezasJugador.stream().filter(x->listaMovimientos(x).contains(posicionReyContrario)).collect(Collectors.toList());
-
-            // Si hay mas de una pieza amenazando al rey, y el rey no puede moverse, es jaque mate.
-            if(piezasAtacante.size() == 1){
-                Piece piezaAtacante = piezasAtacante.get(0);
-
-                if(piezaAtacante.getType().equals("TOWER") || piezaAtacante.getType().equals("BISHOP") || piezaAtacante.getType().equals("QUEEN")){
-                    res = anularJaque(piezaAtacante,reyContrario);
-                
-                } else if(piezaAtacante.getType().equals("HORSE") || piezaAtacante.getType().equals("PAWN")){
-                    List<Integer> posicionPiezaAtacante = new ArrayList<>();
-
-                    posicionPiezaAtacante.add(piezaAtacante.getXPosition());
-                    posicionPiezaAtacante.add(piezaAtacante.getYPosition());
-
-                    List<Piece> piezasJugadorDefensor = this.pieceRepository.piezasJugador(reyContrario.getColor(), reyContrario.getBoard().getId());
-
-                    // Si devuelve true es que alguna pieza que no sea el rey se puede comer a la pieza atacante. por tanto devolvemos false para indicar que no es jaque mate
-
-                    res = !piezasJugadorDefensor.stream().filter(piezaDefensor -> !piezaDefensor.getType().equals("KING")).anyMatch(piezaDefensor-> listaMovimientos(piezaDefensor).contains(posicionPiezaAtacante));
-                    
-
+        for(Piece p: piezasRival){ //Miro si alguna de las piezas del oponente tiene algún movimiento válido, si es así, no es jaque mate.
+            
+            if(!listaMovimientos(p, tablero).isEmpty()){
+                res = false;
+                break;
             }
-
         }
-
-    }
                                                                         
         return res;
 
-    } */
-
-
-    //Analizamos si alguna de las piezas puede interponerse o comerse a la pieza atacante
-   /*  public Boolean anularJaque(Piece piezaAtacante, Piece reyContrario){
-
-        List<List<Integer>> ls = new ArrayList<>();
-        List<Integer> posicion = new ArrayList<>();
-
-        posicion.add(piezaAtacante.getXPosition());
-        posicion.add(piezaAtacante.getYPosition());
-        ls.add(new ArrayList<>(posicion));
-        posicion.clear();
-
-
-        //Vemos si el jaque se produce por la fila
-        if (piezaAtacante.getYPosition() == reyContrario.getYPosition()){
-            int inicioIntermedio = Math.min(piezaAtacante.getXPosition(), reyContrario.getXPosition()) + 1;
-            int finIntermedio = Math.max(piezaAtacante.getXPosition(), reyContrario.getXPosition()) - 1;
-
-            for(int x = inicioIntermedio; x<= finIntermedio; x++){
-
-                posicion.add(x);
-                posicion.add(piezaAtacante.getYPosition());
-                ls.add(new ArrayList<>(posicion));
-
-                posicion.clear();
-            }
-
-        }
-
-
-        //Vemos si se produce por la columna
-        else if (piezaAtacante.getXPosition() == reyContrario.getXPosition()){
-            int inicioIntermedio = Math.min(piezaAtacante.getYPosition(), reyContrario.getYPosition()) + 1;
-            int finIntermedio = Math.max(piezaAtacante.getYPosition(), reyContrario.getYPosition()) - 1;
-
-            for(int y = inicioIntermedio; y<= finIntermedio; y++){
-
-                posicion.add(piezaAtacante.getXPosition());
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-
-                posicion.clear();
-            }
-
-        }
-
-
-        //Vemos si se produce por la diagonal
-        else if (Math.abs(piezaAtacante.getXPosition() - reyContrario.getXPosition()) == Math.abs(piezaAtacante.getYPosition() - reyContrario.getYPosition())){
-
-            int inicioEjeX = Math.min(piezaAtacante.getXPosition(), reyContrario.getXPosition()) + 1 ;
-            int finEjeX = Math.max(piezaAtacante.getXPosition(), reyContrario.getXPosition()) - 1 ;
-
-            int inicioEjeY = Math.min(piezaAtacante.getYPosition(), reyContrario.getYPosition()) + 1 ;
-            int finEjeY = Math.max(piezaAtacante.getYPosition(), reyContrario.getYPosition()) - 1 ;
-
-            for(int x = inicioEjeX, y = inicioEjeY; x<= finEjeX && y<=finEjeY; x++,y++){
-                
-                posicion.add(x);
-                posicion.add(y);
-                ls.add(new ArrayList<>(posicion));
-
-                posicion.clear();
-            }
-
-
-        }
-
-
-        List<Piece> piezasJugadorDefensor = this.pieceRepository.piezasJugador(reyContrario.getColor(), reyContrario.getBoard().getId());
-
-        Boolean res = !ls.stream().anyMatch(movimiento -> piezasJugadorDefensor.stream().filter(piezaDefensor -> !piezaDefensor.getType().equals("KING")).anyMatch(pieza-> listaMovimientos(pieza).contains(movimiento)));
-
-        return res;
-
-
-
-
-    } */
-    
+    }
 
 
 
@@ -250,7 +145,45 @@ public class ChessBoardService {
         int posX = piece.getXPosition();
         int posY = piece.getYPosition();
 
-        int color = piece.getColor().equals("WHITE")? 10: 11;
+        int indiceColor = piece.getColor().equals("WHITE")? 10: 11;
+
+        String color = piece.getColor();
+
+        Boolean enroqueCorto = false;
+        Boolean enroqueLargo = false;
+
+        
+        if(!piece.getPiezaMovida() && tablero[posX-1][posY] == 0 && tablero[posX-2][posY] == 0 && tablero[posX-3][posY] == 0 && tablero[posX-4][posY] == indiceColor){ //Analizo el enroque largo
+            
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX-4, posY,piece.getBoard().getId());
+
+            if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
+                posicion.add(posX-2);
+                posicion.add(posY);
+                ls.add(new ArrayList<>(posicion));
+
+                posicion.clear();
+
+                enroqueLargo = true;
+            }
+
+
+
+        }if(!piece.getPiezaMovida() && tablero[posX+1][posY] == 0 && tablero[posX+2][posY] == 0 && tablero[posX+3][posY] == indiceColor){ //Analizo el enroque corto
+            
+            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX+3, posY, piece.getBoard().getId());
+
+            if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
+                posicion.add(posX+2);
+                posicion.add(posY);
+                ls.add(new ArrayList<>(posicion));
+
+                posicion.clear();
+
+                enroqueCorto = true;
+            }
+        }
+        
 
 
         for(int x=0;x<8;x++){
@@ -258,7 +191,7 @@ public class ChessBoardService {
 
                 if(Math.abs(posX - x) < 2 && Math.abs(posY - y) < 2){
 
-                    if(tablero[x][y] == color){
+                    if(tablero[x][y] == indiceColor){
                             continue;
                     }
                     
@@ -275,9 +208,68 @@ public class ChessBoardService {
             }
 
         }
+        
+        List<List<Integer>> movimientosValidos =  new ArrayList<>(ls);
+
+        if(piece.getColor().equals(piece.getBoard().getTurn())){
+            
+            List<Piece> piezasRival = this.pieceRepository.piezasRival(color,piece.getBoard().getId());
+
+            for(List<Integer>mov: ls){
+
+                if(Math.abs(posX - mov.get(0)) == 2){ // Si el valor del eje x cambai en 2 unidades es que estamos analizando el enroque
+                    if(enroqueLargo){
+                        tablero[3][posY] = indiceColor; // Rellenamos la posicion donde se iría la torre
+                        tablero[0][posY] = 0; // La posicion donde estaba la torre la ponemos a 0
+                    
+                    }if(enroqueCorto){
+                        tablero[5][posY] = indiceColor; // Rellenamos la posicion donde se iría la torre
+                        tablero[7][posY] = 0;
+                    }
+                }
+                
+                
+                int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
+
+                tablero[mov.get(0)][mov.get(1)] = indiceColor;
+                tablero[posX][posY] = 0;
+
+                
+                for(Piece piezaRival: piezasRival){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                        
+                        if(listaMovimientos(piezaRival,tablero).contains(mov)){
+                            
+                            movimientosValidos.remove(mov);
+                        }
+                    }
+                    
+                    
+                }
+
+                if(Math.abs(posX - mov.get(0)) == 2){
+                    if(enroqueLargo){
+                        tablero[3][posY] = 0; // Volvemos a poner a 0 la posible casilla hacia la que haria el enroque la torre
+                        tablero[0][posY] = indiceColor; // La posicion donde estaba la torre le volvemos a poner su valor para la siguiente iteracion
+                
+                    }if(enroqueCorto){
+                        tablero[5][posY] = 0; 
+                        tablero[7][posY] = indiceColor;
+                    }
+                }
+
+                tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
+                tablero[posX][posY] = indiceColor;
 
 
-        return ls;
+
+
+            }
+
+        }
+
+        return movimientosValidos;
+
     }
 
 
@@ -655,6 +647,8 @@ public class ChessBoardService {
 
         List<Integer> posicion = new ArrayList<>();
 
+        int indiceColor = piece.getColor().equals("WHITE")? 10: 11;
+
         String color = piece.getColor();
 
         int x = piece.getXPosition();
@@ -740,9 +734,51 @@ public class ChessBoardService {
                 ls.add(new ArrayList<>(posicion));
             }
         }
+        
+        List<List<Integer>> movimientosValidos =  new ArrayList<>(ls);
+
+        if(piece.getColor().equals(piece.getBoard().getTurn())){
+            
+            List<Piece> piezasRival = this.pieceRepository.piezasRival(color,piece.getBoard().getId());
+
+            Piece posicionRey = this.pieceRepository.piezaRey(color, piece.getBoard().getId());
+
+            List<Integer> posRey = new ArrayList<>();
+
+            posRey.add(posicionRey.getXPosition());
+            posRey.add(posicionRey.getYPosition());
+
+            for(List<Integer>mov: ls){
+                
+                int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
+
+                tablero[mov.get(0)][mov.get(1)] = indiceColor;
+                tablero[x][y] = 0;
+
+                
+                for(Piece piezaRival: piezasRival){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                        
+                        if(listaMovimientos(piezaRival,tablero).contains(posRey)){
+                            
+                            movimientosValidos.remove(mov);
+                        }
+                    }
+                    
+                    
+                }
+
+                tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
+                tablero[x][y] = indiceColor;
 
 
-        return ls;
+
+
+            }
+
+        }
+
+        return movimientosValidos;
 
         }
 

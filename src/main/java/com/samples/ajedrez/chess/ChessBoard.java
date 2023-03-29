@@ -1,6 +1,5 @@
 package com.samples.ajedrez.chess;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;

@@ -1,7 +1,5 @@
 package com.samples.ajedrez;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -10,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.samples.ajedrez.player.Player;
 import com.samples.ajedrez.player.PlayerService;
-import com.samples.ajedrez.user.Authorities;
 import com.samples.ajedrez.user.User;
 import com.samples.ajedrez.user.UserService;
 

@@ -1,6 +1,5 @@
 package com.samples.ajedrez.game;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +20,6 @@ import com.samples.ajedrez.user.UserService;
 @Service
 public class GameService {
 
-
-	private Boolean turno;
 
     private GameRepository gameRepository;
 	private PlayerService playerService;
@@ -93,14 +90,14 @@ public class GameService {
 	}
 
 
-	/* public Boolean esJaque(String color, Piece pieza){
-		return this.boardService.esJaque(color, pieza);
+	public Boolean esJaque(String color, Piece pieza, int[][] tablero){
+		return this.boardService.esJaque(color, pieza,tablero);
 	}
 
 
-	public Boolean esJaqueMate(String color, Piece pieza){
-		return this.boardService.esJaqueMate(color, pieza);
-	} */
+	public Boolean esJaqueMate(String color, Piece pieza, int[][] tablero){
+		return this.boardService.esJaqueMate(color, pieza, tablero);
+	}
 
 	public List<List<Integer>> listaMovimientos(Piece piece, int[][] tablero){
 
@@ -110,6 +107,11 @@ public class GameService {
 
 	public void comprobarCasilla(int x, int y, int chessBoardId){
 		this.boardService.comprobarCasilla(x, y, chessBoardId);
+	}
+
+
+	public Optional<Piece> piezaPosicion(int x, int y, int chessBoardId){
+		return this.boardService.piezaPosicion(x, y, chessBoardId);
 	}
 
 
@@ -124,14 +126,16 @@ public class GameService {
 		piece1.setXPosition(1);
 		piece1.setYPosition(0);
 		piece1.setBoard(board);
+		piece1.setPiezaMovida(false);
 
 		Piece piece2 = new Piece();
 
 		piece2.setColor("WHITE");
 		piece2.setType("QUEEN");
-		piece2.setXPosition(4);
+		piece2.setXPosition(3);
 		piece2.setYPosition(7);
 		piece2.setBoard(board);
+		piece2.setPiezaMovida(false);
 
 
 		Piece piece3 = new Piece();
@@ -141,15 +145,17 @@ public class GameService {
 		piece3.setXPosition(1);
 		piece3.setYPosition(1);
 		piece3.setBoard(board);
+		piece3.setPiezaMovida(false);
 
 
 		Piece piece4 = new Piece();
 
 		piece4.setColor("WHITE");
 		piece4.setType("KING");
-		piece4.setXPosition(3);
+		piece4.setXPosition(4);
 		piece4.setYPosition(7);
 		piece4.setBoard(board);
+		piece4.setPiezaMovida(false);
 
 		Piece piece5 = new Piece();
 
@@ -158,6 +164,7 @@ public class GameService {
 		piece5.setXPosition(4);
 		piece5.setYPosition(6);
 		piece5.setBoard(board);
+		piece5.setPiezaMovida(false);
 
 		Piece piece6 = new Piece();
 
@@ -166,6 +173,7 @@ public class GameService {
 		piece6.setXPosition(7);
 		piece6.setYPosition(7);
 		piece6.setBoard(board);
+		piece6.setPiezaMovida(false);
 
 		Piece piece7 = new Piece();
 
@@ -174,6 +182,7 @@ public class GameService {
 		piece7.setXPosition(0);
 		piece7.setYPosition(0);
 		piece7.setBoard(board);
+		piece7.setPiezaMovida(false);
 
 
 		Piece piece8 = new Piece();
@@ -183,6 +192,7 @@ public class GameService {
 		piece8.setXPosition(5);
 		piece8.setYPosition(0);
 		piece8.setBoard(board);
+		piece8.setPiezaMovida(false);
 
 		Piece piece9 = new Piece();
 
@@ -191,6 +201,18 @@ public class GameService {
 		piece9.setXPosition(4);
 		piece9.setYPosition(0);
 		piece9.setBoard(board);
+		piece9.setPiezaMovida(false);
+
+		Piece piece10 = new Piece();
+
+		piece10.setColor("WHITE");
+		piece10.setType("BISHOP");
+		piece10.setXPosition(2);
+		piece10.setYPosition(7);
+		piece10.setBoard(board);
+		piece10.setPiezaMovida(false);
+
+
 
 
 		this.boardService.savePiece(piece1);
@@ -202,6 +224,7 @@ public class GameService {
 		this.boardService.savePiece(piece7);
 		this.boardService.savePiece(piece8);
 		this.boardService.savePiece(piece9);
+		this.boardService.savePiece(piece10);
 	}
 
 }

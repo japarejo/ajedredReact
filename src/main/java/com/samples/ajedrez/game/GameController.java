@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
@@ -301,8 +302,9 @@ public class GameController {
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
         Integer posX = piece.getXPosition();
-        System.out.println(posX);
         Integer posY = piece.getYPosition();
+
+        int indiceY = pieza.getColor().equals("WHITE")? 7: 0 ;
 
         List<Integer> movimiento = new ArrayList<>();
 
@@ -335,22 +337,48 @@ public class GameController {
         }
 
         this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
+
+        if(!pieza.getPiezaMovida()){
+
+            if(pieza.getType().equals("KING") && Math.abs(posX - pieza.getXPosition()) == 2){
+                if(posX > pieza.getXPosition()){ // Enroque corto
+                    Optional<Piece> piezaTorreEnroque = this.gameService.piezaPosicion(7, indiceY, pieza.getBoard().getId());
+
+                    piezaTorreEnroque.get().setXPosition(5);
+                    piezaTorreEnroque.get().setYPosition(indiceY);
+                    piezaTorreEnroque.get().setPiezaMovida(true);
+
+                    this.gameService.savePiece(piezaTorreEnroque.get());
+                
+                }else{ // Enroque largo
+                    Optional<Piece> piezaTorreEnroque = this.gameService.piezaPosicion(0, indiceY, pieza.getBoard().getId());
+
+                    piezaTorreEnroque.get().setXPosition(3);
+                    piezaTorreEnroque.get().setYPosition(indiceY);
+                    piezaTorreEnroque.get().setPiezaMovida(true);
+
+                    this.gameService.savePiece(piezaTorreEnroque.get());
+                }
+            }
+        }
+
+        pieza.setPiezaMovida(true);
         pieza.setXPosition(posX);
         pieza.setYPosition(posY);
 
         this.gameService.savePiece(pieza);
 
-        ChessBoard tablero = pieza.getBoard();
+        ChessBoard board = pieza.getBoard();
 
-        if(tablero.getTurn().equals("WHITE")){
-            tablero.setTurn("BLACK");
+        if(board.getTurn().equals("WHITE")){
+            board.setTurn("BLACK");
                 
         }else{
-            tablero.setTurn("WHITE");
+            board.setTurn("WHITE");
         }
         
 
-        this.gameService.saveBoard(tablero);
+        this.gameService.saveBoard(board);
 
 
 
@@ -360,34 +388,47 @@ public class GameController {
             game.setFinPartida(true);
         }
 
-       /*  if(!esFinPartidaTiempo){
-            Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza);
-            
+       if(!esFinPartidaTiempo){
+
+            int[][] tablero = new int[8][8];
+
+            for(Piece p: pieza.getBoard().getPieces()){
+                
+                if(p.getColor().equals("WHITE")){
+                    tablero[p.getXPosition()][p.getYPosition()] = 10;
+                }else{
+                    tablero[p.getXPosition()][p.getYPosition()] = 11;
+                }
+                
+            }
+
+
+            Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza,tablero);
+                
             Boolean esJaqueMate = false;
 
-            tablero.setJaque(esJaque);
+            board.setJaque(esJaque);
 
-            if(esJaque){
-                esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza);
+        
+            esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza, tablero);
 
-                tablero.setJaqueMate(esJaqueMate);
+            board.setJaqueMate(esJaqueMate);
 
-                if(esJaqueMate){
-                    
-                    game.setFinPartida(true);
-
-                }
+            if(esJaqueMate){
+                game.setFinPartida(true); // Si es jaque mate y no es jaque, es estancamiento(rey ahogado)
             }
-        } */
 
-        this.gameService.saveBoard(tablero);
+            
+        }
+
+        this.gameService.saveBoard(board);
 
         this.gameService.saveGame(game);
 
 
         List<Object> partida = new ArrayList<>();
 
-        partida.add(tablero);
+        partida.add(board);
 
         partida.add(game.getFinPartida());
 

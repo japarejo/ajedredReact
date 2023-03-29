@@ -137,13 +137,12 @@ function Game() {
                 if(color==="BLACK"){
                     if(7-movimiento[0]=== x && 7-movimiento[1]=== y){
                         setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                        //window.removeEventListener("click",oMousePos);
+                        
       
                     }
                 }else{
                     if(movimiento[0]=== x && movimiento[1]=== y){
                         setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                        //window.removeEventListener("click",oMousePos);
       
                     }
                 }
@@ -158,13 +157,11 @@ function Game() {
             if(color==="BLACK"){
                 if(7-piece.xposition === x && 7-piece.yposition === y && piece.color ===color){
                     setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                    //window.removeEventListener("click",oMousePos);
                 }
             
             }else{
                 if(piece.xposition === x && piece.yposition === y && piece.color ===color){
                     setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                    //window.removeEventListener("click",oMousePos);
                 }
             }
             
@@ -235,7 +232,6 @@ function Game() {
         .then( response =>{
             console.log(response.data[0].turn);
             setJaque(response.data[0].jaque);
-            //setTime(localStorage.getItem("time"));
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
             setColor(response.data[1]);
@@ -246,12 +242,15 @@ function Game() {
 
             setMyTurn(response.data[0].turn === response.data[1]);
 
-            if(response.data[0].jaqueMate === true && response.data[0].turn === response.data[1]){
+            if(response.data[0].jaqueMate === true && response.data[0].jaque === true && response.data[0].turn === response.data[1]){
                 document.getElementById("msg").innerHTML = "¡¡Has perdido la partida!!";
 
-            }else if(response.data[0].jaqueMate === true && response.data[0].turn !== response.data[1]){
+            }else if(response.data[0].jaqueMate === true && response.data[0].jaque === true && response.data[0].turn !== response.data[1]){
 
                 document.getElementById("msg").innerHTML = "¡¡Has ganado la partida!!";
+
+            }else if(response.data[0].jaqueMate === true && response.data[0].jaque === false){
+                document.getElementById("msg").innerHTML = "¡¡Tablas por rey ahogado!!";
             
             } else if(response.data[3] === true && response.data[0].turn === response.data[1]){
                 document.getElementById("msg").innerHTML = "¡¡Has ganado la partida por tiempo!!";
@@ -347,8 +346,6 @@ function Game() {
     useEffect(() => {
         partida();
 
-        //window.addEventListener("click",oMousePos);
-
         if(myTurn){
             InicioTurno();
         }
@@ -414,6 +411,7 @@ function Game() {
             <img id="KING-BLACK" src={require('../../assets/img/KING-BLACK.png')} alt="alt" style={{display:'none'}}/>
             <img id="KING-WHITE" src={require('../../assets/img/KING-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="BISHOP-BLACK" src={require('../../assets/img/BISHOP-BLACK.png')} alt="alt" style={{display:'none'}}/>
+            <img id="BISHOP-WHITE" src={require('../../assets/img/BISHOP-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="PAWN-BLACK" src={require('../../assets/img/PAWN-BLACK.png')} alt="alt" style={{display:'none'}}/>
             <img id="PAWN-WHITE" src={require('../../assets/img/PAWN-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="TOWER-WHITE" src={require('../../assets/img/TOWER-WHITE.png')} alt="alt" style={{display:'none'}}/>
