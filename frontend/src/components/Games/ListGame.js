@@ -6,7 +6,13 @@ import NavBar from '../../Navbar';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { envLoader } from '../../env/envLoader';
+
+
 import { Button } from 'reactstrap';
+
+const apiUrl = "http://localhost:8080/api";
+
 
 class ListGame extends React.Component{
 
@@ -26,7 +32,7 @@ class ListGame extends React.Component{
     unirsePartida(id,tiempo){
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080/games/" + id + "/join";
+        let url = apiUrl + "/games/" + id + "/join";
       
        
         axios.get(url,
@@ -48,7 +54,7 @@ class ListGame extends React.Component{
     espectador(id){
         const token = localStorage.getItem("jwtToken");
     
-        let url = "http://localhost:8080/games/" + id + "/awaitGame";
+        let url = apiUrl + "/games/" + id + "/awaitGame";
           
            
         axios.get(url,
@@ -71,7 +77,7 @@ class ListGame extends React.Component{
         
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080/games/findGames";
+        let url = apiUrl + "/games/findGames";
       
        
         axios.get(url,

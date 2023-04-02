@@ -21,7 +21,7 @@ import com.samples.ajedrez.chess.ChessBoard;
 import com.samples.ajedrez.chess.Piece;
 import com.samples.ajedrez.player.Player;
 
-@RequestMapping("/games")
+@RequestMapping("/api/games")
 @RestController
 public class GameController {
 

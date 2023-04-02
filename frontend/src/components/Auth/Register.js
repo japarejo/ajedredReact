@@ -8,7 +8,9 @@ import axios from 'axios';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { envLoader } from '../../env/envLoader';
 
+const apiUrl = "http://localhost:8080/api";
 
 class Register extends React.Component{
 
@@ -57,7 +59,7 @@ class Register extends React.Component{
   
       handleButton =(e) => {
 
-        let url = "http://localhost:8080/register";
+        let url = apiUrl + "/register";
 
         if(validate(this.state.form)){
           axios.post(url,this.state.form)

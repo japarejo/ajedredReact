@@ -6,8 +6,14 @@ import { useLocation} from "react-router-dom"
 
 import NavBar from '../../Navbar';
 
+import {envLoader} from '../../env/envLoader';
+
+
 
 import './Game.css'; 
+
+const apiUrl = "http://localhost:8080/api";
+
 
 
 function Game() {
@@ -181,7 +187,7 @@ function Game() {
     async function InicioTurno()  {
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080" + sampleLocation.pathname + "/startTurn";
+        let url = apiUrl + sampleLocation.pathname + "/startTurn";
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}});
         
 
@@ -192,22 +198,17 @@ function Game() {
     const finTiempo = () => {
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080" + sampleLocation.pathname + "/endTime";
+        let url = apiUrl + sampleLocation.pathname + "/endTime";
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
 
             setFinPartida(response.data[1]);
-
             setTime(response.data[2]);
-
-            console.log(response.data[2]);
 
             if(response.data[1] === true){
                 localStorage.setItem("time", 0);
 
                 setTurn(response.data[0].turn);
-
-                console.log(response.data[0].turn);
                 setMyTurn(false);
 
                 document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
@@ -227,10 +228,9 @@ function Game() {
     const partida = () => {
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080" + sampleLocation.pathname;
+        let url = apiUrl + sampleLocation.pathname;
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
-            console.log(response.data[0].turn);
             setJaque(response.data[0].jaque);
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
@@ -268,7 +268,7 @@ function Game() {
     const refresco = () => {
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080" + sampleLocation.pathname;
+        let url = apiUrl + sampleLocation.pathname;
         axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
         .then( response =>{
             setPieces(response.data[0].pieces);
@@ -293,7 +293,7 @@ function Game() {
 
         const token = localStorage.getItem("jwtToken");
         
-        let url = "http://localhost:8080/games/listMovements";
+        let url = apiUrl + "/games/listMovements";
         axios.post(url,form,{ headers: { "Authorization": `Bearer  ${token}`}})
             .then( response =>{
                 setMovimientos(response.data);
@@ -307,7 +307,7 @@ function Game() {
 
         const token = localStorage.getItem("jwtToken");
         
-        let url = "http://localhost:8080" + sampleLocation.pathname + "/move";
+        let url = apiUrl + sampleLocation.pathname + "/move";
 
         
             

@@ -4,8 +4,12 @@ import axios from 'axios';
 
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { envLoader } from '../../env/envLoader';
+
+
 import NavBar from '../../Navbar';
 
+const apiUrl = "http://localhost:8080/api";
 
 class AwaitGame extends React.Component{
 
@@ -18,7 +22,7 @@ class AwaitGame extends React.Component{
         
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080" + this.props.location.pathname;
+        let url = apiUrl + this.props.location.pathname;
       
        
         axios.get(url,

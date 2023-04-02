@@ -7,7 +7,13 @@ import logo from "../../logo.svg";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
+import { envLoader } from '../../env/envLoader';
+
+
 import NavBar from '../../Navbar';
+
+const apiUrl = "http://localhost:8080/api";
+
 
 
 class CreateGame extends React.Component{
@@ -44,7 +50,7 @@ class CreateGame extends React.Component{
 
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080/games/create";
+        let url = apiUrl + "/games/create";
       
        
         axios.post(url,this.state.form,

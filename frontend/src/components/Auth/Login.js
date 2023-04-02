@@ -8,6 +8,9 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { envLoader } from '../../env/envLoader';
+
+const apiUrl = "http://localhost:8080/api";
 
 
 class Login extends React.Component{
@@ -39,7 +42,7 @@ class Login extends React.Component{
     }
 
     handleButton =() => {
-      let url = "http://localhost:8080/login";
+      let url = apiUrl + "/login";
       if (validate(this.state.form)){
 
         axios.post(url,this.state.form)
@@ -69,7 +72,10 @@ class Login extends React.Component{
       return(
         
        <React.Fragment>
-        
+          <br></br>
+          <br></br>
+          <br></br>
+          <br></br>
             <div className="wrapper fadeInDown">
               <div id="formContent">
               

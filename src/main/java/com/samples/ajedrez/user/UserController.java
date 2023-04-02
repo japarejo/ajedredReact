@@ -27,7 +27,7 @@ import com.samples.ajedrez.player.PlayerService;
 import com.samples.ajedrez.service.JwtUtilService;
 import com.samples.ajedrez.service.TokenInfo;
 
-@RequestMapping("")
+@RequestMapping("/api")
 @RestController
 //@CrossOrigin(origins = "*")
 public class UserController {

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.samples.ajedrez.service.JwtUtilService;
 import com.samples.ajedrez.service.TokenInfo;
 
-@RequestMapping("/player")
+@RequestMapping("/api/player")
 @RestController
 public class PlayerController {
     

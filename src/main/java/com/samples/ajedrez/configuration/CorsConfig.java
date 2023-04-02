@@ -11,6 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     registry
         .addMapping("/**")
         .allowedOrigins("http://localhost:3000")
+        .allowedOrigins("https://ajedrezreactfront.ey.r.appspot.com")
         .allowedMethods("GET", "POST", "PUT","DELETE")
         .allowCredentials(true);
   }

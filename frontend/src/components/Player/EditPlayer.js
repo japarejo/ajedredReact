@@ -6,7 +6,12 @@ import './EditPlayer.css';
 
 import logo from "../../logo.svg";
 
+import {envLoader} from '../../env/envLoader';
+
+
 import NavBar from '../../Navbar';
+
+const apiUrl = "http://localhost:8080/api";
 
 class EditPlayer extends React.Component{
 
@@ -32,7 +37,7 @@ class EditPlayer extends React.Component{
     player = () =>{
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080/player/data";
+        let url =  apiUrl + "/player/data";
       
        
         axios.get(url,
@@ -89,7 +94,7 @@ class EditPlayer extends React.Component{
 
         const token = localStorage.getItem("jwtToken");
 
-        let url = "http://localhost:8080/player/update";
+        let url = apiUrl + "/player/update";
 
         if(validate(this.state.form)){
           axios.put(url,this.state.form,
