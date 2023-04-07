@@ -51,7 +51,7 @@ public class SecurityConfig   {
         //.httpBasic(withDefaults()) 
         .csrf().disable()
         .authorizeRequests()
-        .antMatchers("/","/h2-console/**","/api/login","/api/register").permitAll()
+        .antMatchers("/","/games/**","/api/login","/api/register").permitAll()
 		.antMatchers("/api/games/**").authenticated()
 		.antMatchers("/api/player/**").authenticated()
         .anyRequest().authenticated()

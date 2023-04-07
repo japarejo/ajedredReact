@@ -61,6 +61,8 @@ public class GameController {
 
             board.setJaqueMate(false);
 
+            board.setCoronacion(false);
+
             this.gameService.inicializacionTablero(board);
 
             game.setChessBoard(board);
@@ -163,15 +165,14 @@ public class GameController {
         String colorJugador = this.gameService.jugadorSesion().getColorPartida();
         partida.add(colorJugador);
 
-        Player player = this.gameService.jugadorSesion();
-
-        Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
-
-        partida.add(player.getTime());
+        //Player player = this.gameService.jugadorSesion();
+        
+        //Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
 
         partida.add(game.getFinPartida());
 
-        partida.add(jugadorRival.getTime());
+        
+        
 
         return partida;
 
@@ -230,6 +231,10 @@ public class GameController {
 
             this.gameService.saveGame(game);
 
+            player.setTime(0);
+
+            this.gameService.updatePlayer(player);
+
             
 
             if(tablero.getTurn().equals("WHITE")){
@@ -243,9 +248,6 @@ public class GameController {
             
         }
 
-        player.setTime(tiempoRestante);
-
-        this.gameService.updatePlayer(player);
 
         List<Object> partida = new ArrayList<>();
 
@@ -253,7 +255,7 @@ public class GameController {
 
         partida.add(game.getFinPartida());
 
-        partida.add(player.getTime());
+        partida.add(tiempoRestante);
 
 
         return partida;
@@ -268,7 +270,9 @@ public class GameController {
 
 
     @PostMapping("/listMovements")
-    public List<List<Integer>> listaMovimientos(@RequestBody Piece piece){
+    public List<Object> listaMovimientos(@RequestBody Piece piece){
+
+        List<Object> res = new ArrayList<>();
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
@@ -284,10 +288,25 @@ public class GameController {
             }
             
         }
-        
 
+        res.add(this.gameService.listaMovimientos(pieza,tablero));
+
+        Player player = this.gameService.jugadorSesion();
+
+        Instant actual = Instant.now();
+
+        Instant inicioTurno = player.getInicioTurno();
+
+        Duration duracion = Duration.between(inicioTurno, actual);
+
+        int segundos = (int) duracion.getSeconds();
+
+
+        int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+        res.add(tiempoRestante);
     
-        return this.gameService.listaMovimientos(pieza,tablero);
+        return res;
 
 
 
@@ -295,7 +314,7 @@ public class GameController {
 
 
     @PostMapping("/{gameId}/move")
-    public List<Object> movimiento(@PathVariable int gameId,@RequestBody Piece piece) throws InterruptedException{
+    public List<Object> movimiento(@PathVariable int gameId,@RequestBody Piece piece) {
 
         
 
@@ -305,6 +324,8 @@ public class GameController {
         Integer posY = piece.getYPosition();
 
         int indiceY = pieza.getColor().equals("WHITE")? 7: 0 ;
+
+        Boolean coronacion = pieza.getType().equals("PAWN") && (pieza.getColor().equals("WHITE") && posY == 0 || pieza.getColor().equals("BLACK") && posY == 7);
 
         List<Integer> movimiento = new ArrayList<>();
 
@@ -326,9 +347,6 @@ public class GameController {
 
         int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
 
-        player.setTime(tiempoRestante);
-
-        this.gameService.updatePlayer(player);
 
         Boolean esFinPartidaTiempo = false;
 
@@ -338,7 +356,7 @@ public class GameController {
 
         this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
 
-        if(!pieza.getPiezaMovida()){
+        if(!pieza.getPiezaMovida() && !coronacion){
 
             if(pieza.getType().equals("KING") && Math.abs(posX - pieza.getXPosition()) == 2){
                 if(posX > pieza.getXPosition()){ // Enroque corto
@@ -368,49 +386,185 @@ public class GameController {
 
         this.gameService.savePiece(pieza);
 
-        ChessBoard board = pieza.getBoard();
-
-        if(board.getTurn().equals("WHITE")){
-            board.setTurn("BLACK");
-                
-        }else{
-            board.setTurn("WHITE");
-        }
-        
-
-        this.gameService.saveBoard(board);
-
-
-
         Game game = this.gameService.findGameById(gameId);
 
         if(esFinPartidaTiempo){
             game.setFinPartida(true);
         }
 
-       if(!esFinPartidaTiempo){
+
+
+        ChessBoard board = pieza.getBoard();
+        board.setCoronacion(coronacion);
+
+        if(coronacion){
+           
+            board.setIdCoronacion(piece.getId());
+        }
+
+        if(!coronacion || esFinPartidaTiempo) {
+
+            player.setTime(tiempoRestante);
+
+            this.gameService.updatePlayer(player);
+
+
+            if(board.getTurn().equals("WHITE")){
+                board.setTurn("BLACK");
+                    
+            }else{
+                board.setTurn("WHITE");
+            }
+            
+
+            this.gameService.saveBoard(board);
+
+
+
+            
+
+            if(!esFinPartidaTiempo){
+
+                int[][] tablero = new int[8][8];
+
+                for(Piece p: pieza.getBoard().getPieces()){
+                    
+                    if(p.getColor().equals("WHITE")){
+                        tablero[p.getXPosition()][p.getYPosition()] = 10;
+                    }else{
+                        tablero[p.getXPosition()][p.getYPosition()] = 11;
+                    }
+                    
+                }
+
+
+                Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza,tablero);
+                board.setJaque(esJaque);
+
+            
+                Boolean esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza, tablero);
+
+                board.setJaqueMate(esJaqueMate);
+
+                if(esJaqueMate){
+                    game.setFinPartida(true); // Si es jaque mate y no es jaque, es estancamiento(rey ahogado)
+                }
+
+                
+            }
+        }
+
+        this.gameService.saveBoard(board);
+
+        this.gameService.saveGame(game);
+
+
+        List<Object> partida = new ArrayList<>();
+
+        partida.add(board);
+
+        partida.add(game.getFinPartida());
+
+        partida.add(tiempoRestante);
+            
+        Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
+
+        partida.add(jugadorRival.getTime());
+
+        partida.add(coronacion);
+
+        return partida;
+
+        
+
+    }
+
+
+    @PostMapping("/{gameId}/move/coronacion")
+    public List<Object> coronacion(@PathVariable int gameId,@RequestBody Piece piece) {
+
+        Piece pieza = this.gameService.findPieceById(piece.getId());
+
+        Integer posX = pieza.getXPosition();
+        Integer posY = pieza.getYPosition();
+
+
+        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
+
+        Piece piezaCambio = new Piece();
+
+        piezaCambio.setBoard(pieza.getBoard());
+        piezaCambio.setColor(pieza.getColor());
+        piezaCambio.setPiezaMovida(false);
+        piezaCambio.setType(piece.getType());
+        piezaCambio.setXPosition(posX);
+        piezaCambio.setYPosition(posY);
+
+        this.gameService.savePiece(piezaCambio);
+
+        Player player = this.gameService.jugadorSesion();
+            
+        Instant finTurno = Instant.now();
+
+        Instant inicioTurno = player.getInicioTurno();
+
+        Duration duracion = Duration.between(inicioTurno, finTurno);
+
+        int segundos = (int) duracion.getSeconds();
+
+
+        int tiempoRestante = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+        player.setTime(tiempoRestante);
+
+        this.gameService.updatePlayer(player);
+
+
+        Boolean esFinPartidaTiempo = false;
+
+        if(tiempoRestante == 0){
+            esFinPartidaTiempo = true;
+        }
+
+        ChessBoard board = pieza.getBoard();
+
+        board.setCoronacion(false);
+
+
+        if(board.getTurn().equals("WHITE")){
+            board.setTurn("BLACK");
+                    
+        }else{
+            board.setTurn("WHITE");
+        }
+            
+
+        this.gameService.saveBoard(board);
+
+
+        Game game = this.gameService.findGameById(gameId);
+            
+
+        if(!esFinPartidaTiempo){
 
             int[][] tablero = new int[8][8];
 
             for(Piece p: pieza.getBoard().getPieces()){
-                
+                    
                 if(p.getColor().equals("WHITE")){
                     tablero[p.getXPosition()][p.getYPosition()] = 10;
                 }else{
                     tablero[p.getXPosition()][p.getYPosition()] = 11;
                 }
-                
+                    
             }
 
 
             Boolean esJaque = this.gameService.esJaque(player.getColorPartida(), pieza,tablero);
-                
-            Boolean esJaqueMate = false;
-
             board.setJaque(esJaque);
 
-        
-            esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza, tablero);
+            
+            Boolean esJaqueMate = this.gameService.esJaqueMate(player.getColorPartida(), pieza, tablero);
 
             board.setJaqueMate(esJaqueMate);
 
@@ -440,9 +594,17 @@ public class GameController {
 
         return partida;
 
-        
+
+
+
+
+
 
     }
+
+
+
+
 
 
 

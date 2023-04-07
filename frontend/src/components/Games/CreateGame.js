@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 import { envLoader } from '../../env/envLoader';
 
+import Cookies from 'js-cookie';
+
 
 import NavBar from '../../Navbar';
 
@@ -63,8 +65,8 @@ class CreateGame extends React.Component{
             if(response.status===200){
                 const id = response.data;
 
-                localStorage.setItem("time",this.state.form.tiempo * 60);
-                localStorage.setItem("timeOpponent",this.state.form.tiempo * 60);
+                Cookies.set("time",this.state.form.tiempo * 60);
+                Cookies.set("timeOpponent",this.state.form.tiempo * 60);
                 this.props.navigate("/games/"+ id + "/awaitGame");
 
             }

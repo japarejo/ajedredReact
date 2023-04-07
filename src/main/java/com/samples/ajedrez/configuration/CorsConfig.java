@@ -10,8 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
   public void addCorsMappings(CorsRegistry registry) {
     registry
         .addMapping("/**")
-        .allowedOrigins("http://localhost:3000")
-        .allowedOrigins("https://ajedrezreactfront.ey.r.appspot.com")
+        .allowedOrigins("http://localhost:3000","https://ajedrezreactfront.ey.r.appspot.com")
         .allowedMethods("GET", "POST", "PUT","DELETE")
         .allowCredentials(true);
   }

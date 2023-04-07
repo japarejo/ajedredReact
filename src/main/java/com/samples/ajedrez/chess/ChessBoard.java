@@ -47,6 +47,12 @@ public class ChessBoard extends BaseEntity{
     @Column(name= "jaque_mate")
     private Boolean jaqueMate;
 
+    @Column(name= "coronacion")
+    private Boolean coronacion;
+
+    @Column(name = "id_coronacion")
+    private Integer idCoronacion;
+
 
     
     

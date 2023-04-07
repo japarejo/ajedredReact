@@ -44,14 +44,16 @@ class Login extends React.Component{
     handleButton =() => {
       let url = apiUrl + "/login";
       if (validate(this.state.form)){
-
+        this.setState({
+          error:false,
+        })
         axios.post(url,this.state.form)
         .then( response =>{
-          console.log(response);
+          
           if(response.status === 200){
             
             localStorage.setItem("jwtToken",response.data.jwtToken);
-            this.props.navigate('/games/list');
+            window.location.replace('/games/list');
             
           }
         

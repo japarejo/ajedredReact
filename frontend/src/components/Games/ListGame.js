@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { envLoader } from '../../env/envLoader';
 
+import Cookies from 'js-cookie';
+
 
 import { Button } from 'reactstrap';
 
@@ -43,8 +45,17 @@ class ListGame extends React.Component{
 
             }).then( response =>{
                 if(response.data==='OK'){
-                    localStorage.setItem("time",tiempo * 60);
-                    localStorage.setItem("timeOpponent",tiempo*60);
+
+                    const socket = new WebSocket('ws://localhost:8080/games/' + id + '/ws');
+
+                    socket.onopen = () => {
+                        
+                        socket.send('Union partida');
+                      };
+                    
+
+                    Cookies.set("time",tiempo * 60);
+                    Cookies.set("timeOpponent",tiempo*60);
                     window.location.replace("/games/" + id);
                 }
                 })
@@ -102,7 +113,16 @@ class ListGame extends React.Component{
         <React.Fragment>
         <NavBar></NavBar>
         <div className="container">
+        {this.state.games.length === 0 &&
+            <div>
+                <br></br>
+                
+                <h1>No hay partidas disponibles en este momento</h1>
 
+            </div>
+        }
+
+        {this.state.games.length > 0 &&
         <table className="table table-hover">
 
             <thead>
@@ -134,6 +154,7 @@ class ListGame extends React.Component{
                 })}
             </tbody>
         </table>
+    }
         </div>
 
         </React.Fragment>

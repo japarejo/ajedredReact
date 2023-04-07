@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 
+
 import { useLocation} from "react-router-dom"
 
 import NavBar from '../../Navbar';
+
+import Cookies from 'js-cookie';
 
 import {envLoader} from '../../env/envLoader';
 
@@ -32,6 +35,8 @@ function Game() {
 
     const[myTurn, setMyTurn] = useState(false);
 
+    const[coronacion,setCoronacion] = useState();
+
     const[finPartida, setFinPartida] = useState(false);
 
 
@@ -44,21 +49,13 @@ function Game() {
     const [form,setForm] = useState({
         id: "0",
         xposition:"-1",
-        yposition:"-1"
+        yposition:"-1",
+        type:"QUEEN" // Se utiliza para indicar la pieza que vamos a cambiar por el peon en la coronacion
     })
-
-
-    
-
-
 
     const sampleLocation = useLocation();
 
-
-
-
-
-    
+    const [socket, setSocket] = useState(null);
 
 
     const DrawBoard = () => {
@@ -130,6 +127,7 @@ function Game() {
 
 
     const oMousePos = (evt) => {
+
         var canvas = document.getElementById("canvas");
 
         var ClientRect = canvas.getBoundingClientRect();
@@ -137,49 +135,53 @@ function Game() {
         var x = Math.floor(Math.round(evt.clientX - ClientRect.left)/100);
         var y = Math.floor(Math.round(evt.clientY - ClientRect.top)/100);
 
-        if(form.id!=0){
-            movimientos.map(movimiento =>{
+        if(!coronacion){
 
-                if(color==="BLACK"){
-                    if(7-movimiento[0]=== x && 7-movimiento[1]=== y){
-                        setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-                        
-      
+            setForm({id:"0",xposition:"-1",yposition:"-1"});
+
+            if(form.id!=0){
+                movimientos.map(movimiento =>{
+
+                    if(color==="BLACK"){
+                        if(7-movimiento[0]=== x && 7-movimiento[1]=== y){
+                            setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
+                            
+        
+                        }
+                    }else{
+                        if(movimiento[0]=== x && movimiento[1]=== y){
+                            setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
+        
+                        }
                     }
-                }else{
-                    if(movimiento[0]=== x && movimiento[1]=== y){
-                        setForm({...form,xposition:movimiento[0], yposition:movimiento[1]})
-      
+
+                    
+                })
+
+            }
+
+            pieces.map(piece =>{
+
+                if(color==="BLACK" && myTurn && !coronacion){
+                    if(7-piece.xposition === x && 7-piece.yposition === y && piece.color ===color){
+                        setForm({id:piece.id,xposition:"-1",yposition:"-1"});
+                    }
+                
+                }else if(myTurn && !coronacion){
+                    if(piece.xposition === x && piece.yposition === y && piece.color ===color){
+                        setForm({id:piece.id,xposition:"-1",yposition:"-1"});
                     }
                 }
-
                 
+
+
             })
+
 
         }
 
-        pieces.map(piece =>{
 
-            if(color==="BLACK"){
-                if(7-piece.xposition === x && 7-piece.yposition === y && piece.color ===color){
-                    setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                }
-            
-            }else{
-                if(piece.xposition === x && piece.yposition === y && piece.color ===color){
-                    setForm({id:piece.id,xposition:"-1",yposition:"-1"});
-                }
-            }
-            
-
-
-        })
-
-
-        
-
-
-       }
+    }
 
 
 
@@ -206,15 +208,17 @@ function Game() {
             setTime(response.data[2]);
 
             if(response.data[1] === true){
-                localStorage.setItem("time", 0);
+                Cookies.set("time", 0);
 
                 setTurn(response.data[0].turn);
                 setMyTurn(false);
 
+                socket.send("fin partida");
+
                 document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
 
             } else if(response.data[2] > 0){
-                localStorage.setItem("time",response.data[2]);
+                Cookies.set("time",response.data[2]);
             }
 
 
@@ -234,10 +238,17 @@ function Game() {
             setJaque(response.data[0].jaque);
             setPieces(response.data[0].pieces);
             setTurn(response.data[0].turn);
+            setCoronacion(response.data[0].coronacion);
+
             setColor(response.data[1]);
-            setTime(localStorage.getItem("time"));
-            setFinPartida(response.data[3]);
-            setTimeOpponent(localStorage.getItem("timeOpponent"));
+
+            if(response.data[0].coronacion === true && response.data[0].turn === response.data[1]){
+                setForm({id:response.data[0].idCoronacion,xposition:"-1", yposition: "-1",type:"QUEEN"});
+            }
+
+            setTime(Cookies.get('time'));
+            setFinPartida(response.data[2]);
+            setTimeOpponent(Cookies.get('timeOpponent'));
             setInicializado("true");
 
             setMyTurn(response.data[0].turn === response.data[1]);
@@ -252,10 +263,10 @@ function Game() {
             }else if(response.data[0].jaqueMate === true && response.data[0].jaque === false){
                 document.getElementById("msg").innerHTML = "¡¡Tablas por rey ahogado!!";
             
-            } else if(response.data[3] === true && response.data[0].turn === response.data[1]){
+            } else if(response.data[2] === true && response.data[0].turn === response.data[1]){
                 document.getElementById("msg").innerHTML = "¡¡Has ganado la partida por tiempo!!";
             
-            }else if(response.data[3] === true && response.data[0].turn !== response.data[1]){
+            }else if(response.data[2] === true && response.data[0].turn !== response.data[1]){
                 document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
             }
             })
@@ -266,26 +277,12 @@ function Game() {
 
 
     const refresco = () => {
-        const token = localStorage.getItem("jwtToken");
+        
 
-        let url = apiUrl + sampleLocation.pathname;
-        axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
-        .then( response =>{
-            setPieces(response.data[0].pieces);
-            setTurn(response.data[0].turn);
-            setJaque(response.data[0].jaque);
-            setMyTurn(response.data[0].turn === response.data[1]);
-            setForm({id:"0"});
-
-            if(response.data[0].turn !== response.data[1]){
-
-                if(localStorage.getItem("timeOpponent")>0){
-                    setTimeOpponent(timeOpponent => timeOpponent -1);
-                    localStorage.setItem("timeOpponent",localStorage.getItem("timeOpponent")-1);
-                }
-            }
-            })
-
+        if(Cookies.get("timeOpponent")>0){
+            setTimeOpponent(timeOpponent => timeOpponent -1);
+            Cookies.set("timeOpponent",Cookies.get("timeOpponent")-1);
+        }
     }
 
 
@@ -296,7 +293,8 @@ function Game() {
         let url = apiUrl + "/games/listMovements";
         axios.post(url,form,{ headers: { "Authorization": `Bearer  ${token}`}})
             .then( response =>{
-                setMovimientos(response.data);
+                setMovimientos(response.data[0]);
+                Cookies.set("time",response.data[1]);
                     })
             }
 
@@ -315,17 +313,27 @@ function Game() {
             .then(response =>{
                 setTurn(response.data[0].turn);
                 setJaque(response.data[0].jaque);
-                setMyTurn(false);
                 setFinPartida(response.data[1]);
-                setForm({id: "0",xposition:"-1",yposition:"-1"});
-                //setTime(response.data[2]);
+
+                if(response.data[0].coronacion === true){ // Si la coronacion es true, no cambio el turno hasta que seleccione una pieza para sustituir
+
+                    setCoronacion(true);
+                    setForm({...form,xposition:"-1", yposition: "-1",type:"QUEEN"});
+                }else{
+                    socket.send(response.data[2]);
+                    setMyTurn(false);
+                    setForm({id: "0"});
+                }
+                
+                
+                
 
                 if(response.data[2]>=0){
-                    localStorage.setItem("time",response.data[2]);
+                    Cookies.set("time",response.data[2]);
                 }
 
                 if(response.data[3]>=0){
-                    localStorage.setItem("timeOpponent",response.data[3]);
+                     Cookies.set("timeOpponent",response.data[3]);
                 }
 
             })
@@ -333,38 +341,32 @@ function Game() {
     
     
     }
-
-    
-
-       
-
-
-    
         
 
 
+
+
     useEffect(() => {
+
+        
+        
         partida();
+
+        const newSocket = new WebSocket('ws://localhost:8080' + sampleLocation.pathname + '/ws');
+
+        if(!myTurn){
+            newSocket.onmessage = (event) => {
+                partida();
+            }
+
+        }
+        
+
+        setSocket(newSocket);
 
         if(myTurn){
             InicioTurno();
         }
-            
-        const descontarTiempo = setInterval(() => {
-            if (myTurn && !finPartida) {
-                if(localStorage.getItem("time")>0){
-                    setTime(time => time -1);
-                    localStorage.setItem("time",localStorage.getItem("time")-1);
-                }else if(localStorage.getItem("time") == 0){
-                    finTiempo();
-                }
-            } else if(!myTurn && !finPartida) {
-
-                refresco();
-                
-            }
-
-        },1000)
         
 
         if(form.id!=0){
@@ -375,18 +377,80 @@ function Game() {
             }
         }
 
+        const interval = setInterval(() => {
+            if (myTurn && !finPartida) {
+                if(Cookies.get("time")>0){
+                    setTime(time => time -1);
+                    Cookies.set("time",Cookies.get("time")-1);
+                }else if(Cookies.get("time") == 0){
+                    finTiempo();
+                }
+            } else if(!myTurn && !finPartida) {
 
-        
+                refresco();
+                
+            }
+        }, 1000);
+    
 
         return () => {
-            clearInterval(descontarTiempo);
-        }
+            clearInterval(interval);
+          }
+
+
 
         
     },[form.id,form.xposition,myTurn,finPartida])
 
 
+    
 
+    const handleSubmit = (e) =>{
+        e.preventDefault();
+      }
+  
+  
+     const handleChange = async e =>{
+         setForm({...form,"type": e.target.value})
+        
+    }
+        
+  
+  
+      const handleButton =() => {
+  
+          const token = localStorage.getItem("jwtToken");
+  
+          let url = apiUrl + sampleLocation.pathname + "/move/coronacion";
+        
+         
+          axios.post(url,form,{headers: {"Authorization": `Bearer  ${token}`}
+  
+          }).then( response =>{
+              
+            setTurn(response.data[0].turn);
+                setJaque(response.data[0].jaque);
+                setFinPartida(response.data[1]);
+                setCoronacion(false);
+
+                setMyTurn(false);
+                setForm({id: "0"});
+
+                socket.send(response.data[0].turn);
+                
+                if(response.data[2]>=0){
+                    Cookies.set("time",response.data[2]);
+                }
+
+                if(response.data[3]>=0){
+                     Cookies.set("timeOpponent",response.data[3]);
+                }
+
+  
+  
+          })
+  
+      }
 
 
 
@@ -417,8 +481,6 @@ function Game() {
             <img id="TOWER-WHITE" src={require('../../assets/img/TOWER-WHITE.png')} alt="alt" style={{display:'none'}}/>
             <img id="TOWER-BLACK" src={require('../../assets/img/TOWER-BLACK.png')} alt="alt" style={{display:'none'}}/>
             <img id="QUEEN-WHITE" src={require('../../assets/img/QUEEN-WHITE.png')} alt="alt" style={{display:'none'}}/>
-
-            <h1 id="msg"></h1>
 
             {inicializado === "true" &&
             <div>
@@ -460,8 +522,36 @@ function Game() {
 
             }
 
+
+            { myTurn && coronacion &&
+            
+                <div>
+                <form className="form" onSubmit={handleSubmit}>
+                  <label htmlFor="myInput" className='centered-label'>
+                        Escoja una pieza:       
+                        <select name="type" onChange={handleChange}>
+                        
+                        <option value="QUEEN">Reina</option>
+                        <option value="BISHOP">Alfil</option>
+                        <option value="TOWER">Torre</option>
+                        <option value="HORSE">Caballo</option>
+                        </select>
+                </label>
+                <br></br>
+
+                  <input className = "my-button" type="button" value="Cambiar pieza" onClick={handleButton}/>
+                </form>
+
+                </div>
+            
+            
+            }
+
             </div>
             }
+
+
+
 
             
 

@@ -152,37 +152,40 @@ public class ChessBoardService {
         Boolean enroqueCorto = false;
         Boolean enroqueLargo = false;
 
-        
-        if(!piece.getPiezaMovida() && tablero[posX-1][posY] == 0 && tablero[posX-2][posY] == 0 && tablero[posX-3][posY] == 0 && tablero[posX-4][posY] == indiceColor){ //Analizo el enroque largo
+        if(!piece.getBoard().getJaque() && piece.getColor().equals(piece.getBoard().getTurn())){
+            if(!piece.getPiezaMovida() && tablero[posX-1][posY] == 0 && tablero[posX-2][posY] == 0 && tablero[posX-3][posY] == 0 && tablero[posX-4][posY] == indiceColor){ //Analizo el enroque largo. Si el rey esta en jaque 
             
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX-4, posY,piece.getBoard().getId());
-
-            if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
-                posicion.add(posX-2);
-                posicion.add(posY);
-                ls.add(new ArrayList<>(posicion));
-
-                posicion.clear();
-
-                enroqueLargo = true;
-            }
-
-
-
-        }if(!piece.getPiezaMovida() && tablero[posX+1][posY] == 0 && tablero[posX+2][posY] == 0 && tablero[posX+3][posY] == indiceColor){ //Analizo el enroque corto
-            
-            Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX+3, posY, piece.getBoard().getId());
-
-            if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
-                posicion.add(posX+2);
-                posicion.add(posY);
-                ls.add(new ArrayList<>(posicion));
-
-                posicion.clear();
-
-                enroqueCorto = true;
+                Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX-4, posY,piece.getBoard().getId());
+    
+                if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
+                    posicion.add(posX-2);
+                    posicion.add(posY);
+                    ls.add(new ArrayList<>(posicion));
+    
+                    posicion.clear();
+    
+                    enroqueLargo = true;
+                }
+    
+    
+    
+            }if(!piece.getPiezaMovida() && tablero[posX+1][posY] == 0 && tablero[posX+2][posY] == 0 && tablero[posX+3][posY] == indiceColor){ //Analizo el enroque corto
+                
+                Optional<Piece> piezaPosicion = this.pieceRepository.existePiezaPosicion(posX+3, posY, piece.getBoard().getId());
+    
+                if(piezaPosicion.isPresent() && piezaPosicion.get().getType().equals("TOWER") && !piezaPosicion.get().getPiezaMovida()){
+                    posicion.add(posX+2);
+                    posicion.add(posY);
+                    ls.add(new ArrayList<>(posicion));
+    
+                    posicion.clear();
+    
+                    enroqueCorto = true;
+                }
             }
         }
+        
+        
         
 
 
@@ -217,7 +220,7 @@ public class ChessBoardService {
 
             for(List<Integer>mov: ls){
 
-                if(Math.abs(posX - mov.get(0)) == 2){ // Si el valor del eje x cambai en 2 unidades es que estamos analizando el enroque
+                if(Math.abs(posX - mov.get(0)) == 2){ // Si el valor del eje x cambia en 2 unidades es que estamos analizando el enroque
                     if(enroqueLargo){
                         tablero[3][posY] = indiceColor; // Rellenamos la posicion donde se iría la torre
                         tablero[0][posY] = 0; // La posicion donde estaba la torre la ponemos a 0
@@ -265,8 +268,43 @@ public class ChessBoardService {
 
 
             }
+            //Tengo que ver si es enroque, si la posicion por la que pasa el rey esta amenazada, ya que solo puede enrocarse si el rey no esta amenazado ni ninguna de las posiciones por las que pasa.
 
+            if (enroqueCorto){
+                List<Integer> pos1 = new ArrayList<>();
+
+                pos1.add(posX+1);
+                pos1.add(posY);
+
+                List<Integer> pos2 = new ArrayList<>();
+
+                pos2.add(posX+2);
+                pos2.add(posY);
+
+
+                if(movimientosValidos.contains(pos2) && !movimientosValidos.contains(pos1)){
+                    movimientosValidos.remove(pos2);
+                }
+
+            } else if (enroqueLargo){
+                List<Integer> pos1 = new ArrayList<>();
+
+                pos1.add(posX-1);
+                pos1.add(posY);
+
+                List<Integer> pos2 = new ArrayList<>();
+
+                pos2.add(posX-2);
+                pos2.add(posY);
+
+
+                if(movimientosValidos.contains(pos2) && !movimientosValidos.contains(pos1)){
+                    movimientosValidos.remove(pos2);
+                }
+            }
         }
+
+        
 
         return movimientosValidos;
 
