@@ -53,6 +53,10 @@ class CreateGame extends React.Component{
         const token = localStorage.getItem("jwtToken");
 
         let url = apiUrl + "/games/create";
+
+        this.setState({
+          error:false,
+        })
       
        
         axios.post(url,this.state.form,
@@ -72,7 +76,13 @@ class CreateGame extends React.Component{
             }
 
 
+        }).catch(error => {
+          this.setState({
+            error:true,
+            errorMsg : "Ese nombre de partida ya ha sido utilizado"
         })
+
+      });
 
     }
 

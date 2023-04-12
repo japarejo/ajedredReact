@@ -1,7 +1,5 @@
 package com.samples.ajedrez.game;
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -12,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-//@RequestMapping("/chesss")
 public class WebSocketController extends TextWebSocketHandler {
     
     private static Map<String, WebSocketSession> sessions = new HashMap<>();

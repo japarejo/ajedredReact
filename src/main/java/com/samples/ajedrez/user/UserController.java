@@ -2,8 +2,7 @@ package com.samples.ajedrez.user;
 
 
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -13,19 +12,28 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.samples.ajedrez.player.Player;
 import com.samples.ajedrez.player.PlayerService;
 import com.samples.ajedrez.service.JwtUtilService;
 import com.samples.ajedrez.service.TokenInfo;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+//import io.jsonwebtoken.security.Keys;
+
 
 @RequestMapping("/api")
 @RestController
@@ -45,12 +53,28 @@ public class UserController {
     @Autowired
     private PlayerService playerService;
 
+    @Value("${jwt.secret}")
+    private String JWT_SECRET_KEY;
+
     @InitBinder
 	public void setAllowedFields(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
 
-    //private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    @GetMapping("/auth/validate_token/{token}")
+    public String tokenValido(@PathVariable String token) {
+
+        try {
+            //Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes())).parseClaimsJws(accessToken);
+
+            Jwts.parser().setSigningKey(JWT_SECRET_KEY).parseClaimsJws(token);
+
+            return "200";
+        } catch (JwtException e) {
+            return "401";
+        }
+
+    }
 
 
     @PostMapping("/login")

@@ -114,117 +114,166 @@ public class GameService {
 		return this.boardService.piezaPosicion(x, y, chessBoardId);
 	}
 
+	public Optional<Piece> peonSalto(int chessBoardId){
+		return this.boardService.peonPaso(chessBoardId);
+	}
+
 
 	public void inicializacionTablero(ChessBoard board){
 
 		this.boardService.saveChessBoard(board);
 
-		Piece piece1 = new Piece();
 
-		piece1.setColor("BLACK");
-		piece1.setType("HORSE");
-		piece1.setXPosition(1);
-		piece1.setYPosition(0);
+		for(int i=0; i<8;i++){
+			Piece piece = new Piece();
+
+			piece.setColor("WHITE");
+			piece.setType("PAWN");
+			piece.setXPosition(i);
+			piece.setYPosition(6);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
+
+
+		for(int i=0; i<8;i++){
+			Piece piece = new Piece();
+
+			piece.setColor("BLACK");
+			piece.setType("PAWN");
+			piece.setXPosition(i);
+			piece.setYPosition(1);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
+
+
+		Piece piece1 = new Piece();
+		piece1.setColor("WHITE");
+		piece1.setType("KING");
+		piece1.setXPosition(4);
+		piece1.setYPosition(7);
 		piece1.setBoard(board);
 		piece1.setPiezaMovida(false);
+		piece1.setPeonPaso(false);
+
 
 		Piece piece2 = new Piece();
-
-		piece2.setColor("WHITE");
-		piece2.setType("QUEEN");
-		piece2.setXPosition(3);
-		piece2.setYPosition(7);
+		piece2.setColor("BLACK");
+		piece2.setType("KING");
+		piece2.setXPosition(4);
+		piece2.setYPosition(0);
 		piece2.setBoard(board);
 		piece2.setPiezaMovida(false);
-
+		piece2.setPeonPaso(false);
 
 		Piece piece3 = new Piece();
-
-		piece3.setColor("BLACK");
-		piece3.setType("PAWN");
-		piece3.setXPosition(1);
-		piece3.setYPosition(1);
+		piece3.setColor("WHITE");
+		piece3.setType("QUEEN");
+		piece3.setXPosition(3);
+		piece3.setYPosition(7);
 		piece3.setBoard(board);
 		piece3.setPiezaMovida(false);
+		piece3.setPeonPaso(false);
 
 
 		Piece piece4 = new Piece();
-
-		piece4.setColor("WHITE");
-		piece4.setType("KING");
-		piece4.setXPosition(4);
-		piece4.setYPosition(7);
+		piece4.setColor("BLACK");
+		piece4.setType("QUEEN");
+		piece4.setXPosition(3);
+		piece4.setYPosition(0);
 		piece4.setBoard(board);
 		piece4.setPiezaMovida(false);
-
-		Piece piece5 = new Piece();
-
-		piece5.setColor("WHITE");
-		piece5.setType("PAWN");
-		piece5.setXPosition(4);
-		piece5.setYPosition(6);
-		piece5.setBoard(board);
-		piece5.setPiezaMovida(false);
-
-		Piece piece6 = new Piece();
-
-		piece6.setColor("WHITE");
-		piece6.setType("TOWER");
-		piece6.setXPosition(7);
-		piece6.setYPosition(7);
-		piece6.setBoard(board);
-		piece6.setPiezaMovida(false);
-
-		Piece piece7 = new Piece();
-
-		piece7.setColor("BLACK");
-		piece7.setType("TOWER");
-		piece7.setXPosition(0);
-		piece7.setYPosition(0);
-		piece7.setBoard(board);
-		piece7.setPiezaMovida(false);
+		piece4.setPeonPaso(false);
 
 
-		Piece piece8 = new Piece();
+		for(int i=2;i<6;i=i+3){
+			Piece piece = new Piece();
+			piece.setColor("BLACK");
+			piece.setType("BISHOP");
+			piece.setXPosition(i);
+			piece.setYPosition(0);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
 
-		piece8.setColor("BLACK");
-		piece8.setType("BISHOP");
-		piece8.setXPosition(5);
-		piece8.setYPosition(0);
-		piece8.setBoard(board);
-		piece8.setPiezaMovida(false);
+		for(int i=2;i<6;i=i+3){
+			Piece piece = new Piece();
+			piece.setColor("WHITE");
+			piece.setType("BISHOP");
+			piece.setXPosition(i);
+			piece.setYPosition(7);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
 
-		Piece piece9 = new Piece();
+		for(int i=1;i<7;i=i+5){
+			Piece piece = new Piece();
 
-		piece9.setColor("BLACK");
-		piece9.setType("KING");
-		piece9.setXPosition(4);
-		piece9.setYPosition(0);
-		piece9.setBoard(board);
-		piece9.setPiezaMovida(false);
+			piece.setColor("BLACK");
+			piece.setType("HORSE");
+			piece.setXPosition(i);
+			piece.setYPosition(0);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
 
-		Piece piece10 = new Piece();
+		for(int i=1;i<7;i=i+5){
+			Piece piece = new Piece();
 
-		piece10.setColor("WHITE");
-		piece10.setType("BISHOP");
-		piece10.setXPosition(2);
-		piece10.setYPosition(7);
-		piece10.setBoard(board);
-		piece10.setPiezaMovida(false);
+			piece.setColor("WHITE");
+			piece.setType("HORSE");
+			piece.setXPosition(i);
+			piece.setYPosition(7);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
+		
 
 
+		for(int i=0;i<8;i=i+7){
+			Piece piece = new Piece();
 
+			piece.setColor("WHITE");
+			piece.setType("TOWER");
+			piece.setXPosition(i);
+			piece.setYPosition(7);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
+		
+
+		for(int i=0;i<8;i=i+7){
+			Piece piece = new Piece();
+
+			piece.setColor("BLACK");
+			piece.setType("TOWER");
+			piece.setXPosition(i);
+			piece.setYPosition(0);
+			piece.setBoard(board);
+			piece.setPiezaMovida(false);
+			piece.setPeonPaso(false);
+			this.boardService.savePiece(piece);
+		}
 
 		this.boardService.savePiece(piece1);
 		this.boardService.savePiece(piece2);
 		this.boardService.savePiece(piece3);
 		this.boardService.savePiece(piece4);
-		this.boardService.savePiece(piece5);
-		this.boardService.savePiece(piece6);
-		this.boardService.savePiece(piece7);
-		this.boardService.savePiece(piece8);
-		this.boardService.savePiece(piece9);
-		this.boardService.savePiece(piece10);
 	}
 
 }

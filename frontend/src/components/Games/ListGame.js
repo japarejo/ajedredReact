@@ -50,34 +50,46 @@ class ListGame extends React.Component{
 
                     socket.onopen = () => {
                         
-                        socket.send('Union partida');
+                        socket.send('Union');
                       };
                     
 
                     Cookies.set("time",tiempo * 60);
                     Cookies.set("timeOpponent",tiempo*60);
                     window.location.replace("/games/" + id);
+                }else{
+                    window.location.replace("/games/" + id + "/awaitGame");
                 }
                 })
         }
 
     
-    espectador(id){
+    espectador(id,tiempo){
         const token = localStorage.getItem("jwtToken");
     
         let url = apiUrl + "/games/" + id + "/awaitGame";
           
            
-        axios.get(url,
-            {
-                headers: {
-                "Authorization": `Bearer  ${token}`
-                }
-    
-            }).then( response =>{
+        axios.get(url,{headers: {"Authorization": `Bearer  ${token}`}})
+            .then( response =>{
+                
                 if(response.data===2){
-                    window.location.replace("/games/" + id);
+                    let url = apiUrl + "/games/" + id + "/espectador";
+
+                    axios.get(url,{headers: {"Authorization": `Bearer  ${token}`}})
+                    .then( response =>{
+
+                        Cookies.set("time",response.data[0]);
+                        Cookies.set("timeOpponent", response.data[1]);
+
+                        window.location.replace("/games/" + id);
+
+                    })
                 }else{
+
+                    Cookies.set("time",tiempo * 60);
+                    Cookies.set("timeOpponent",tiempo*60);
+
                     window.location.replace("/games/" + id + "/awaitGame");
                 }
                 })
@@ -144,7 +156,7 @@ class ListGame extends React.Component{
                            
                             <td>
                                {value.numeroJugadores===1?<Button color="primary" onClick={() => this.unirsePartida(value.id,value.tiempo)}> Unirse</Button>:''}
-                               {value.espectadores===true?<Button color="success" onClick={() => this.espectador(value.id)}> Espectador</Button>:''}
+                               {value.espectadores===true?<Button color="success" onClick={() => this.espectador(value.id,value.tiempo)}> Espectador</Button>:''}
                             </td>
                             
                         </tr>

@@ -109,6 +109,54 @@ public class GameController {
         return game.getPlayer().size();
     }
 
+
+    @GetMapping("/{gameId}/espectador")
+    public List<Integer> joinEspectador(@PathVariable int gameId){
+        Game game = this.gameService.findGameById(gameId);
+
+        List<Integer> res = new ArrayList<Integer>();
+
+        int timeWhite = 0;
+
+        int timeBlack = 0;
+
+        for(Player player: game.getPlayer()){
+            if(player.getColorPartida().equals("WHITE")){
+                if(player.getInicioTurno() != null){
+                    
+                    Instant instanteActual = Instant.now();
+                    Instant inicioTurno = player.getInicioTurno();
+                    Duration duracion = Duration.between(inicioTurno, instanteActual);
+                    int segundos = (int) duracion.getSeconds();
+                    timeWhite = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+                }else{
+                    timeWhite = player.getTime();
+                }
+            }else{
+                if(player.getInicioTurno() != null){
+                    
+                    Instant instanteActual = Instant.now();
+                    Instant inicioTurno = player.getInicioTurno();
+                    Duration duracion = Duration.between(inicioTurno, instanteActual);
+                    int segundos = (int) duracion.getSeconds();
+                    timeBlack = player.getTime()-segundos>0? player.getTime()-segundos : 0;
+
+                }else{
+                    timeBlack = player.getTime();
+                }
+            }
+        }
+
+        res.add(timeWhite);
+        res.add(timeBlack);
+
+        return res;
+
+
+
+    }
+
     @GetMapping("/{gameId}/join")
     public String joinPlayer(@PathVariable int gameId) throws SQLException{
         Game game = this.gameService.findGameById(gameId);
@@ -162,12 +210,19 @@ public class GameController {
 
         partida.add(tablero);
 
-        String colorJugador = this.gameService.jugadorSesion().getColorPartida();
+        Player jugadorSesion = this.gameService.jugadorSesion();
+
+
+
+        String colorJugador = "espectador";
+
+        if(game.getPlayer().contains(jugadorSesion)){
+            colorJugador = jugadorSesion.getColorPartida();
+        }
+        
         partida.add(colorJugador);
 
-        //Player player = this.gameService.jugadorSesion();
-        
-        //Player jugadorRival = game.getPlayer().stream().filter(x-> !x.getUser().equals(player.getUser())).findAny().orElse(null);
+       
 
         partida.add(game.getFinPartida());
 
@@ -269,12 +324,12 @@ public class GameController {
 
 
 
-    @PostMapping("/listMovements")
-    public List<Object> listaMovimientos(@RequestBody Piece piece){
+    @GetMapping("/listMovements/{idPieza}")
+    public List<Object> listaMovimientos(@PathVariable int idPieza){
 
         List<Object> res = new ArrayList<>();
 
-        Piece pieza = this.gameService.findPieceById(piece.getId());
+        Piece pieza = this.gameService.findPieceById(idPieza);
 
         //Si es blanca, metemos 10, si es negra 11. Si no hay, sera 0
         int[][] tablero = new int[8][8];
@@ -282,9 +337,13 @@ public class GameController {
         for(Piece p: pieza.getBoard().getPieces()){
             
             if(p.getColor().equals("WHITE")){
+
                 tablero[p.getXPosition()][p.getYPosition()] = 10;
+               
             }else{
+
                 tablero[p.getXPosition()][p.getYPosition()] = 11;
+
             }
             
         }
@@ -316,7 +375,7 @@ public class GameController {
     @PostMapping("/{gameId}/move")
     public List<Object> movimiento(@PathVariable int gameId,@RequestBody Piece piece) {
 
-        
+        System.out.println("Entraaaaa");
 
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
@@ -324,6 +383,8 @@ public class GameController {
         Integer posY = piece.getYPosition();
 
         int indiceY = pieza.getColor().equals("WHITE")? 7: 0 ;
+
+        int indiceColor = pieza.getColor().equals("WHITE")? 10: 11; //Se utiliza para detectar si es jaque mate
 
         Boolean coronacion = pieza.getType().equals("PAWN") && (pieza.getColor().equals("WHITE") && posY == 0 || pieza.getColor().equals("BLACK") && posY == 7);
 
@@ -354,6 +415,19 @@ public class GameController {
             esFinPartidaTiempo = true;
         }
 
+
+        if(pieza.getType().equals("PAWN") && posX != pieza.getXPosition()){ // Si cambia el valor del eje x, quiere decir que se ha movido por la diagonal
+            Optional<Piece> piezaOpcional = this.gameService.piezaPosicion(posX, posY, pieza.getBoard().getId());
+
+            if(!piezaOpcional.isPresent()){ // Si el peon se mueve en diagonal y no hay pieza, es que va a comer al paso
+
+                int indiceEjeY = pieza.getColor().equals("WHITE") ? posY+1: posY-1;
+
+                this.gameService.comprobarCasilla(posX, indiceEjeY, pieza.getBoard().getId());
+            } 
+
+        }
+
         this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
 
         if(!pieza.getPiezaMovida() && !coronacion){
@@ -380,9 +454,23 @@ public class GameController {
             }
         }
 
+
+
+        Optional<Piece> peonSalto = this.gameService.peonSalto(pieza.getBoard().getId());
+
+        if(peonSalto.isPresent()){
+            peonSalto.get().setPeonPaso(false);
+
+        }
+
+        if(pieza.getType().equals("PAWN") && Math.abs(pieza.getYPosition() - posY) == 2){
+            pieza.setPeonPaso(true);
+        }
+
         pieza.setPiezaMovida(true);
         pieza.setXPosition(posX);
         pieza.setYPosition(posY);
+
 
         this.gameService.savePiece(pieza);
 
@@ -429,11 +517,14 @@ public class GameController {
 
                 for(Piece p: pieza.getBoard().getPieces()){
                     
+                    
                     if(p.getColor().equals("WHITE")){
                         tablero[p.getXPosition()][p.getYPosition()] = 10;
                     }else{
                         tablero[p.getXPosition()][p.getYPosition()] = 11;
                     }
+
+                    tablero[posX][posY] = indiceColor;
                     
                 }
 

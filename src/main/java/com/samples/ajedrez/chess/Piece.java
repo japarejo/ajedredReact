@@ -29,6 +29,8 @@ public class Piece extends BaseEntity {
     int yPosition;
 
     Boolean piezaMovida;
+
+    Boolean peonPaso;  // Se utiliza por si el peon se mueve dos posiciones
     
     @ManyToOne
     @JoinColumn(name = "board_id")

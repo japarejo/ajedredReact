@@ -52,6 +52,12 @@ public class ChessBoardService {
         return pieceRepository.existePiezaPosicion(x, y, chessBoardId);
     }
 
+    public Optional<Piece> peonPaso(int chessBoardId){
+        return pieceRepository.peonPaso(chessBoardId);
+    }
+
+
+
 
 
     public Boolean esJaque(String color,Piece pieza, int[][] tablero){
@@ -239,7 +245,9 @@ public class ChessBoardService {
 
                 
                 for(Piece piezaRival: piezasRival){
-                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1)) && ( piezaRival.getXPosition() == mov.get(0)
+                    || piezaRival.getYPosition() == mov.get(1) || (Math.abs(piezaRival.getXPosition() - mov.get(0)) == Math.abs(piezaRival.getYPosition() - mov.get(1)))
+                    || piezaRival.getType().equals("HORSE"))){
                         
                         if(listaMovimientos(piezaRival,tablero).contains(mov)){
                             
@@ -426,7 +434,9 @@ public class ChessBoardService {
 
                 
                 for(Piece piezaRival: piezasRival){
-                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1)) && ( piezaRival.getXPosition() == posRey.get(0)
+                        || piezaRival.getYPosition() == posRey.get(1) || (Math.abs(piezaRival.getXPosition() - posRey.get(0)) == Math.abs(piezaRival.getYPosition() - posRey.get(1)))
+                        || piezaRival.getType().equals("HORSE"))){
                         
                         if(listaMovimientos(piezaRival,tablero).contains(posRey)){
                             
@@ -570,7 +580,9 @@ public class ChessBoardService {
 
                 
                 for(Piece piezaRival: piezasRival){
-                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1)) && ( piezaRival.getXPosition() == posRey.get(0)
+                    || piezaRival.getYPosition() == posRey.get(1) || (Math.abs(piezaRival.getXPosition() - posRey.get(0)) == Math.abs(piezaRival.getYPosition() - posRey.get(1)))
+                    || piezaRival.getType().equals("HORSE"))){
                         
                         if(listaMovimientos(piezaRival,tablero).contains(posRey)){
                             
@@ -654,7 +666,9 @@ public class ChessBoardService {
 
                 
                 for(Piece piezaRival: piezasRival){
-                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1)) && ( piezaRival.getXPosition() == posRey.get(0)
+                        || piezaRival.getYPosition() == posRey.get(1) || (Math.abs(piezaRival.getXPosition() - posRey.get(0)) == Math.abs(piezaRival.getYPosition() - posRey.get(1)))
+                        || piezaRival.getType().equals("HORSE"))){
                         
                         if(listaMovimientos(piezaRival,tablero).contains(posRey)){
                             
@@ -692,6 +706,11 @@ public class ChessBoardService {
         int x = piece.getXPosition();
         int y = piece.getYPosition();
 
+        Boolean peonPasoDiagonal1 = false;
+        Boolean peonPasoDiagonal2 = false;
+
+        Optional<Piece> peonPaso = this.peonPaso(piece.getBoard().getId());
+
         if(color.equals("WHITE")){
 
 
@@ -719,7 +738,26 @@ public class ChessBoardService {
                 posicion.add(x-1);
                 posicion.add(y-1);
                 ls.add(new ArrayList<>(posicion));
+            
+            }else if(x-1>=0 && y-1>=0 && tablero[x-1][y-1] == 0){
+
+
+                if(peonPaso.isPresent() && peonPaso.get().getXPosition() == x-1 && peonPaso.get().getYPosition() == y){
+                    
+                    peonPasoDiagonal1 = true;
+                    posicion.clear();
+                    posicion.add(x-1);
+                    posicion.add(y-1);
+                    ls.add(new ArrayList<>(posicion));
+                }
+                
+                
             }
+
+
+            
+
+
 
 
             if(x+1<=7 && y-1>=0 && tablero[x+1][y-1] == 11){
@@ -727,7 +765,20 @@ public class ChessBoardService {
                 posicion.add(x+1);
                 posicion.add(y-1);
                 ls.add(new ArrayList<>(posicion));
+            }else if(x+1<=7 && y-1>=0 && tablero[x+1][y-1] == 0){
+
+                if(peonPaso.isPresent() && peonPaso.get().getXPosition() == x+1 && peonPaso.get().getYPosition() == y){
+               
+                    peonPasoDiagonal2 = true;
+                    posicion.clear();
+                    posicion.add(x+1);
+                    posicion.add(y-1);
+                    ls.add(new ArrayList<>(posicion));
+                }
             }
+
+
+            
 
 
 
@@ -762,6 +813,16 @@ public class ChessBoardService {
                 posicion.add(x+1);
                 posicion.add(y+1);
                 ls.add(new ArrayList<>(posicion));
+            
+            } else if(x+1 <=7 && y+1<=7 && tablero[x+1][y+1] == 0){
+
+                if(peonPaso.isPresent() && peonPaso.get().getXPosition() == x+1 && peonPaso.get().getYPosition() == y){
+                    peonPasoDiagonal2 = true;
+                    posicion.clear();
+                    posicion.add(x+1);
+                    posicion.add(y+1);
+                    ls.add(new ArrayList<>(posicion));
+                }
             }
 
 
@@ -770,6 +831,16 @@ public class ChessBoardService {
                 posicion.add(x-1);
                 posicion.add(y+1);
                 ls.add(new ArrayList<>(posicion));
+            
+            }else if(x-1 >=0 && y+1<=7 && tablero[x-1][y+1] == 0){
+
+                if(peonPaso.isPresent() && peonPaso.get().getXPosition() == x-1 && peonPaso.get().getYPosition() == y){
+                    peonPasoDiagonal1 = true;
+                    posicion.clear();
+                    posicion.add(x-1);
+                    posicion.add(y+1);
+                    ls.add(new ArrayList<>(posicion));
+                }
             }
         }
         
@@ -790,12 +861,26 @@ public class ChessBoardService {
                 
                 int valorMovPieza = tablero[mov.get(0)][mov.get(1)];
 
+                int indiceY = piece.getColor().equals("WHITE")? y+1:y-1; // Si es blanco,miramos la casilla que esta detras y por tanto incrementa el eje y. Si es negro al reves. Se utiliza para la captura del peon al paso
+
+                int indiceColorOpuesto = piece.getColor().equals("WHITE")? 11:10; // Si es blanco, nos quedamos con el 11, si es blanco con el 10. Se utiliza para la captura del peon al paso
+
+                if(mov.get(0) != x){ // Si el valor del eje x cambia quiere decir que el peon se mueve en diagonal
+                    if((peonPasoDiagonal1 || peonPasoDiagonal2) && tablero[mov.get(0)][mov.get(1)] == 0){
+                        tablero[mov.get(0)][indiceY] = 0;
+                    } 
+                }
+
                 tablero[mov.get(0)][mov.get(1)] = indiceColor;
                 tablero[x][y] = 0;
 
                 
+
+                
                 for(Piece piezaRival: piezasRival){
-                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1))){
+                    if(!(piezaRival.getXPosition() == mov.get(0) && piezaRival.getYPosition() == mov.get(1)) && ( piezaRival.getXPosition() == posRey.get(0)
+                        || piezaRival.getYPosition() == posRey.get(1) || (Math.abs(piezaRival.getXPosition() - posRey.get(0)) == Math.abs(piezaRival.getYPosition() - posRey.get(1)))
+                        || piezaRival.getType().equals("HORSE"))){
                         
                         if(listaMovimientos(piezaRival,tablero).contains(posRey)){
                             
@@ -808,6 +893,12 @@ public class ChessBoardService {
 
                 tablero[mov.get(0)][mov.get(1)] = valorMovPieza;
                 tablero[x][y] = indiceColor;
+
+                if(mov.get(0) != x){ // Si el valor del eje x cambia quiere decir que el peon se mueve en diagonal
+                    if((peonPasoDiagonal1 || peonPasoDiagonal2) && tablero[mov.get(0)][mov.get(1)] == 0){
+                        tablero[mov.get(0)][indiceY] = indiceColorOpuesto;
+                    } 
+                }
 
 
 
