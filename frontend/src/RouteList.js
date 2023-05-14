@@ -12,7 +12,7 @@ import axios from 'axios';
 
 import React, { useState, useEffect } from 'react';
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 export const RouteList = () => {
     

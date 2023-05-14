@@ -13,8 +13,7 @@ import Cookies from 'js-cookie';
 
 import { Button } from 'reactstrap';
 
-const apiUrl = "http://localhost:8080/api";
-
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 class ListGame extends React.Component{
 
@@ -45,20 +44,9 @@ class ListGame extends React.Component{
 
             }).then( response =>{
                 if(response.data==='OK'){
-
-                    const socket = new WebSocket('ws://localhost:8080/games/' + id + '/ws');
-
-                    socket.onopen = () => {
-                        
-                        socket.send('Union');
-                      };
-                    
-
                     Cookies.set("time",tiempo * 60);
                     Cookies.set("timeOpponent",tiempo*60);
                     window.location.replace("/games/" + id);
-                }else{
-                    window.location.replace("/games/" + id + "/awaitGame");
                 }
                 })
         }

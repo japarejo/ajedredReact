@@ -35,9 +35,9 @@ public class ChessBoardService {
     }
 
 
-    public void comprobarCasilla(int x, int y, int chessBoardId){
+    public void comprobarCasilla(int x, int y, int chessBoardId,String color){
 
-        Optional<Piece> piezaComer = pieceRepository.existePiezaPosicion(x, y, chessBoardId);
+        Optional<Piece> piezaComer = pieceRepository.comprobarCasilla(x, y, chessBoardId,color);
 
         if(piezaComer.isPresent()){
             pieceRepository.remove(piezaComer.get().getId());
@@ -65,6 +65,8 @@ public class ChessBoardService {
 
 
         List<Piece>piezasJugador = this.pieceRepository.piezasJugador(color, pieza.getBoard().getId());
+
+        System.out.println(piezasJugador);
 
         Piece rey = this.pieceRepository.piezaReyContrario(color, pieza.getBoard().getId()); //Miro si  despues de haber hecho el movimiento hay opcion de llegar al rey con alguna de mis piezas
 
@@ -909,6 +911,163 @@ public class ChessBoardService {
 
         return movimientosValidos;
 
+        }
+
+        public void inicializacionTablero(ChessBoard board){
+
+            this.saveChessBoard(board);
+    
+    
+            for(int i=0; i<8;i++){
+                Piece piece = new Piece();
+    
+                piece.setColor("WHITE");
+                piece.setType("PAWN");
+                piece.setXPosition(i);
+                piece.setYPosition(6);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+    
+            for(int i=0; i<8;i++){
+                Piece piece = new Piece();
+    
+                piece.setColor("BLACK");
+                piece.setType("PAWN");
+                piece.setXPosition(i);
+                piece.setYPosition(1);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+    
+            Piece piece1 = new Piece();
+            piece1.setColor("WHITE");
+            piece1.setType("KING");
+            piece1.setXPosition(4);
+            piece1.setYPosition(7);
+            piece1.setBoard(board);
+            piece1.setPiezaMovida(false);
+            piece1.setPeonPaso(false);
+    
+    
+            Piece piece2 = new Piece();
+            piece2.setColor("BLACK");
+            piece2.setType("KING");
+            piece2.setXPosition(4);
+            piece2.setYPosition(0);
+            piece2.setBoard(board);
+            piece2.setPiezaMovida(false);
+            piece2.setPeonPaso(false);
+    
+            Piece piece3 = new Piece();
+            piece3.setColor("WHITE");
+            piece3.setType("QUEEN");
+            piece3.setXPosition(3);
+            piece3.setYPosition(7);
+            piece3.setBoard(board);
+            piece3.setPiezaMovida(false);
+            piece3.setPeonPaso(false);
+    
+    
+            Piece piece4 = new Piece();
+            piece4.setColor("BLACK");
+            piece4.setType("QUEEN");
+            piece4.setXPosition(3);
+            piece4.setYPosition(0);
+            piece4.setBoard(board);
+            piece4.setPiezaMovida(false);
+            piece4.setPeonPaso(false);
+    
+    
+            for(int i=2;i<6;i=i+3){
+                Piece piece = new Piece();
+                piece.setColor("BLACK");
+                piece.setType("BISHOP");
+                piece.setXPosition(i);
+                piece.setYPosition(0);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+            for(int i=2;i<6;i=i+3){
+                Piece piece = new Piece();
+                piece.setColor("WHITE");
+                piece.setType("BISHOP");
+                piece.setXPosition(i);
+                piece.setYPosition(7);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+            for(int i=1;i<7;i=i+5){
+                Piece piece = new Piece();
+    
+                piece.setColor("BLACK");
+                piece.setType("HORSE");
+                piece.setXPosition(i);
+                piece.setYPosition(0);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+            for(int i=1;i<7;i=i+5){
+                Piece piece = new Piece();
+    
+                piece.setColor("WHITE");
+                piece.setType("HORSE");
+                piece.setXPosition(i);
+                piece.setYPosition(7);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+            
+    
+    
+            for(int i=0;i<8;i=i+7){
+                Piece piece = new Piece();
+    
+                piece.setColor("WHITE");
+                piece.setType("TOWER");
+                piece.setXPosition(i);
+                piece.setYPosition(7);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+            
+    
+            for(int i=0;i<8;i=i+7){
+                Piece piece = new Piece();
+    
+                piece.setColor("BLACK");
+                piece.setType("TOWER");
+                piece.setXPosition(i);
+                piece.setYPosition(0);
+                piece.setBoard(board);
+                piece.setPiezaMovida(false);
+                piece.setPeonPaso(false);
+                this.pieceRepository.save(piece);
+            }
+    
+            this.pieceRepository.save(piece1);
+            this.pieceRepository.save(piece2);
+            this.pieceRepository.save(piece3);
+            this.pieceRepository.save(piece4);
         }
 
         

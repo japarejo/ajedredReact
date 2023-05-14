@@ -11,7 +11,7 @@ import {envLoader} from '../../env/envLoader';
 
 import NavBar from '../../Navbar';
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 class EditPlayer extends React.Component{
 
@@ -97,7 +97,7 @@ class EditPlayer extends React.Component{
         let url = apiUrl + "/player/update";
 
         if(validate(this.state.form)){
-          axios.put(url,this.state.form,
+          axios.post(url,this.state.form,
             {
                 headers: {
                     "Authorization": `Bearer  ${token}`
@@ -114,14 +114,14 @@ class EditPlayer extends React.Component{
               alert("Se han modificado los datos correctamente");
               window.location.replace("/games/list");
               
-            }else{
-              this.setState({
-                error:true,
-                errorMsg : "El nombre de usuario ya existe"
-              })
             }
 
-        })
+        }).catch(error => {
+          this.setState({
+            error:true,
+            errorMsg : "Ese nombre de usuario ya existe"
+          })
+        });
         
         }
        

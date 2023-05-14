@@ -9,19 +9,40 @@ import { envLoader } from '../../env/envLoader';
 
 import NavBar from '../../Navbar';
 
-
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 class AwaitGame extends React.Component{
 
     componentDidMount = () => {
-        const direccion = this.props.location.pathname;
-        const socket = new WebSocket('ws://localhost:8080' + direccion.substring(0,direccion.lastIndexOf("/")) + '/ws');
-
-        socket.onmessage = (event) => {
-            window.location.replace(direccion.substring(0,direccion.lastIndexOf("/")));
-        }
+        setInterval(this.numberOfPlayers,1000);
+         
+     }
+ 
+     numberOfPlayers = () =>{
+         
+         const token = localStorage.getItem("jwtToken");
+ 
+         let url = apiUrl + this.props.location.pathname;
+       
         
-    }
+         axios.get(url,
+             {
+                 headers: {
+                 "Authorization": `Bearer  ${token}`
+                 }
+ 
+             }).then( response =>{
+                 if(response.data===2){
+                     const direccion = this.props.location.pathname;
+                     window.location.replace(direccion.substring(0,direccion.lastIndexOf("/")));
+                 }
+                 
+ 
+                 }
+ 
+                 )
+         }
+ 
 
     
 

@@ -39,7 +39,6 @@ public class GameService {
 		return gameRepository.findGames();
 	}
 
-
     public void saveGame(Game game) {
 		this.gameRepository.save(game);
 	}
@@ -105,8 +104,8 @@ public class GameService {
 	}
 
 
-	public void comprobarCasilla(int x, int y, int chessBoardId){
-		this.boardService.comprobarCasilla(x, y, chessBoardId);
+	public void comprobarCasilla(int x, int y, int chessBoardId,String color){
+		this.boardService.comprobarCasilla(x, y, chessBoardId,color);
 	}
 
 
@@ -121,159 +120,10 @@ public class GameService {
 
 	public void inicializacionTablero(ChessBoard board){
 
-		this.boardService.saveChessBoard(board);
+		this.boardService.inicializacionTablero(board);
 
-
-		for(int i=0; i<8;i++){
-			Piece piece = new Piece();
-
-			piece.setColor("WHITE");
-			piece.setType("PAWN");
-			piece.setXPosition(i);
-			piece.setYPosition(6);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-
-		for(int i=0; i<8;i++){
-			Piece piece = new Piece();
-
-			piece.setColor("BLACK");
-			piece.setType("PAWN");
-			piece.setXPosition(i);
-			piece.setYPosition(1);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-
-		Piece piece1 = new Piece();
-		piece1.setColor("WHITE");
-		piece1.setType("KING");
-		piece1.setXPosition(4);
-		piece1.setYPosition(7);
-		piece1.setBoard(board);
-		piece1.setPiezaMovida(false);
-		piece1.setPeonPaso(false);
-
-
-		Piece piece2 = new Piece();
-		piece2.setColor("BLACK");
-		piece2.setType("KING");
-		piece2.setXPosition(4);
-		piece2.setYPosition(0);
-		piece2.setBoard(board);
-		piece2.setPiezaMovida(false);
-		piece2.setPeonPaso(false);
-
-		Piece piece3 = new Piece();
-		piece3.setColor("WHITE");
-		piece3.setType("QUEEN");
-		piece3.setXPosition(3);
-		piece3.setYPosition(7);
-		piece3.setBoard(board);
-		piece3.setPiezaMovida(false);
-		piece3.setPeonPaso(false);
-
-
-		Piece piece4 = new Piece();
-		piece4.setColor("BLACK");
-		piece4.setType("QUEEN");
-		piece4.setXPosition(3);
-		piece4.setYPosition(0);
-		piece4.setBoard(board);
-		piece4.setPiezaMovida(false);
-		piece4.setPeonPaso(false);
-
-
-		for(int i=2;i<6;i=i+3){
-			Piece piece = new Piece();
-			piece.setColor("BLACK");
-			piece.setType("BISHOP");
-			piece.setXPosition(i);
-			piece.setYPosition(0);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-		for(int i=2;i<6;i=i+3){
-			Piece piece = new Piece();
-			piece.setColor("WHITE");
-			piece.setType("BISHOP");
-			piece.setXPosition(i);
-			piece.setYPosition(7);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-		for(int i=1;i<7;i=i+5){
-			Piece piece = new Piece();
-
-			piece.setColor("BLACK");
-			piece.setType("HORSE");
-			piece.setXPosition(i);
-			piece.setYPosition(0);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-		for(int i=1;i<7;i=i+5){
-			Piece piece = new Piece();
-
-			piece.setColor("WHITE");
-			piece.setType("HORSE");
-			piece.setXPosition(i);
-			piece.setYPosition(7);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-		
-
-
-		for(int i=0;i<8;i=i+7){
-			Piece piece = new Piece();
-
-			piece.setColor("WHITE");
-			piece.setType("TOWER");
-			piece.setXPosition(i);
-			piece.setYPosition(7);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-		
-
-		for(int i=0;i<8;i=i+7){
-			Piece piece = new Piece();
-
-			piece.setColor("BLACK");
-			piece.setType("TOWER");
-			piece.setXPosition(i);
-			piece.setYPosition(0);
-			piece.setBoard(board);
-			piece.setPiezaMovida(false);
-			piece.setPeonPaso(false);
-			this.boardService.savePiece(piece);
-		}
-
-		this.boardService.savePiece(piece1);
-		this.boardService.savePiece(piece2);
-		this.boardService.savePiece(piece3);
-		this.boardService.savePiece(piece4);
 	}
 
+
+		
 }

@@ -80,7 +80,6 @@ public class PlayerService {
 
 			
 		}else if(!user.getPassword().equals(player.getUser().getPassword())){
-			System.out.println("------------------------- prueba");
 			this.userService.saveUser(player.getUser());
 		}else{
 			this.userService.updateUser(player.getUser());
@@ -88,9 +87,6 @@ public class PlayerService {
 		}
 
 		playerRepository.save(player);
-
-	
-
 		
 
 
@@ -101,5 +97,13 @@ public class PlayerService {
 	@Transactional
 	public void updateTurnPlayer(Player player){
 		playerRepository.save(player);
+	}
+
+	public List<Player> findAllPlayers(){
+		return playerRepository.findAllPlayers();
+	}
+
+	public Player findPlayerById(int id){
+		return playerRepository.findById(id);
 	}
 }

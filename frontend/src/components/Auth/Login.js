@@ -10,8 +10,7 @@ import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { envLoader } from '../../env/envLoader';
 
-const apiUrl = "http://localhost:8080/api";
-
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 class Login extends React.Component{
 
@@ -52,7 +51,7 @@ class Login extends React.Component{
           
           if(response.status === 200){
             
-            localStorage.setItem("jwtToken",response.data.jwtToken);
+            localStorage.setItem("jwtToken",response.data);
             window.location.replace('/games/list');
             
           }

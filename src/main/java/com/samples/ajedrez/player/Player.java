@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.databind.util.TypeKey;
 import com.samples.ajedrez.model.BaseEntity;
 import com.samples.ajedrez.user.User;
 
@@ -23,6 +24,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Player extends BaseEntity {
+
+
+	public Player(){
+
+	}
+
+	public Player(String firstName,String lastName, String telephone, User user){
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.telephone = telephone;
+		this.user = user;
+	}
 
 	@Column(name = "first_name")
 	@NotEmpty

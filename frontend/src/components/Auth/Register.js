@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { envLoader } from '../../env/envLoader';
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 class Register extends React.Component{
 
@@ -64,7 +64,7 @@ class Register extends React.Component{
         if(validate(this.state.form)){
           axios.post(url,this.state.form)
           .then( response =>{
-            if(response.data==='OK'){
+            if(response.status === 200){
               alert("Se ha registrado el usuario correctamente");
               window.location.replace('/login');
             }else{

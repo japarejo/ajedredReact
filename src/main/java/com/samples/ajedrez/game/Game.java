@@ -5,7 +5,9 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -26,6 +28,19 @@ import lombok.Setter;
 @Setter
 public class Game extends BaseEntity {
 
+
+
+	public Game(){
+
+	}
+
+	public Game(int id,String name,Integer tiempo,Boolean espectadores){
+		this.id = id;
+		this.name = name;
+		this.tiempo = tiempo;
+		this.espectadores = espectadores;
+	}
+
 	@Column(name = "name",unique = true)
 	@NotEmpty
 	private String name;
@@ -43,7 +58,12 @@ public class Game extends BaseEntity {
 	@NotNull
 	private Integer numeroJugadores;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "game_player",
+        joinColumns = @JoinColumn(name = "game_id"),
+        inverseJoinColumns = @JoinColumn(name = "player_id")
+    )
 	@JsonIgnore
 	private List<Player> player;
 

@@ -17,6 +17,16 @@ import lombok.Setter;
 
 public class Piece extends BaseEntity {
 
+    public Piece(){
+
+    }
+    
+    public Piece(int id,int xPosition,int yPosition){
+        this.id = id;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+    }
+
 
     String type;
     

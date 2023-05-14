@@ -92,7 +92,7 @@ public class UserController {
 
             TokenInfo tokenInfo = new TokenInfo(jwt);
 
-            return ResponseEntity.ok(tokenInfo);
+            return ResponseEntity.ok(tokenInfo.getJwtToken());
 
         } catch(AuthenticationException e){
             return ResponseEntity.badRequest().build();
@@ -102,16 +102,16 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public String register(@RequestBody Player player){
+    public ResponseEntity<?> register(@RequestBody Player player){
 
 
         try{
             playerService.savePlayer(player);
 
-            return "OK";
+            return ResponseEntity.ok().build();
             
         }catch(DataAccessException e){
-            return "fallo";
+            return ResponseEntity.badRequest().build();
         }
     }
 

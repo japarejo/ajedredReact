@@ -14,8 +14,7 @@ import Cookies from 'js-cookie';
 
 import NavBar from '../../Navbar';
 
-const apiUrl = "http://localhost:8080/api";
-
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 
 class CreateGame extends React.Component{

@@ -21,23 +21,12 @@ import lombok.Setter;
 public class ChessBoard extends BaseEntity{
 
 
-    public ChessBoard(){
-        
-    }
-
-    public ChessBoard(ChessBoard board){
-        this.jaque = board.getJaque();
-        this.jaqueMate = board.getJaqueMate();
-        this.turn = board.getTurn();
-    }
-
-
     @Column(name = "turn")
 	@NotNull
 	private String turn;
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "board", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "board")
     List<Piece> pieces;
 
 

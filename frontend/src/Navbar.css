@@ -10,10 +10,10 @@
 
 body::after {
     content: "";
-    background-image: url("http://2.bp.blogspot.com/-5_3295FDOd4/UcQvY6s05uI/AAAAAAAAa4I/IF9Pf_Qxa2w/s1600/Chess+HD+Pictures7.jpg");
+    background-image: url("https://images8.alphacoders.com/457/457857.jpg");
     background-size: cover;
     background-attachment: fixed;
-    opacity: 0.2;
+    opacity: 0.1;
     top: 0;
     left: 0;
     bottom: 0;

@@ -375,8 +375,6 @@ public class GameController {
     @PostMapping("/{gameId}/move")
     public List<Object> movimiento(@PathVariable int gameId,@RequestBody Piece piece) {
 
-        System.out.println("Entraaaaa");
-
         Piece pieza = this.gameService.findPieceById(piece.getId());
 
         Integer posX = piece.getXPosition();
@@ -423,12 +421,12 @@ public class GameController {
 
                 int indiceEjeY = pieza.getColor().equals("WHITE") ? posY+1: posY-1;
 
-                this.gameService.comprobarCasilla(posX, indiceEjeY, pieza.getBoard().getId());
+                this.gameService.comprobarCasilla(posX, indiceEjeY, pieza.getBoard().getId(),pieza.getColor());
             } 
 
         }
 
-        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
+        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId(),pieza.getColor());
 
         if(!pieza.getPiezaMovida() && !coronacion){
 
@@ -579,8 +577,10 @@ public class GameController {
         Integer posX = pieza.getXPosition();
         Integer posY = pieza.getYPosition();
 
+        String color = pieza.getColor().equals("WHITE")?"BLACK":"WHITE";
 
-        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId());
+
+        this.gameService.comprobarCasilla(posX, posY, pieza.getBoard().getId(),color);
 
         Piece piezaCambio = new Piece();
 

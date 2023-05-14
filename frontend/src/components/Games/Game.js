@@ -15,8 +15,7 @@ import {envLoader} from '../../env/envLoader';
 
 import './Game.css'; 
 
-const apiUrl = "http://localhost:8080/api";
-
+const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
 
 
 function Game() {
@@ -55,7 +54,7 @@ function Game() {
 
     const sampleLocation = useLocation();
 
-    const [socket, setSocket] = useState(null);
+    //const [socket, setSocket] = useState(null);
 
 
     const DrawBoard = () => {
@@ -237,8 +236,6 @@ function Game() {
                 setTurn(response.data[0].turn);
                 setMyTurn(false);
 
-                socket.send(color + "-" + response.data[2]);
-
                 document.getElementById("msg").innerHTML = "¡¡Has perdido la partida por tiempo!!";
 
             } else if(response.data[2] > 0){
@@ -303,6 +300,29 @@ function Game() {
     }
 
 
+    const refresco = () => {
+        const token = localStorage.getItem("jwtToken");
+
+        let url = apiUrl + sampleLocation.pathname;
+        axios.get(url,{ headers: { "Authorization": `Bearer  ${token}`}})
+        .then( response =>{
+            setPieces(response.data[0].pieces);
+            setTurn(response.data[0].turn);
+            setJaque(response.data[0].jaque);
+            setMyTurn(response.data[0].turn === response.data[1]);
+            setForm({id:"0"});
+
+            if(response.data[0].turn !== response.data[1]){
+
+                if(Cookies.get("timeOpponent")>0){
+                    setTimeOpponent(timeOpponent => timeOpponent -1);
+                    Cookies.set("timeOpponent",Cookies.get("timeOpponent")-1);
+                }
+            }
+            })
+
+    }
+
 
 
 
@@ -327,7 +347,6 @@ function Game() {
                     setCoronacion(true);
                     setForm({...form,xposition:"-1", yposition: "-1",type:"QUEEN"});
                 }else{
-                    socket.send(color + "-" + response.data[2]);
                     setMyTurn(false);
                     setForm({id: "0",xposition:"-1",yposition:"-1"});
                 }
@@ -355,9 +374,6 @@ function Game() {
 
     useEffect(() => {
 
-        
-        const newSocket = new WebSocket('ws://localhost:8080' + sampleLocation.pathname + '/ws');
-
 
         partida();
 
@@ -365,39 +381,10 @@ function Game() {
             InicioTurno();
         }
 
-
-        if(!myTurn && color){
-            newSocket.onmessage = (event) => {
-                if(event.data !="Union" && color != "espectador" && event.data.split("-")[0] != color){
-                    Cookies.set("timeOpponent", event.data.split("-")[1]);
-                }
-                partida();
-            }
-
-        }
-
-
-        if(!myTurn && color){
-            if(color == "espectador"){
-                newSocket.onmessage = (event) => {
-                    if(event.data !="Union" && event.data.split("-")[0] == "BLACK"){
-                        Cookies.set("timeOpponent", event.data.split("-")[1]);
-                    } else if(event.data !="Union" && event.data.split("-")[0] == "WHITE"){
-                        Cookies.set("time", event.data.split("-")[1]);
-                    }
-                    partida();
-                }
-            }
-            
-
-        }
-
-        setSocket(newSocket);
-
-    
-        if(form.xposition != "-1"){
+        if(form.id != "0" && form.xposition != "-1"){
                 mover();
             }
+        
         
 
         const interval = setInterval(() => {
@@ -408,11 +395,8 @@ function Game() {
                 }else if(Cookies.get("time") == 0){
                     finTiempo();
                 }
-            } else if(((!myTurn && color !="espectador") || (color =="espectador" && turn == "BLACK")) && !finPartida) {
-                if(Cookies.get("timeOpponent")>0){
-                    setTimeOpponent(timeOpponent => timeOpponent -1);
-                    Cookies.set("timeOpponent",Cookies.get("timeOpponent")-1);
-                }
+            } else if(((!myTurn && inicializado == "true" && color !="espectador") || (color =="espectador" && turn == "BLACK")) && !finPartida) {
+                refresco();
                 
             }
         }, 1000);
@@ -460,8 +444,6 @@ function Game() {
 
                 setMyTurn(false);
                 setForm({id: "0"});
-
-                socket.send(color + "-" + response.data[2]);
                 
                 if(response.data[2]>=0){
                     Cookies.set("time",response.data[2]);
