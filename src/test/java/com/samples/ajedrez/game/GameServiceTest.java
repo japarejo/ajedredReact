@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class GameServiceTest {
@@ -22,9 +23,9 @@ public class GameServiceTest {
         game.setNumeroJugadores(1);
         this.gameService.saveGame(game);
 
-        Game g = this.gameService.findGameById(1);
+        Game g = this.gameService.findGameById(this.gameService.findGames().size());
 		
-        assertThat(g.getName().equals("Partida Servicio"));
+        assertEquals(g.getName(),"Partida Servicio");
         
     }
 
@@ -48,7 +49,7 @@ public class GameServiceTest {
 
         int totalPartidas = this.gameService.findGames().size();
 		
-        assertThat(totalPartidas == 2);
+        assertTrue(totalPartidas>=2);
         
     }
     

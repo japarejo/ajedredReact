@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import com.samples.ajedrez.user.User;
@@ -29,7 +30,7 @@ public class PlayerServiceTest {
 		player.setUser(user);
 		this.playerService.savePlayer(player);
 		Player p = this.playerService.findPlayerByUsername(user);
-		assertThat(p.getFirstName().equals("Julian"));
+		assertEquals(p.getFirstName(),"Julio");
         
     }
 
@@ -58,14 +59,14 @@ public class PlayerServiceTest {
 
     @Test
 	public void testUpdatePlayer() {
-		Player player = this.playerService.findPlayerById(1);
+		Player player = this.playerService.findPlayerById(this.playerService.findAllPlayers().size());
 		String oldLastName = player.getLastName();
 		String newLastName = oldLastName + "X";
 
 		player.setLastName(newLastName);
 		this.playerService.savePlayer(player);
 
-		player = this.playerService.findPlayerById(1);
+		player = this.playerService.findPlayerById(this.playerService.findAllPlayers().size());
 		assertThat(player.getLastName()).isEqualTo(newLastName);
 	}
     

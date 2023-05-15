@@ -13,7 +13,7 @@ import Cookies from 'js-cookie';
 
 import { Button } from 'reactstrap';
 
-const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
+const apiUrl = "http://localhost:8080/api";
 
 class ListGame extends React.Component{
 

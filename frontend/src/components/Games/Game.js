@@ -15,7 +15,7 @@ import {envLoader} from '../../env/envLoader';
 
 import './Game.css'; 
 
-const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
+const apiUrl = "http://localhost:8080/api";
 
 
 function Game() {

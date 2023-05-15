@@ -34,6 +34,10 @@ public class ChessBoardService {
         this.pieceRepository.save(piece);
     }
 
+    public List<ChessBoard> totalChessBoards(){
+        return this.chessRepository.totalTableros();
+    }
+
 
     public void comprobarCasilla(int x, int y, int chessBoardId,String color){
 

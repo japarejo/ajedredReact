@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +39,9 @@ public class ChessBoardServiceTest {
         board.setTurn("BLACK");
         this.boardService.saveChessBoard(board);
 
-        ChessBoard g = this.boardService.findById(1).get();
+        ChessBoard g = this.boardService.findById(this.boardService.totalChessBoards().size()).get();
 		
-        assertThat(g.getTurn().equals("BLACK"));
+        assertEquals(g.getTurn(),"BLACK");
         
     }
 
@@ -49,7 +50,7 @@ public class ChessBoardServiceTest {
 
         Piece p = this.boardService.findPieceById(1);
 		
-        assertThat(p.getType().equals("PAWN"));
+        assertEquals(p.getType(),"PAWN");
         
     }
 
@@ -66,6 +67,30 @@ public class ChessBoardServiceTest {
         Optional<Piece> p2 = this.boardService.piezaPosicion(1, 6, 1);
 
         assertThat(p2.isEmpty()).isTrue();
+        
+    }
+
+
+    @Test
+    public void testJaque() {
+
+        Piece pieza = this.boardService.findPieceById(1);
+
+        int[][] tablero = new int[8][8];
+
+        for(int i=2;i<=32;i++){
+            Piece p = this.boardService.findPieceById(i);
+
+            if(p.getColor().equals("WHITE")){
+                tablero[p.getXPosition()][p.getYPosition()] = 10;
+            }else{
+                tablero[p.getXPosition()][p.getYPosition()] = 11;
+            }
+        }
+
+        Boolean esJaque = this.boardService.esJaque("WHITE", pieza, tablero);
+
+        assertEquals(esJaque,false);
         
     }
 

@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { envLoader } from '../../env/envLoader';
 
-const apiUrl = "https://ajedrezreact.ey.r.appspot.com/api";
+const apiUrl = "http://localhost:8080/api";
 
 class Register extends React.Component{
 

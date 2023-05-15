@@ -1,14 +1,12 @@
 package com.samples.ajedrez.game;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-
-import javax.transaction.Transactional;
 
 
 import org.junit.jupiter.api.BeforeEach;
@@ -124,17 +122,9 @@ public class GameControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        Game game = gameService.findGameById(1);
-
-        int nPlayers = game.getNumeroJugadores();
-
         HttpEntity<?> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-
-        nPlayers = game.getNumeroJugadores();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        assertThat(nPlayers == 2);
     }
 
     @Test
@@ -154,7 +144,7 @@ public class GameControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        assertThat(game.getNumeroJugadores() == nPlayers);
+        assertEquals(game.getNumeroJugadores(),nPlayers);
     }
 
 
@@ -222,7 +212,7 @@ public class GameControllerTest {
 
         int newXPosition = this.gameService.findPieceById(1).getXPosition();
 
-        assertThat(xPosition != newXPosition);
+        assertNotEquals(xPosition,newXPosition);
     }
 
     
