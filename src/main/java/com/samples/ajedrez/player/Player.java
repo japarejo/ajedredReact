@@ -12,7 +12,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.databind.util.TypeKey;
 import com.samples.ajedrez.model.BaseEntity;
 import com.samples.ajedrez.user.User;
 
