@@ -9,9 +9,8 @@ import './Navbar.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class NavBar extends React.Component{
+function NavBar() {
 
-    render(){
         return(
             <>    
             <Navbar className="navbar" variant="white" expand="lg">
@@ -44,8 +43,7 @@ class NavBar extends React.Component{
              </section> 
             </> 
             )
-        }
 }
 
 
-export default NavBar
+export default NavBar;

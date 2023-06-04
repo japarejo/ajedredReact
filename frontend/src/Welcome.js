@@ -17,7 +17,7 @@ export default function Welcome() {
             <br></br>
             <br></br>
               <div className="d-flex justify-content-center bd-highlight">
-              <a className="btn boton btn-info btn-lg p-2 bd-highlight" style={{'marginRight': '10px'}} href="/login">Login</a>
+              <a className="btn boton btn-info btn-lg p-2 bd-highlight" style={{'marginRight': '10px'}} href="/login">Iniciar Sesión</a>
               <br></br>
               <br></br>
               <a className="btn boton btn-info btn-lg p-2 bd-highlight" href="/register">Registro</a>

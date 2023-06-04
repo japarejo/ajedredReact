@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 
 import axios from 'axios';
 
@@ -13,28 +13,28 @@ import NavBar from '../../Navbar';
 
 const apiUrl = "http://localhost:8080/api";
 
-class EditPlayer extends React.Component{
+function EditPlayer() {
 
 
+    const [form,setForm] = useState({
+      "firstName":"",
+      "lastName": "",
+      "telephone": "",
+      "user":{"username":"", "password":""}
+    })
 
-    state={
-        form:{
-        "firstName":"",
-        "lastName": "",
-        "telephone": "",
-        "user":{"username":"", "password":""}
-        },
-        error : false,
-        errorMsg:""
-      }
+    const [error,setError] = useState(false);
 
-    componentDidMount = () => {
-       this.player();
+    const [errorMsg,setErrorMsg] = useState(false);
+
+
+    useEffect(() =>{
+       player();
         
-    }
+    },[]);
 
 
-    player = () =>{
+    const player = () =>{
         const token = localStorage.getItem("jwtToken");
 
         let url =  apiUrl + "/player/data";
@@ -47,42 +47,26 @@ class EditPlayer extends React.Component{
                 }
 
             }).then( response =>{
-                let player = response.data
-                this.setState({
-                    form:{
-                        "firstName": player.firstName,
-                        "lastName" : player.lastName,
-                        "telephone": player.telephone,
-                        "user":{"username": player.user.username,"password": player.user.password}
-                        }
-                    })
+                let player = response.data;
+
+                setForm({"firstName": player.firstName,"lastName" : player.lastName,"telephone": player.telephone,"user":{"username": player.user.username,"password": player.user.password}});
                 })
 
     }
 
 
-    handleSubmit(e){
+    const handleSubmit =(e) =>{
         e.preventDefault();
       }
   
   
-      handleChange = async e =>{
+    const handleChange = async e =>{
 
         if(e.target.name==='username' || e.target.name==='password'){
-            this.setState({
-            form:{
-                ...this.state.form,
-                user:{...this.state.form.user,[e.target.name]: e.target.value}
-                }
-            })
+            setForm({...form,user:{...form.user,[e.target.name]: e.target.value}})
       
         } else {
-            this.setState({
-                form:{
-                    ...this.state.form,
-                    [e.target.name]: e.target.value
-                    }
-                })
+            setForm({...form, [e.target.name] : e.target.value});
       }
   
       }
@@ -90,14 +74,14 @@ class EditPlayer extends React.Component{
 
      
   
-      handleButton =(e) => {
+    const handleButton =(e) => {
 
         const token = localStorage.getItem("jwtToken");
 
         let url = apiUrl + "/player/update";
 
-        if(validate(this.state.form)){
-          axios.post(url,this.state.form,
+        if(validate(form)){
+          axios.post(url,form,
             {
                 headers: {
                     "Authorization": `Bearer  ${token}`
@@ -117,21 +101,19 @@ class EditPlayer extends React.Component{
             }
 
         }).catch(error => {
-          this.setState({
-            error:true,
-            errorMsg : "Ese nombre de usuario ya existe"
-          })
+          setError(true);
+          setErrorMsg("El nombre de usuario ya existe");
         });
         
+        }else{
+          setError(true);
+          setErrorMsg("La longitud de los campos debe ser mayor que 1");
         }
        
         
         
     }
 
-
-
-    render(){
         return(
 
             <React.Fragment>
@@ -145,18 +127,18 @@ class EditPlayer extends React.Component{
                   <img src={logo} width="100px" alt="User Icon" />
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="firstName" placeholder="Nombre" value={this.state.form.firstName} required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Apellidos" value={this.state.form.lastName} required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telefono" value={this.state.form.telephone} required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" value={this.state.form.user.username} required onChange={this.handleChange}/>
-                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" value={this.state.form.user.password} required onChange={this.handleChange}/>
-                  <input type="submit"  value="Actualizar" onClick={this.handleButton}/>
+                <form onSubmit={handleSubmit}>
+                  <input type="text"  className="fadeIn second" name="firstName" placeholder="Nombre" value={form.firstName} required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Apellidos" value={form.lastName} required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telefono" value={form.telephone} required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" value={form.user.username} required onChange={handleChange}/>
+                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" value={form.user.password} required onChange={handleChange}/>
+                  <input type="submit"  value="Actualizar" onClick={handleButton}/>
                 </form>
 
-            {this.state.error === true &&
+            {error === true &&
               <div className="alert alert-danger" role = "alert">
-                {this.state.errorMsg}
+                {errorMsg}
               </div>
             }
             </div>
@@ -169,12 +151,7 @@ class EditPlayer extends React.Component{
 
         )
 
-
-        }
-
 }
-
-export default EditPlayer;
 
 function validate(props){
   if (props["firstName"].length > 1 && props["lastName"].length > 1 && props["telephone"].length > 1){
@@ -183,3 +160,5 @@ function validate(props){
       return false;
     }
   }
+
+export default EditPlayer;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import axios from 'axios';
 
@@ -11,42 +11,44 @@ import NavBar from '../../Navbar';
 
 const apiUrl = "http://localhost:8080/api";
 
-class AwaitGame extends React.Component{
+function AwaitGame() {
 
-    componentDidMount = () => {
-        setInterval(this.numberOfPlayers,1000);
-         
-     }
+   useEffect(() =>{
+    setInterval(numberOfPlayers,1000);
+   },[])
  
-     numberOfPlayers = () =>{
-         
-         const token = localStorage.getItem("jwtToken");
- 
-         let url = apiUrl + this.props.location.pathname;
-       
+    
+   const sampleLocation = useLocation();
+   
+   
+    const numberOfPlayers = () =>{
+            
+            const token = localStorage.getItem("jwtToken");
+    
+            let url = apiUrl + sampleLocation.pathname;
         
-         axios.get(url,
-             {
-                 headers: {
-                 "Authorization": `Bearer  ${token}`
-                 }
- 
-             }).then( response =>{
-                 if(response.data===2){
-                     const direccion = this.props.location.pathname;
-                     window.location.replace(direccion.substring(0,direccion.lastIndexOf("/")));
-                 }
-                 
- 
-                 }
- 
-                 )
-         }
+            
+            axios.get(url,
+                {
+                    headers: {
+                    "Authorization": `Bearer  ${token}`
+                    }
+    
+                }).then( response =>{
+                    if(response.data===2){
+                        const direccion = sampleLocation.pathname;
+                        window.location.replace(direccion.substring(0,direccion.lastIndexOf("/")));
+                    }
+                    
+    
+                    }
+    
+                    )
+            }
  
 
     
 
-    render(){
     return(
         <React.Fragment>
             <NavBar></NavBar>
@@ -56,14 +58,7 @@ class AwaitGame extends React.Component{
         </React.Fragment>
         )
 
-    }
 }
 
 
-export default function Redirect(props){
-    const location = useLocation();
-    const navigate = useNavigate();
-  
-    return <AwaitGame {... props} location={location} navigate={navigate}/>;
-
-}
+export default AwaitGame;

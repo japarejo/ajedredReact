@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 
 import './Login.css'; 
@@ -12,41 +12,34 @@ import { envLoader } from '../../env/envLoader';
 
 const apiUrl = "http://localhost:8080/api";
 
-class Login extends React.Component{
+function Login() {
 
 
-    state={
-      form:{
-        "username":"",
-        "password":""
-      },
-      error : false,
-      errorMsg:""
-    }
+    const [form,setForm] = useState({
+      "username":"",
+      "password":""
+    })
+
+    const [error,setError] = useState(false);
+
+    const [errorMsg,setErrorMsg] = useState(false);
 
 
-    handleSubmit(e){
+    const handleSubmit = (e) => {
       e.preventDefault();
     }
 
 
-    handleChange = async e =>{
-       this.setState({
-        form:{
-          ...this.state.form,
-          [e.target.name]: e.target.value
-        }
-      })
+    const handleChange = async e =>{
+      setForm({...form, [e.target.name]: e.target.value});
 
     }
 
-    handleButton =() => {
+    const handleButton = () => {
       let url = apiUrl + "/login";
-      if (validate(this.state.form)){
-        this.setState({
-          error:false,
-        })
-        axios.post(url,this.state.form)
+      if (validate(form)){
+        setError(false);
+        axios.post(url,form)
         .then( response =>{
           
           if(response.status === 200){
@@ -57,20 +50,18 @@ class Login extends React.Component{
           }
         
         }).catch(error => {
-          this.setState({
-            error:true,
-            errorMsg : "Credenciales Incorrectas"
-          })
+          setError(true);
+          setErrorMsg("Credenciales Incorrectas");
         });
 
+      }else{
+        setError(true);
+        setErrorMsg("La longitud de los campos debe ser mayor que 1");
       }
       
     }
-
-
-
-    render(){
-      return(
+      
+    return(
         
        <React.Fragment>
           <br></br>
@@ -84,15 +75,15 @@ class Login extends React.Component{
                   <img src={logo} width="100px" alt="User Icon" />
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={this.handleChange}/>
-                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={this.handleChange}/>
-                  <input type="submit" className="fadeIn fourth" value="Iniciar Sesion" onClick={this.handleButton}/>
+                <form onSubmit={handleSubmit}>
+                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={handleChange}/>
+                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={handleChange}/>
+                  <input type="submit" className="fadeIn fourth" value="Iniciar Sesion" onClick={handleButton}/>
                 </form>
 
-            {this.state.error === true &&
+            {error === true &&
               <div className="alert alert-danger" role = "alert">
-                {this.state.errorMsg}
+                {errorMsg}
               </div>
             }
             </div>
@@ -103,13 +94,6 @@ class Login extends React.Component{
 
 
     )
-  }
-}
-
-export default function Redirect(props){
-  const navigate = useNavigate();
-
-  return <Login {... props} navigate={navigate}/>;
 }
 
 
@@ -120,4 +104,7 @@ function validate(props){
       return false;
     }
   }
+
+
+export default Login;
 

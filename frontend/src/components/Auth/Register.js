@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 
 import './Login.css';
 
@@ -12,44 +12,32 @@ import { envLoader } from '../../env/envLoader';
 
 const apiUrl = "http://localhost:8080/api";
 
-class Register extends React.Component{
+function Register() {
+
+    const [form,setForm] = useState({
+      "firstName":"",
+      "lastName": "",
+      "telephone": "",
+      "user":{"username":"", "password":""}
+    })
+
+    const [error,setError] = useState(false);
+
+    const [errorMsg,setErrorMsg] = useState(false);
 
 
-
-    state={
-        form:{
-        "firstName":"",
-        "lastName": "",
-        "telephone": "",
-        "user":{"username":"", "password":""}
-        },
-        error : false,
-        errorMsg:""
-      }
-
-
-      handleSubmit(e){
+    const handleSubmit = (e) => {
         e.preventDefault();
       }
   
   
-      handleChange = async e =>{
+    const handleChange = async e =>{
 
         if(e.target.name==='username' || e.target.name==='password'){
-            this.setState({
-            form:{
-                ...this.state.form,
-                user:{...this.state.form.user,[e.target.name]: e.target.value}
-                }
-            })
+            setForm({...form,user:{...form.user,[e.target.name]: e.target.value}})
       
         } else {
-            this.setState({
-                form:{
-                    ...this.state.form,
-                    [e.target.name]: e.target.value
-                    }
-                })
+            setForm({...form, [e.target.name] : e.target.value});
       }
   
       }
@@ -57,25 +45,26 @@ class Register extends React.Component{
 
      
   
-      handleButton =(e) => {
+    const handleButton =(e) => {
 
         let url = apiUrl + "/register";
 
-        if(validate(this.state.form)){
-          axios.post(url,this.state.form)
+        if(validate(form)){
+          axios.post(url,form)
           .then( response =>{
             if(response.status === 200){
               alert("Se ha registrado el usuario correctamente");
               window.location.replace('/login');
-            }else{
-              this.setState({
-                error:true,
-                errorMsg : "El nombre de usuario ya existe"
-              })
             }
 
-        })
+        }).catch(error => {
+          setError(true);
+          setErrorMsg("El nombre de usuario ya existe");
+        });
         
+        }else{
+          setError(true);
+          setErrorMsg("La longitud de los campos debe ser mayor que 1");
         }
        
         
@@ -83,9 +72,7 @@ class Register extends React.Component{
     }
 
 
-
-    render(){
-        return(
+      return(
 
             <React.Fragment>
 
@@ -96,18 +83,18 @@ class Register extends React.Component{
                   <img src={logo} width="100px" alt="User Icon" />
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="firstName" placeholder="Nombre" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Apellidos" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telefono" required onChange={this.handleChange}/>
-                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={this.handleChange}/>
-                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={this.handleChange}/>
-                  <input type="submit" className="fadeIn fourth" value="Registrarse" onClick={this.handleButton}/>
+                <form onSubmit={handleSubmit}>
+                  <input type="text"  className="fadeIn second" name="firstName" placeholder="Nombre" required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="lastName" placeholder="Apellidos" required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="telephone" placeholder="Telefono" required onChange={handleChange}/>
+                  <input type="text"  className="fadeIn second" name="username" placeholder="Usuario" required onChange={handleChange}/>
+                  <input type="password" className="fadeIn third" name="password" placeholder="Contraseña" required onChange={handleChange}/>
+                  <input type="submit" className="fadeIn fourth" value="Registrarse" onClick={handleButton}/>
                 </form>
 
-            {this.state.error === true &&
+            {error === true &&
               <div className="alert alert-danger" role = "alert">
-                {this.state.errorMsg}
+                {errorMsg}
               </div>
             }
             </div>
@@ -120,12 +107,8 @@ class Register extends React.Component{
 
         )
 
-
-        }
-
 }
 
-export default Register;
 
 function validate(props){
   if (props["firstName"].length > 1 && props["lastName"].length > 1 && props["telephone"].length > 1 && props.user["username"].length > 1 && props.user["password"].length > 1){
@@ -134,6 +117,8 @@ function validate(props){
       return false;
     }
   }
+
+export default Register;
 
 
 

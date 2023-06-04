@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 
@@ -15,22 +15,21 @@ import { Button } from 'reactstrap';
 
 const apiUrl = "http://localhost:8080/api";
 
-class ListGame extends React.Component{
+function ListGame() {
 
-    state = {
-        games:[]
-    };
+    const[games,setGames] = useState([]);
 
     
   
 
-    componentDidMount = () => {
-       this.listGames()
-       setInterval(this.listGames,500);
+    useEffect(() => {
+       listGames()
+       setInterval(listGames,500);
         
-    }
+    },[])
 
-    unirsePartida(id,tiempo){
+    
+    const unirsePartida = (id,tiempo) => {
         const token = localStorage.getItem("jwtToken");
 
         let url = apiUrl + "/games/" + id + "/join";
@@ -52,7 +51,7 @@ class ListGame extends React.Component{
         }
 
     
-    espectador(id,tiempo){
+    const espectador = (id,tiempo) => {
         const token = localStorage.getItem("jwtToken");
     
         let url = apiUrl + "/games/" + id + "/awaitGame";
@@ -84,7 +83,7 @@ class ListGame extends React.Component{
         }
 
 
-    listGames = () =>{
+    const listGames = () => {
         
         const token = localStorage.getItem("jwtToken");
 
@@ -98,22 +97,18 @@ class ListGame extends React.Component{
                 }
 
             }).then( response =>{
-                this.setState({
-                    games : response.data
-                })
+                setGames(response.data);
                 
                 })
         }
 
     
-
-    render(){
     return(
 
         <React.Fragment>
         <NavBar></NavBar>
         <div className="container">
-        {this.state.games.length === 0 &&
+        {games.length === 0 &&
             <div>
                 <br></br>
                 
@@ -122,7 +117,7 @@ class ListGame extends React.Component{
             </div>
         }
 
-        {this.state.games.length > 0 &&
+        {games.length > 0 &&
         <table className="table table-hover">
 
             <thead>
@@ -135,7 +130,7 @@ class ListGame extends React.Component{
             </thead>
 
             <tbody>
-                { this.state.games.map((value,i) =>{
+                { games.map((value,i) =>{
                     return (
                         <tr key={i}>
                             <td>{value.name} </td>
@@ -143,8 +138,9 @@ class ListGame extends React.Component{
                             
                            
                             <td>
-                               {value.numeroJugadores===1?<Button color="primary" onClick={() => this.unirsePartida(value.id,value.tiempo)}> Unirse</Button>:''}
-                               {value.espectadores===true?<Button color="success" onClick={() => this.espectador(value.id,value.tiempo)}> Espectador</Button>:''}
+                               {value.numeroJugadores===1?<Button color="primary" onClick={() => unirsePartida(value.id,value.tiempo)}> Unirse</Button>:''}
+                               {' '}
+                               {value.espectadores===true?<Button color="success" onClick={() => espectador(value.id,value.tiempo)}> Espectador</Button>:''}
                             </td>
                             
                         </tr>
@@ -159,8 +155,6 @@ class ListGame extends React.Component{
 
         </React.Fragment>
         )
-
-    }
 }
 
 export default ListGame;

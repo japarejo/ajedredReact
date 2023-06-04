@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 
 
 import './CreateGame.css'; 
@@ -17,48 +17,40 @@ import NavBar from '../../Navbar';
 const apiUrl = "http://localhost:8080/api";
 
 
-class CreateGame extends React.Component{
+function CreateGame() {
+
+  const [form,setForm] = useState({
+    "name":"",
+    "tiempo":"3",
+    "espectadores":"True",
+  })
+
+  const [error,setError] = useState(false);
+
+  const [errorMsg,setErrorMsg] = useState("");
 
 
-    state={
-      form:{
-        "name":"",
-        "tiempo":"3",
-        "espectadores":"True",
-      },
-      error : false,
-      errorMsg:""
-    }
-
-
-    handleSubmit(e){
+    const handleSubmit = (e) => {
       e.preventDefault();
     }
 
 
-    handleChange = async e =>{
-       this.setState({
-        form:{
-          ...this.state.form,
-          [e.target.name]: e.target.value
-        }
-      })
+    const handleChange = async e =>{
+       setForm({...form,[e.target.name]: e.target.value});
       
 
     }
 
-    handleButton =() => {
+    const handleButton = () => {
 
         const token = localStorage.getItem("jwtToken");
 
         let url = apiUrl + "/games/create";
 
-        this.setState({
-          error:false,
-        })
+        setError(false);
       
        
-        axios.post(url,this.state.form,
+        axios.post(url,form,
         {
             headers: {
                 "Authorization": `Bearer  ${token}`
@@ -68,26 +60,22 @@ class CreateGame extends React.Component{
             if(response.status===200){
                 const id = response.data;
 
-                Cookies.set("time",this.state.form.tiempo * 60);
-                Cookies.set("timeOpponent",this.state.form.tiempo * 60);
-                this.props.navigate("/games/"+ id + "/awaitGame");
+                Cookies.set("time",form.tiempo * 60);
+                Cookies.set("timeOpponent",form.tiempo * 60);
+                window.location.replace("/games/"+ id + "/awaitGame");
 
             }
 
 
         }).catch(error => {
-          this.setState({
-            error:true,
-            errorMsg : "Ese nombre de partida ya ha sido utilizado"
-        })
-
-      });
+          setError(true);
+          setErrorMsg("Ese nombre de partida ya ha sido utilizado");
+        
+        });
 
     }
 
 
-
-    render(){
       return(
         
        <React.Fragment>
@@ -100,11 +88,11 @@ class CreateGame extends React.Component{
                   <img src={logo} width="100px" alt="User Icon" />
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
-                  <input type="text"  className="fadeIn second" name="name" placeholder="Nombre" required onChange={this.handleChange}/>
+                <form onSubmit={handleSubmit}>
+                  <input type="text"  className="fadeIn second" name="name" placeholder="Nombre" required onChange={handleChange}/>
                   <label>
                         Tiempo Movimiento:       
-                        <select name="tiempo" value={this.state.tiempo} onChange={this.handleChange}>
+                        <select name="tiempo" value={form.tiempo} onChange={handleChange}>
                         
                         <option value="3">3 min</option>
                         <option value="5">5 min</option>
@@ -116,7 +104,7 @@ class CreateGame extends React.Component{
 
                 <label>
                         Espectadores:       
-                        <select name="espectadores" value={this.state.espectadores} onChange={this.handleChange}>
+                        <select name="espectadores" value={form.espectadores} onChange={handleChange}>
                         
                         <option value="True">Si</option>
                         <option value="False">No</option>
@@ -127,12 +115,12 @@ class CreateGame extends React.Component{
                 <br></br>
 
 
-                  <input type="submit" className="fadeIn fourth" value="Crear Partida" onClick={this.handleButton}/>
+                  <input type="submit" className="fadeIn fourth" value="Crear Partida" onClick={handleButton}/>
                 </form>
 
-            {this.state.error === true &&
+            {error === true &&
               <div className="alert alert-danger" role = "alert">
-                {this.state.errorMsg}
+                {errorMsg}
               </div>
             }
             </div>
@@ -143,11 +131,7 @@ class CreateGame extends React.Component{
 
 
     )
-  }
 }
 
-export default function Redirect(props){
-  const navigate = useNavigate();
+export default CreateGame;
 
-  return <CreateGame {... props} navigate={navigate}/>;
-}
