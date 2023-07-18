@@ -17,31 +17,25 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class ChessBoard extends BaseEntity{
-
+public class ChessBoard extends BaseEntity {
 
     @Column(name = "turn")
-	@NotNull
-	private String turn;
-
+    @NotNull
+    private String turn;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "board")
     List<Piece> pieces;
 
-
-    @Column(name= "jaque")
+    @Column(name = "jaque")
     private Boolean jaque;
 
-    @Column(name= "jaque_mate")
+    @Column(name = "jaque_mate")
     private Boolean jaqueMate;
 
-    @Column(name= "coronacion")
+    @Column(name = "coronacion")
     private Boolean coronacion;
 
     @Column(name = "id_coronacion")
     private Integer idCoronacion;
 
-
-    
-    
 }

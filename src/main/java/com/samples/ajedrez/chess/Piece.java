@@ -17,31 +17,30 @@ import lombok.Setter;
 
 public class Piece extends BaseEntity {
 
-    public Piece(){
+    public Piece() {
 
     }
-    
-    public Piece(int id,int xPosition,int yPosition){
+
+    public Piece(int id, int xPosition, int yPosition) {
         this.id = id;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
 
-
     String type;
-    
+
     String color;
-    
-    @Range(min=0,max=7)
+
+    @Range(min = 0, max = 7)
     int xPosition;
-    
-    @Range(min=0,max=7)
+
+    @Range(min = 0, max = 7)
     int yPosition;
 
     Boolean piezaMovida;
 
-    Boolean peonPaso;  // Se utiliza por si el peon se mueve dos posiciones
-    
+    Boolean peonPaso; // Se utiliza por si el peon se mueve dos posiciones
+
     @ManyToOne
     @JoinColumn(name = "board_id")
     @JsonIgnore

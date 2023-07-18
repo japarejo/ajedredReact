@@ -6,9 +6,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface ChessBoardRepository extends CrudRepository<ChessBoard,Integer> {
+public interface ChessBoardRepository extends CrudRepository<ChessBoard, Integer> {
 
     @Query("SELECT board FROM ChessBoard board")
     List<ChessBoard> totalTableros() throws DataAccessException;
-    
+
 }
