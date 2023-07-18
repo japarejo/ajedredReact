@@ -15,6 +15,10 @@
 	<name>Ajedrez</name>
 	<description>Ajedrez project for Spring Boot And React</description>
 	<properties>
+		<sourceDirectory>${basedir}/src</sourceDirectory>
+        <targetDirectory>${basedir}/target</targetDirectory>
+        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
@@ -86,21 +90,18 @@
         </dependency>
 
 		<dependency>
-    	<groupId>com.h2database</groupId>
-    	<artifactId>h2</artifactId>
+    		<groupId>com.h2database</groupId>
+    		<artifactId>h2</artifactId>
 		</dependency>
 
 		<dependency>
-  		<groupId>org.springframework.boot</groupId>
-  		<artifactId>spring-boot-starter-websocket</artifactId>
+  			<groupId>org.springframework.boot</groupId>
+  			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
 	</dependencies>
 
 	<build>
-
-		
-
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -110,7 +111,6 @@
 	</build>
 
 	<profiles>
-
 		<profile>
 			<id>cloud-gcp</id>
 			<dependencies>
@@ -125,7 +125,6 @@
 				<version>1.0.0.RELEASE</version>
 				</dependency>
 			</dependencies>
-
 		<build>
 		<plugins>
 			<plugin>
@@ -136,7 +135,5 @@
 			</plugins>
 		</build>
 		</profile>
-	
 	</profiles>
-
 </project>
