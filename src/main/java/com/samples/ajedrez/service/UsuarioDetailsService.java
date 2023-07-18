@@ -13,19 +13,16 @@ import com.samples.ajedrez.user.UserService;
 import java.util.List;
 
 @Service
-public class UsuarioDetailsService implements UserDetailsService  {
+public class UsuarioDetailsService implements UserDetailsService {
 
   @Autowired
   private UserService userService;
 
-  
-
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    
-    
+
     var user = userService.findUser(username);
-    
+
     if (user != null) {
       User.UserBuilder userBuilder = User.withUsername(username);
       String password = user.get().getPassword();
@@ -35,34 +32,28 @@ public class UsuarioDetailsService implements UserDetailsService  {
       throw new UsernameNotFoundException(username);
     }
 
-
   }
 
-
-  private String[] getRoles(String username){
+  private String[] getRoles(String username) {
     var user = userService.findUser(username);
     List<Authorities> authorities = user.get().getAuthorities();
 
-    if(authorities!=null){
+    if (authorities != null) {
       String[] array = new String[authorities.size()];
 
-      for(int i = 0; i<authorities.size();i++){
+      for (int i = 0; i < authorities.size(); i++) {
         array[i] = authorities.get(i).getAuthority();
-        }
-
+      }
 
       return array;
-    
-    }else{
+
+    } else {
       String[] array = new String[1];
       array[0] = "player";
 
       return array;
     }
-    
-    
-    
-    }
-    
+
   }
 
+}

@@ -15,5 +15,5 @@ public class TokenInfo implements Serializable {
   public String getJwtToken() {
     return this.jwtToken;
   }
-    
+
 }

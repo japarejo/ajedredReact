@@ -1,6 +1,5 @@
 package com.samples.ajedrez;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +18,6 @@ public class AjedrezApplication implements CommandLineRunner {
 
 	@Autowired
 	private PlayerService playerService;
-
 
 	public static void main(String[] args) {
 		SpringApplication.run(AjedrezApplication.class, args);
@@ -55,11 +53,7 @@ public class AjedrezApplication implements CommandLineRunner {
 
 			playerService.savePlayer(player2);
 
-			
-
-		
 		}
 	}
-	
 
 }
