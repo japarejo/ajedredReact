@@ -13,18 +13,15 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "users")
-
+@NoArgsConstructor
 public class User {
-
-    public User(){
-        
-    }
 
     public User(String username, String password) {
         this.username = username;
@@ -40,9 +37,8 @@ public class User {
     @Column(nullable = false)
     boolean enabled;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user",fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnore
-	private List<Authorities> authorities;
+    private List<Authorities> authorities;
 
-    
 }

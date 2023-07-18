@@ -1,0 +1,17 @@
+# JDBC URL of the database
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=<Login username of the database>
+spring.datasource.password=<Login password of the database>
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=<Show sql query>
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.defer-datasource-initialization=<See Spring Boot 2.5 release notes>
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+jwt.secret=<Your secret>
