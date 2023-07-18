@@ -16,9 +16,8 @@ public class ChessBoardServiceTest {
     @Autowired
     private ChessBoardService boardService;
 
-
     @BeforeEach
-    void setup(){
+    void setup() {
         ChessBoard board = new ChessBoard();
         board.setTurn("WHITE");
         board.setJaque(false);
@@ -39,20 +38,19 @@ public class ChessBoardServiceTest {
         this.boardService.saveChessBoard(board);
 
         ChessBoard g = this.boardService.findById(this.boardService.totalChessBoards().size()).get();
-		
-        assertEquals(g.getTurn(),"BLACK");
-        
+
+        assertEquals(g.getTurn(), "BLACK");
+
     }
 
     @Test
     public void testFindPieceById() {
 
         Piece p = this.boardService.findPieceById(1);
-		
-        assertEquals(p.getType(),"PAWN");
-        
-    }
 
+        assertEquals(p.getType(), "PAWN");
+
+    }
 
     @Test
     public void testComprobarCasilla() {
@@ -66,9 +64,8 @@ public class ChessBoardServiceTest {
         Optional<Piece> p2 = this.boardService.piezaPosicion(1, 6, 1);
 
         assertThat(p2.isEmpty()).isTrue();
-        
-    }
 
+    }
 
     @Test
     public void testJaque() {
@@ -77,24 +74,20 @@ public class ChessBoardServiceTest {
 
         int[][] tablero = new int[8][8];
 
-        for(int i=2;i<=32;i++){
+        for (int i = 2; i <= 32; i++) {
             Piece p = this.boardService.findPieceById(i);
 
-            if(p.getColor().equals("WHITE")){
+            if (p.getColor().equals("WHITE")) {
                 tablero[p.getXPosition()][p.getYPosition()] = 10;
-            }else{
+            } else {
                 tablero[p.getXPosition()][p.getYPosition()] = 11;
             }
         }
 
         Boolean esJaque = this.boardService.esJaque("WHITE", pieza, tablero);
 
-        assertEquals(esJaque,false);
-        
+        assertEquals(esJaque, false);
+
     }
 
-
-
-    
-    
 }
