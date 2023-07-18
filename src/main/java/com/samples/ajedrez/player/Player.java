@@ -1,6 +1,5 @@
 package com.samples.ajedrez.player;
 
-
 import java.time.Instant;
 
 import javax.persistence.CascadeType;
@@ -16,20 +15,17 @@ import com.samples.ajedrez.model.BaseEntity;
 import com.samples.ajedrez.user.User;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "players")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Player extends BaseEntity {
 
-
-	public Player(){
-
-	}
-
-	public Player(String firstName,String lastName, String telephone, User user){
+	public Player(String firstName, String lastName, String telephone, User user) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.telephone = telephone;
@@ -40,29 +36,24 @@ public class Player extends BaseEntity {
 	@NotEmpty
 	private String firstName;
 
-    @Column(name = "last_name")
+	@Column(name = "last_name")
 	@NotEmpty
 	private String lastName;
-
 
 	@Column(name = "telephone")
 	@NotEmpty
 	@Digits(fraction = 0, integer = 9)
 	private String telephone;
 
-
-	@Column(name="color")
+	@Column(name = "color")
 	private String colorPartida;
-
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "username", referencedColumnName = "username")
 	private User user;
 
-
 	@Column(name = "time")
 	private Integer time;
-
 
 	@Column(name = "start_turn")
 	private Instant inicioTurno;

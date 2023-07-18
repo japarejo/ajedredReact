@@ -1,7 +1,5 @@
 package com.samples.ajedrez.player;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -21,29 +19,26 @@ import com.samples.ajedrez.service.TokenInfo;
 @RequestMapping("/api/player")
 @RestController
 public class PlayerController {
-    
-    
+
     @Autowired
     PlayerService playerService;
 
     @Autowired
     UserDetailsService usuarioDetailsService;
-    
+
     @Autowired
     JwtUtilService jwtUtilService;
 
-
     @InitBinder
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
-	}
-
+    public void setAllowedFields(WebDataBinder dataBinder) {
+        dataBinder.setDisallowedFields("id");
+    }
 
     @GetMapping("/data")
-    public Player getPlayer(){
+    public Player getPlayer() {
 
         Player player = this.playerService.jugadorSesion();
-        
+
         return player;
     }
 
@@ -54,45 +49,39 @@ public class PlayerController {
 
         player.setId(jugadorActual.getId());
 
-        try{
+        try {
 
-
-            if(!player.getUser().getUsername().equals(jugadorActual.getUser().getUsername())){
+            if (!player.getUser().getUsername().equals(jugadorActual.getUser().getUsername())) {
 
                 Player playerWithUser = this.playerService.findPlayerByUsername(player.getUser());
-                
-                if(playerWithUser != null){
+
+                if (playerWithUser != null) {
                     throw new Error();
                 }
-                
+
                 this.playerService.updatePlayer(player);
-                
-                final UserDetails userDetails = usuarioDetailsService.loadUserByUsername(player.getUser().getUsername());
-            
+
+                final UserDetails userDetails = usuarioDetailsService
+                        .loadUserByUsername(player.getUser().getUsername());
 
                 final String jwt = jwtUtilService.generateToken(userDetails);
 
                 TokenInfo tokenInfo = new TokenInfo(jwt);
 
                 return ResponseEntity.ok(tokenInfo);
-            
-            }else{
+
+            } else {
                 this.playerService.updatePlayer(player);
                 return ResponseEntity.ok().build();
             }
 
-            
-        }catch(DataAccessException e){
+        } catch (DataAccessException e) {
             return ResponseEntity.badRequest().build();
-        
-        } catch(Error e){
+
+        } catch (Error e) {
             return ResponseEntity.internalServerError().build();
         }
-        
-
 
     }
 
-
-    
 }

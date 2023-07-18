@@ -28,7 +28,7 @@ public class BaseEntity {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
 	@JsonIgnore
 	public boolean isNew() {
 		return this.id == null;
