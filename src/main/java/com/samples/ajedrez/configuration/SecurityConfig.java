@@ -1,6 +1,5 @@
 package com.samples.ajedrez.configuration;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,46 +17,41 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.samples.ajedrez.service.JwtRequestFilter;
 
-
-
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig   {
-
-
+public class SecurityConfig {
 
 	@Autowired
-  	UserDetailsService usuarioDetailsService;
+	UserDetailsService usuarioDetailsService;
 
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-	  @Bean
-	  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		  return authenticationConfiguration.getAuthenticationManager();
-	  }
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 
-  	@Autowired
-  	private JwtRequestFilter jwtRequestFilter;
-
-  	@Bean
-  	public PasswordEncoder passwordEncoder() {
-    	return new BCryptPasswordEncoder();
-  	}
-	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http
-        //.httpBasic(withDefaults()) 
-        .csrf().disable()
-        .authorizeRequests()
-        .antMatchers("/","/games/**","/api/login","/api/register", "/api/auth/**").permitAll()
-		.antMatchers("/api/games/**").authenticated()
-		.antMatchers("/api/player/**").authenticated()
-        .anyRequest().authenticated()
-		.and().cors()
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				// .httpBasic(withDefaults())
+				.csrf().disable()
+				.authorizeRequests()
+				.antMatchers("/", "/games/**", "/api/login", "/api/register", "/api/auth/**").permitAll()
+				.antMatchers("/api/games/**").authenticated()
+				.antMatchers("/api/player/**").authenticated()
+				.anyRequest().authenticated()
+				.and().cors()
+				.and()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -70,7 +64,4 @@ public class SecurityConfig   {
 
 	}
 
-
-
-	
 }
