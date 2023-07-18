@@ -16,7 +16,6 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-
 public class ChessBoard extends BaseEntity {
 
     @Column(name = "turn")

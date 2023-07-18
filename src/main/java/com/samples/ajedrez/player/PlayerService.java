@@ -37,14 +37,14 @@ public class PlayerService {
 	}
 
 	@Transactional(readOnly = true)
-	public Player findPlayerByUsername(User username) throws DataAccessException {
+	public Player findPlayerByUsername(String username) throws DataAccessException {
 		return playerRepository.findByUsername(username);
 	}
 
 	public Player jugadorSesion() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
-		return findPlayerByUsername(this.userService.findUser(username).orElse(null));
+		return findPlayerByUsername(username);
 	}
 
 	@Transactional

@@ -29,7 +29,7 @@ public class PlayerServiceTest {
 		user.setEnabled(true);
 		player.setUser(user);
 		this.playerService.savePlayer(player);
-		Player p = this.playerService.findPlayerByUsername(user);
+		Player p = this.playerService.findPlayerByUsername(user.getUsername());
 		assertEquals(p.getFirstName(), "Julio");
 
 	}

@@ -51,7 +51,7 @@ public class GameService {
 	public Player jugadorSesion() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = authentication.getName();
-		return this.playerService.findPlayerByUsername(this.userService.findUser(username).orElse(null));
+		return this.playerService.findPlayerByUsername(username);
 	}
 
 	public void updatePlayer(Player player) {

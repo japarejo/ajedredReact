@@ -53,7 +53,7 @@ public class PlayerController {
 
             if (!player.getUser().getUsername().equals(jugadorActual.getUser().getUsername())) {
 
-                Player playerWithUser = this.playerService.findPlayerByUsername(player.getUser());
+                Player playerWithUser = this.playerService.findPlayerByUsername(player.getUser().getUsername());
 
                 if (playerWithUser != null) {
                     throw new Error();

@@ -17,8 +17,8 @@ INSERT INTO USERS(username,password,enabled) VALUES
 --('test','$2a$10$.0rMkKe5kDbZfDX7nC0jce/HqRRbgMAHs18RN7mzKLa6G43xWx4pC', TRUE, 1);
 
 INSERT INTO authorities(id,authority, username) VALUES
-(1,'ADMIN', 'admin1'),(2,'PLAYER', 'dani'),
-(3,'PLAYER', 'adri'), (4,'PLAYER', 'test');
+(1,'Admin', 'admin1'),(2,'Player', 'dani'),
+(3,'Player', 'adri'), (4,'Player', 'test');
 
 INSERT INTO players(username,first_name, last_name, telephone) VALUES
 ('dani', 'Daniel', 'Rodríguez', '666777999'), ('adri','Adrian', 'Contreras', '654654654'),

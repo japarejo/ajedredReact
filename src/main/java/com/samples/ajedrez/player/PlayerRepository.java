@@ -6,12 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.samples.ajedrez.user.User;
-
 public interface PlayerRepository extends CrudRepository<Player, String> {
 
-    @Query("SELECT player FROM Player player WHERE player.user = :user")
-    public Player findByUsername(@Param("user") User username);
+    @Query("SELECT player FROM Player player WHERE player.user.username = :username")
+    public Player findByUsername(String username);
 
     @Query("SELECT player FROM Player player")
     public List<Player> findAllPlayers();
