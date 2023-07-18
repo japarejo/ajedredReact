@@ -36,10 +36,7 @@ public class GameControllerTest {
     @Autowired
     private PlayerService playerService;
 
-
-
-
-    public String obtenerToken(){
+    public String obtenerToken() {
 
         String url = "http://localhost:8080/api/login";
         HttpHeaders headers = new HttpHeaders();
@@ -51,8 +48,7 @@ public class GameControllerTest {
         return response.getBody();
     }
 
-
-    public String obtenerToken2(){
+    public String obtenerToken2() {
 
         String url = "http://localhost:8080/api/login";
         HttpHeaders headers = new HttpHeaders();
@@ -64,9 +60,8 @@ public class GameControllerTest {
         return response.getBody();
     }
 
-
     @BeforeEach
-    void setup(){
+    void setup() {
 
         String url = "http://localhost:8080/api/games/create";
         String token = obtenerToken2();
@@ -74,7 +69,7 @@ public class GameControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        Game createRequest = new Game(1,"Partida1",10,true);
+        Game createRequest = new Game(1, "Partida1", 10, true);
 
         HttpEntity<Game> requestEntity = new HttpEntity<>(createRequest, headers);
 
@@ -84,7 +79,7 @@ public class GameControllerTest {
 
         Player player = game.getPlayer().get(0);
 
-        Instant instant =Instant.now();
+        Instant instant = Instant.now();
 
         player.setInicioTurno(instant);
 
@@ -92,17 +87,16 @@ public class GameControllerTest {
 
     }
 
-
     @Test
     public void testCreateGame() {
-        
+
         String url = "http://localhost:8080/api/games/create";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        Game createRequest = new Game(2,"PartidaPrueba",10,true);
+        Game createRequest = new Game(2, "PartidaPrueba", 10, true);
 
         HttpEntity<Game> requestEntity = new HttpEntity<>(createRequest, headers);
 
@@ -110,10 +104,9 @@ public class GameControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-
     @Test
     public void testJoinPlayer() {
-        
+
         String url = "http://localhost:8080/api/games/1/join";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
@@ -126,7 +119,7 @@ public class GameControllerTest {
 
     @Test
     public void testJoinEspectador() {
-        
+
         String url = "http://localhost:8080/api/games/1/espectador";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
@@ -141,14 +134,13 @@ public class GameControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        assertEquals(game.getNumeroJugadores(),nPlayers);
+        assertEquals(game.getNumeroJugadores(), nPlayers);
     }
-
 
     @Test
     @WithMockUser(username = "dani", roles = "Player")
     public void testListaMovimientos() {
-        
+
         String url = "http://localhost:8080/api/games/listMovements/1";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
@@ -171,7 +163,7 @@ public class GameControllerTest {
     @Test
     @WithMockUser(username = "dani", roles = "Player")
     public void testMovimiento() {
-        
+
         String url = "http://localhost:8080/api/games/1/move";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
@@ -188,7 +180,7 @@ public class GameControllerTest {
         this.playerService.updatePlayer(player);
 
         Game game = this.gameService.findGameById(1);
-        List<Player>players = game.getPlayer();
+        List<Player> players = game.getPlayer();
         players.add(player);
 
         game.setPlayer(players);
@@ -199,7 +191,7 @@ public class GameControllerTest {
 
         int xPosition = piece.getXPosition();
 
-        Piece createRequest = new Piece(1,5,4);
+        Piece createRequest = new Piece(1, 5, 4);
 
         HttpEntity<Piece> requestEntity = new HttpEntity<>(createRequest, headers);
 
@@ -209,8 +201,7 @@ public class GameControllerTest {
 
         int newXPosition = this.gameService.findPieceById(1).getXPosition();
 
-        assertNotEquals(xPosition,newXPosition);
+        assertNotEquals(xPosition, newXPosition);
     }
 
-    
 }

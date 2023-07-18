@@ -22,10 +22,9 @@ public class PlayerControllerTest {
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     @Autowired
-	protected PlayerService playerService;
+    protected PlayerService playerService;
 
-
-    public String obtenerToken(){
+    public String obtenerToken() {
 
         String url = "http://localhost:8080/api/login";
         HttpHeaders headers = new HttpHeaders();
@@ -37,11 +36,9 @@ public class PlayerControllerTest {
         return response.getBody();
     }
 
-    
-
-	@Test
+    @Test
     public void testUpdatePlayer() {
-        
+
         String url = "http://localhost:8080/api/player/update";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
@@ -49,36 +46,35 @@ public class PlayerControllerTest {
         headers.setBearerAuth(token);
 
         String[] APELLIDOS = {
-            "González", "Rodríguez", "López", "Martínez", "Pérez", "Gómez", "Sánchez", "Fernández", "Ramírez", "Torres"
+                "González", "Rodríguez", "López", "Martínez", "Pérez", "Gómez", "Sánchez", "Fernández", "Ramírez",
+                "Torres"
         };
 
         Random random = new Random();
         int index = random.nextInt(APELLIDOS.length);
 
         String apellido = APELLIDOS[index];
-       
+
         User user = new User("dani", "react");
-        Player registerRequest = new Player("Daniel",apellido,"676876876",user);
+        Player registerRequest = new Player("Daniel", apellido, "676876876", user);
         HttpEntity<Player> requestEntity = new HttpEntity<>(registerRequest, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-
     @Test
     public void testErrorUpdatePlayer() {
-        
+
         String url = "http://localhost:8080/api/player/update";
         String token = obtenerToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
         User user = new User("adri", "react");
-        Player registerRequest = new Player("Daniel","Rodriguez","676876876",user);
+        Player registerRequest = new Player("Daniel", "Rodriguez", "676876876", user);
         HttpEntity<Player> requestEntity = new HttpEntity<>(registerRequest, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
-    
-    
+
 }

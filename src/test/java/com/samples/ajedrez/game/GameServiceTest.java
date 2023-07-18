@@ -24,11 +24,10 @@ public class GameServiceTest {
         this.gameService.saveGame(game);
 
         Game g = this.gameService.findGameById(this.gameService.findGames().size());
-		
-        assertEquals(g.getName(),"Partida Servicio");
-        
-    }
 
+        assertEquals(g.getName(), "Partida Servicio");
+
+    }
 
     @Test
     public void testFindGames() {
@@ -48,9 +47,9 @@ public class GameServiceTest {
         this.gameService.saveGame(game2);
 
         int totalPartidas = this.gameService.findGames().size();
-		
-        assertTrue(totalPartidas>=2);
-        
+
+        assertTrue(totalPartidas >= 2);
+
     }
-    
+
 }

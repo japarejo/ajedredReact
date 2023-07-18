@@ -13,13 +13,13 @@ import com.samples.ajedrez.user.User;
 @SpringBootTest
 public class PlayerServiceTest {
 
-    @Autowired
-    private PlayerService playerService;
+	@Autowired
+	private PlayerService playerService;
 
-    @Test
-    public void testFindPlayerByUsername() {
+	@Test
+	public void testFindPlayerByUsername() {
 
-        Player player = new Player();
+		Player player = new Player();
 		player.setFirstName("Julio");
 		player.setLastName("Rodriguez");
 		player.setTelephone("687978879");
@@ -30,12 +30,11 @@ public class PlayerServiceTest {
 		player.setUser(user);
 		this.playerService.savePlayer(player);
 		Player p = this.playerService.findPlayerByUsername(user);
-		assertEquals(p.getFirstName(),"Julio");
-        
-    }
+		assertEquals(p.getFirstName(), "Julio");
 
+	}
 
-    @Test
+	@Test
 	public void testInsertPlayer() {
 		List<Player> players = this.playerService.findAllPlayers();
 		int found = players.size();
@@ -50,14 +49,13 @@ public class PlayerServiceTest {
 		user.setEnabled(true);
 		player.setUser(user);
 
-        this.playerService.savePlayer(player);
+		this.playerService.savePlayer(player);
 
 		players = this.playerService.findAllPlayers();
 		assertThat(players.size()).isEqualTo(found + 1);
 	}
 
-
-    @Test
+	@Test
 	public void testUpdatePlayer() {
 		Player player = this.playerService.findPlayerById(this.playerService.findAllPlayers().size());
 		String oldLastName = player.getLastName();
@@ -69,5 +67,5 @@ public class PlayerServiceTest {
 		player = this.playerService.findPlayerById(this.playerService.findAllPlayers().size());
 		assertThat(player.getLastName()).isEqualTo(newLastName);
 	}
-    
+
 }
