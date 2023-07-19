@@ -1,74 +1,85 @@
 package com.samples.ajedrez.user;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samples.ajedrez.player.Player;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class UserControllerTest {
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    public void testLoginSuccess() {
+    public void testLoginSuccess() throws Exception {
 
-        String url = "http://localhost:8080/api/login";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        User loginRequest = new User("dani", "react");
-        HttpEntity<User> requestEntity = new HttpEntity<>(loginRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        String username = "test";
+        String password = "test";
+        User user = new User(username, password);
+        String loginRequest = objectMapper.writeValueAsString(user);
+        this.mvc.perform(post("/api/login").content(loginRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void testLoginError() {
+    public void testLoginError() throws Exception {
 
-        String url = "http://localhost:8080/api/login";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        User loginRequest = new User("username", "password");
-        HttpEntity<User> requestEntity = new HttpEntity<>(loginRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        String username = "$error$";
+        String password = "error";
+        User user = new User(username, password);
+        String loginRequest = objectMapper.writeValueAsString(user);
+        this.mvc.perform(post("/api/login").content(loginRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testRegisterSuccess() {
+    public void testRegisterSuccess() throws Exception {
 
-        String url = "http://localhost:8080/api/register";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        User user = new User("alba", "1234password");
-        Player registerRequest = new Player("Alba", "Rodriguez", "676876876", user);
-        HttpEntity<Player> requestEntity = new HttpEntity<>(registerRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        User user = new User("john", "johndoe");
+        Player player = new Player("John", "Doe", "123456789", user);
 
+        String registerRequest = objectMapper.writeValueAsString(player);
+        this.mvc.perform(post("/api/register").content(registerRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+    
+    @Test
+    public void testRegisterAccountAlreadyExists() throws Exception {
+
+        User user = new User("test", "test");
+        Player player = new Player("John", "Doe", "123456789", user);
+
+        
+        String registerRequest = objectMapper.writeValueAsString(player);
+        this.mvc.perform(post("/api/register").content(registerRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testRegisterError() {
+    public void testRegisterError() throws Exception {
 
-        String url = "http://localhost:8080/api/register";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        User user = new User("dani", "react");
-        Player registerRequest = new Player("Daniel", "Rodriguez", "676876876", user);
-        HttpEntity<Player> requestEntity = new HttpEntity<>(registerRequest, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        User user = new User("test", "test");
 
+        String registerRequest = objectMapper.writeValueAsString(user);
+        this.mvc.perform(post("/api/register").content(registerRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
-
+    
 }
