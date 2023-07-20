@@ -29,9 +29,9 @@ public class PlayerService {
 
     @Transactional
     public void savePlayer(Player player) throws DataAccessException {
+        playerRepository.save(player);
         userService.saveUser(player.getUser());
         authoritiesService.saveAuthorities(player.getUser().getUsername(), "Player");
-        playerRepository.save(player);
     }
 
     @Transactional(readOnly = true)

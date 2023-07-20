@@ -1,7 +1,10 @@
 package com.samples.ajedrez.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.samples.ajedrez.chess.ChessBoard;
+import com.samples.ajedrez.model.BaseEntity;
+import com.samples.ajedrez.player.Player;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +16,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.samples.ajedrez.chess.ChessBoard;
-import com.samples.ajedrez.model.BaseEntity;
-import com.samples.ajedrez.player.Player;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,7 +48,7 @@ public class Game extends BaseEntity {
 	@NotNull
 	private Boolean espectadores;
 
-	@Column(name = "numeroJugadores")
+	@Column(name = "numero_jugadores")
 	@NotNull
 	private Integer numeroJugadores;
 
@@ -64,7 +61,7 @@ public class Game extends BaseEntity {
 	@JoinColumn(name = "chessboard_id", referencedColumnName = "id")
 	private ChessBoard chessBoard;
 
-	@Column(name = "finPartida")
+	@Column(name = "fin_partida")
 	private Boolean finPartida;
 
 }

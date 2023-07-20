@@ -1,7 +1,7 @@
 package com.samples.ajedrez.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,13 +26,13 @@ public class User {
     }
 
     @Id
-    String username;
+    private String username;
 
     @Column(nullable = false)
-    String password;
+    private String password;
 
     @Column(nullable = false)
-    boolean enabled;
+    private boolean enabled;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
     @JsonIgnore

@@ -35,14 +35,15 @@ public class SecurityConfig {
                 // .httpBasic(withDefaults())
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/games/**", "/api/login", "/api/register", "/api/auth/**").permitAll()
+                .antMatchers("/", "/games/**", "/api/login", "/api/register", "/api/auth/**,", "/h2-console/**").permitAll()
                 .antMatchers("/api/games/**").authenticated()
                 .antMatchers("/api/player/**").authenticated()
                 .anyRequest().authenticated()
                 .and().cors()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+        
+        http.headers().frameOptions().sameOrigin();
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
