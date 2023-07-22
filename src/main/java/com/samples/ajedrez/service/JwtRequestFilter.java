@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.util.StringUtils;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -28,17 +29,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
+        String jwt = parseJwt(request);
 
-        String username = null;
-        String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            username = jwtUtilService.extractUsername(jwt);
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            String username = jwtUtilService.extractUsername(jwt);
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
@@ -51,6 +45,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private String parseJwt(HttpServletRequest request) {
+
+        String headerAuth = request.getHeader("Authorization");
+        boolean checkAuthHeaderHasToken = StringUtils.hasText(headerAuth);
+
+        if (checkAuthHeaderHasToken && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7, headerAuth.length());
+        }
+
+        return null;
     }
 
 }
