@@ -17,51 +17,49 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "games")
 @Getter
 @Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "games")
 public class Game extends BaseEntity {
 
-	public Game() {
+    public Game(int id, String name, Integer tiempo, Boolean espectadores) {
+        this.id = id;
+        this.name = name;
+        this.tiempo = tiempo;
+        this.espectadores = espectadores;
+    }
 
-	}
+    @Column(name = "name", unique = true)
+    @NotEmpty
+    private String name;
 
-	public Game(int id, String name, Integer tiempo, Boolean espectadores) {
-		this.id = id;
-		this.name = name;
-		this.tiempo = tiempo;
-		this.espectadores = espectadores;
-	}
+    @Column(name = "tiempo")
+    @NotNull
+    private Integer tiempo;
 
-	@Column(name = "name", unique = true)
-	@NotEmpty
-	private String name;
+    @Column(name = "espectadores")
+    @NotNull
+    private Boolean espectadores;
 
-	@Column(name = "tiempo")
-	@NotNull
-	private Integer tiempo;
+    @Column(name = "numero_jugadores")
+    @NotNull
+    private Integer numeroJugadores;
 
-	@Column(name = "espectadores")
-	@NotNull
-	private Boolean espectadores;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "game_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
+    @JsonIgnore
+    private List<Player> player;
 
-	@Column(name = "numero_jugadores")
-	@NotNull
-	private Integer numeroJugadores;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chessboard_id", referencedColumnName = "id")
+    private ChessBoard chessBoard;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "game_player", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
-	@JsonIgnore
-	private List<Player> player;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "chessboard_id", referencedColumnName = "id")
-	private ChessBoard chessBoard;
-
-	@Column(name = "fin_partida")
-	private Boolean finPartida;
+    @Column(name = "fin_partida")
+    private Boolean finPartida;
 
 }

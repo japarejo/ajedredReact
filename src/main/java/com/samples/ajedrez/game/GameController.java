@@ -1,12 +1,14 @@
 package com.samples.ajedrez.game;
 
+import com.samples.ajedrez.chess.ChessBoard;
+import com.samples.ajedrez.chess.Piece;
+import com.samples.ajedrez.player.Player;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.samples.ajedrez.chess.ChessBoard;
-import com.samples.ajedrez.chess.Piece;
-import com.samples.ajedrez.player.Player;
 
 @RequestMapping("/api/games")
 @RestController
@@ -622,7 +620,6 @@ public class GameController {
         List<Game> pl = this.gameService.findGames();
 
         return pl;
-
     }
-
+    
 }

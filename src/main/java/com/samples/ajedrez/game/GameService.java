@@ -112,5 +112,11 @@ public class GameService {
         this.boardService.inicializacionTablero(board);
 
     }
+    
+    @Transactional(readOnly = true)
+    public int getGamesPlayedByPlayerUsername(String username) {
+
+        return this.gameRepository.countGamesPlayedByPlayer(username);   
+    }
 
 }
