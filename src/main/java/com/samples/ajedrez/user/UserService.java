@@ -1,5 +1,8 @@
 package com.samples.ajedrez.user;
 
+import com.samples.ajedrez.plan.Plan;
+import com.samples.ajedrez.plan.PlanRepository;
+import com.samples.ajedrez.plan.PlanType;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -12,21 +15,26 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    
+    private final PlanRepository planRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, PlanRepository planRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.planRepository = planRepository;
     }
 
     @Transactional
     public void saveUser(User user) {
+        Plan plan = this.planRepository.findPlanByType(PlanType.BASIC);
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
         user.setEnabled(true);
+        user.setPlan(plan);
         userRepository.save(user);
     }
 
