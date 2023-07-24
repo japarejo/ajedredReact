@@ -1,14 +1,9 @@
-import React from 'react';
-import './App.css';
+import './App.css'
 
-import {RouteList} from "./RouteList";
+import { RouteList } from './RouteList'
 
 function App() {
-  
-    
-return (
-      <RouteList/>
-    );
-  }
+  return <RouteList />
+}
 
-export default App;
+export default App
