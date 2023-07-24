@@ -1,30 +1,21 @@
-import React from 'react';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Link } from 'react-router-dom'
 
 export default function Welcome() {
+  return (
+    <div className='container p-5 text-center'>
+      <h1 className='col h1 m-3 font-weight-normal text-center'>
+        Entra y disfruta del ajedrez
+      </h1>
 
-    
-        return(
-           
-            <div className="form-signin container col-auto p-5 text-center display:flex; justify-content: center;">
-              <br></br>
-              <br></br>
-              <br></br>
-            <h1 className="h3 mb-3 font-weight-normal">Entra y disfruta del ajedrez</h1>
-            <br></br>
-            <br></br>
-              <div className="d-flex justify-content-center bd-highlight">
-              <a className="btn boton btn-info btn-lg p-2 bd-highlight" style={{'marginRight': '10px'}} href="/login">Iniciar Sesión</a>
-              <br></br>
-              <br></br>
-              <a className="btn boton btn-info btn-lg p-2 bd-highlight" href="/register">Registro</a>
-              </div>
-              </div>
-
-
-            )
+      <div className='row'>
+        <Link className='col btn btn-lg btn-primary p-2 m-1' to='/login'>
+          Iniciar sesión
+        </Link>
+        <Link className='col btn btn-lg btn-primary p-2  m-1' to='/register'>
+          Registrarse
+        </Link>
+      </div>
+    </div>
+  )
 }
-
