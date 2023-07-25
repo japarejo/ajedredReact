@@ -32,7 +32,7 @@ function ListGame() {
         },
       })
       .then(response => {
-        if (response.data === 'OK') {
+        if (response.status === 200) {
           Cookies.set('time', tiempo * 60)
           Cookies.set('timeOpponent', tiempo * 60)
           window.location.replace('/games/' + id)
