@@ -32,10 +32,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // .httpBasic(withDefaults())
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/games/**", "/api/login", "/api/register", "/api/auth/**,", "/h2-console/**").permitAll()
+                .antMatchers("/", "/api/login", "/api/register", "/api/check", "/games/**", "/api/auth/**", "/h2-console/**").permitAll()
                 .antMatchers("/api/games/**").authenticated()
                 .antMatchers("/api/player/**").authenticated()
                 .anyRequest().authenticated()
