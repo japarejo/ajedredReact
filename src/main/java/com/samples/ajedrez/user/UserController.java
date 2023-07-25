@@ -56,10 +56,12 @@ public class UserController {
         try {
             Jwts.parser().setSigningKey(JWT_SECRET_KEY).parseClaimsJws(token);
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                    .body(token);
         } catch (JwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).
-                    body(e.getCause().toString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .contentType(MediaType.APPLICATION_JSON).
+                    body(e.getMessage());
         }
 
     }
