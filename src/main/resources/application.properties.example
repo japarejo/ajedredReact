@@ -1,17 +1,26 @@
+#Folder name with schema.sql and data.sql
+database=h2
+spring.sql.init.schema-locations=classpath*:db/${database}/schema.sql
+spring.sql.init.data-locations=classpath*:db/${database}/data.sql
+
 # JDBC URL of the database
 spring.datasource.url=jdbc:h2:mem:testdb
 spring.datasource.driverClassName=org.h2.Driver
-spring.datasource.username=<Login username of the database>
-spring.datasource.password=<Login password of the database>
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+#Database credentials
+spring.datasource.username=Example
+spring.datasource.password=Example
+spring.h2.console.enabled=Enable h2 console
 
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=<Show sql query>
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=Show jpa queries
 spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.defer-datasource-initialization=<See Spring Boot 2.5 release notes>
 
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
 
-jwt.secret=<Your secret>
+#Control logging of Spring Security
+logging.level.org.springframework.security=TRACE
+
+#JWT secret
+jwt.secret=Insert your secret
