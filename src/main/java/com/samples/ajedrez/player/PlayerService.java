@@ -4,6 +4,8 @@ import com.samples.ajedrez.user.Authorities;
 import com.samples.ajedrez.user.AuthoritiesService;
 import com.samples.ajedrez.user.User;
 import com.samples.ajedrez.user.UserService;
+import com.samples.request.RegisterRequest;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,9 +31,9 @@ public class PlayerService {
 
     @Transactional
     public void savePlayer(Player player) throws DataAccessException {
-        playerRepository.save(player);
-        userService.saveUser(player.getUser());
-        authoritiesService.saveAuthorities(player.getUser().getUsername(), "Player");
+        
+    	authoritiesService.saveAuthorities(player.getUser().getUsername(), "Player");
+    	playerRepository.save(player);
     }
 
     @Transactional(readOnly = true)
@@ -39,6 +41,7 @@ public class PlayerService {
         return playerRepository.findByUsername(username);
     }
 
+    @Transactional(readOnly = true)
     public Player jugadorSesion() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -80,12 +83,24 @@ public class PlayerService {
     public void updateTurnPlayer(Player player) {
         playerRepository.save(player);
     }
-
+    
+    @Transactional(readOnly = true)
     public List<Player> findAllPlayers() {
         return playerRepository.findAllPlayers();
     }
 
+    @Transactional(readOnly = true)
     public Player findPlayerById(int id) {
         return playerRepository.findById(id);
+    }
+    
+    public Player mapRegisterRequestToPlayer(RegisterRequest register, User user) {
+    	String firstName = register.getFirstName();
+    	String lastName = register.getLastName();
+    	String telephone = register.getTelephone();
+    	
+    	Player player = new Player(firstName, lastName, telephone, user);
+    	
+    	return player;
     }
 }
