@@ -1,9 +1,12 @@
 package com.samples.ajedrez.user;
 
+import com.samples.ajedrez.plan.Plan;
+import com.samples.ajedrez.plan.PlanService;
 import com.samples.ajedrez.player.Player;
 import com.samples.ajedrez.player.PlayerService;
 import com.samples.ajedrez.service.JwtUtilService;
 import com.samples.request.LoginRequest;
+import com.samples.request.RegisterRequest;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -33,20 +36,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsService usuarioDetailsService;
+    private final UserDetailsService usuarioDetailsService;
 
-    @Autowired
-    private JwtUtilService jwtUtilService;
+    private final JwtUtilService jwtUtilService;
 
-    @Autowired
-    private PlayerService playerService;
+    private final PlayerService playerService;
 
+    private final UserService userService;
+    
+    private final PlanService planService;
+    
     @Autowired
-    private UserService userService;
+    public UserController(AuthenticationManager authManager,
+    			UserDetailsService userDetailsService,
+    			JwtUtilService jwtService,
+    			PlayerService playerService,
+    			UserService userService,
+    			PlanService planService) {
+    	
+    	this.authenticationManager = authManager;
+    	this.usuarioDetailsService = userDetailsService;
+    	this.jwtUtilService = jwtService;
+    	this.playerService = playerService;
+    	this.userService = userService;
+    	this.planService = planService;
+    	
+    }
 
     @Value("${jwt.secret}")
     private String JWT_SECRET_KEY;
@@ -98,19 +115,27 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Player player) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest register) {
 
-        User user = player.getUser();
-
-        if (user == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        if (userService.checkUsernameExists(user.getUsername())) {
+      
+        if (userService.checkUsernameExists(register.getUsername())) {
             return ResponseEntity.badRequest().build();
 
         }
+        
+        if (!planService.checkPlanExists(register.getPlan())) {
+            return ResponseEntity.badRequest().build();
 
+        }
+        
+        String planName = register.getPlan();
+        
+        Plan plan = this.planService.getPlanByPlanType(planName);
+        User user = this.userService.mapRegisterToUserEntity(register, plan);
+        
+        this.userService.saveUser(user);
+        
+        Player player = playerService.mapRegisterRequestToPlayer(register, user);
         playerService.savePlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
