@@ -1,62 +1,72 @@
 package com.samples.ajedrez.user;
 
-import com.samples.ajedrez.plan.Plan;
-import com.samples.ajedrez.plan.PlanRepository;
-import com.samples.ajedrez.plan.PlanType;
 import java.util.List;
 import java.util.Optional;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.samples.ajedrez.plan.Plan;
+import com.samples.request.RegisterRequest;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     
-    private final PlanRepository planRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository,
-            PasswordEncoder passwordEncoder, PlanRepository planRepository) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.planRepository = planRepository;
     }
 
-    @Transactional
-    public void saveUser(User user) {
-        Plan plan = this.planRepository.findPlanByType(PlanType.BASIC);
-        String password = passwordEncoder.encode(user.getPassword());
-        user.setPassword(password);
-        user.setEnabled(true);
-        user.setPlan(plan);
-        userRepository.save(user);
-    }
-
+    @Transactional(readOnly = true)
     public Optional<User> findUser(String username) {
         return userRepository.findById(username);
     }
     
-    public boolean checkUsernameExists(String username) {
-        return findUser(username).isPresent();
-    }
-
+    @Transactional(readOnly = true)
     public List<User> findAllUsers() {
         return (List<User>) userRepository.findAll();
     }
-
+    
+    @Transactional(readOnly = true)
+    public boolean checkUsernameExists(String username) {
+        return findUser(username).isPresent();
+    }
+    
+    @Transactional
+    public void saveUser(User user) {
+        String password = passwordEncoder.encode(user.getPassword());
+        user.setPassword(password);
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+    
+    @Transactional
     public void updateUser(User user) {
         user.setEnabled(true);
         userRepository.save(user);
     }
-
+    
+    @Transactional
     public void deleteUser(User user) throws DataAccessException {
         userRepository.delete(user);
+    }
+    
+    public User mapRegisterToUserEntity(RegisterRequest register, Plan plan) {
+    	String username = register.getUsername();
+    	String password = register.getPassword();
+    	
+    	User user = new User(username, password);
+    	user.setPlan(plan);
+    	
+    	return user;
     }
 
 }
