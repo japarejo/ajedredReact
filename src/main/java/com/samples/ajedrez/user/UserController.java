@@ -117,14 +117,19 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest register) {
 
+    	String message;
       
         if (userService.checkUsernameExists(register.getUsername())) {
-            return ResponseEntity.badRequest().build();
+        	message = "Username " + "\"" + register.getUsername() + "\""
+        			+ " already exists";
+            return ResponseEntity.badRequest().body(message);
 
         }
         
         if (!planService.checkPlanExists(register.getPlan())) {
-            return ResponseEntity.badRequest().build();
+        	message = "Plan " + "\"" +register.getPlan() + "\"" 
+        			+ " doesnt't exist";
+            return ResponseEntity.badRequest().body(message);
 
         }
         
