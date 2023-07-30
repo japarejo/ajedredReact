@@ -3,8 +3,13 @@ package com.samples.ajedrez.user;
 import com.samples.ajedrez.player.Player;
 import com.samples.ajedrez.player.PlayerService;
 import com.samples.ajedrez.service.JwtUtilService;
+import com.samples.request.LoginRequest;
+
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -75,13 +80,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticate(@RequestBody User user) {
+    public ResponseEntity<String> authenticate(@Valid @RequestBody LoginRequest login) {
 
         try {
 
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
 
-            final UserDetails userDetails = usuarioDetailsService.loadUserByUsername(user.getUsername());
+            final UserDetails userDetails = usuarioDetailsService.loadUserByUsername(login.getUsername());
 
             final String jwt = jwtUtilService.generateToken(userDetails);
 
