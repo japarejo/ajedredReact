@@ -115,7 +115,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest register) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest register) {
 
       
         if (userService.checkUsernameExists(register.getUsername())) {
