@@ -140,7 +140,8 @@ public class UserController {
         
         this.userService.saveUser(user);
         
-        Player player = playerService.mapRegisterRequestToPlayer(register, user);
+        
+        Player player = playerService.mapRegisterRequestToPlayer(register, this.userService.findUser(register.getUsername()).get());
         playerService.savePlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
