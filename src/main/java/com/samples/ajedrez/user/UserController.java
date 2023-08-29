@@ -4,7 +4,7 @@ import com.samples.ajedrez.plan.Plan;
 import com.samples.ajedrez.plan.PlanService;
 import com.samples.ajedrez.player.Player;
 import com.samples.ajedrez.player.PlayerService;
-import com.samples.ajedrez.service.JwtUtilService;
+import com.samples.ajedrez.service.JwtUtilServiceNew;
 import com.samples.request.LoginRequest;
 import com.samples.request.RegisterRequest;
 
@@ -40,29 +40,29 @@ public class UserController {
 
     private final UserDetailsService usuarioDetailsService;
 
-    private final JwtUtilService jwtUtilService;
+    private final JwtUtilServiceNew jwtUtilService;
 
     private final PlayerService playerService;
 
     private final UserService userService;
-    
+
     private final PlanService planService;
-    
+
     @Autowired
     public UserController(AuthenticationManager authManager,
-    			UserDetailsService userDetailsService,
-    			JwtUtilService jwtService,
-    			PlayerService playerService,
-    			UserService userService,
-    			PlanService planService) {
-    	
-    	this.authenticationManager = authManager;
-    	this.usuarioDetailsService = userDetailsService;
-    	this.jwtUtilService = jwtService;
-    	this.playerService = playerService;
-    	this.userService = userService;
-    	this.planService = planService;
-    	
+            UserDetailsService userDetailsService,
+            JwtUtilServiceNew jwtService,
+            PlayerService playerService,
+            UserService userService,
+            PlanService planService) {
+
+        this.authenticationManager = authManager;
+        this.usuarioDetailsService = userDetailsService;
+        this.jwtUtilService = jwtService;
+        this.playerService = playerService;
+        this.userService = userService;
+        this.planService = planService;
+
     }
 
     @Value("${jwt.secret}")
@@ -72,7 +72,7 @@ public class UserController {
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
     }
-    
+
     @GetMapping("/auth/validate_token/{token}")
     public ResponseEntity<String> tokenValido(@PathVariable String token) {
         try {
@@ -82,12 +82,11 @@ public class UserController {
                     .body(token);
         } catch (JwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .contentType(MediaType.APPLICATION_JSON).
-                    body(e.getMessage());
+                    .contentType(MediaType.APPLICATION_JSON).body(e.getMessage());
         }
 
     }
-    
+
     @GetMapping("/check")
     public ResponseEntity<String> checkHealth() {
         String message = "I am running ✅";
@@ -101,11 +100,18 @@ public class UserController {
 
         try {
 
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
 
-            final UserDetails userDetails = usuarioDetailsService.loadUserByUsername(login.getUsername());
+            /*
+             * This is the old code that given an object of userdetails generates a token
+             * final UserDetails userDetails =
+             * usuarioDetailsService.loadUserByUsername(login.getUsername());
+             * final String jwt = jwtUtilService.generateToken(userDetails);
+             */
 
-            final String jwt = jwtUtilService.generateToken(userDetails);
+            // This is new code that generates a token with no parameters
+            final String jwt = jwtUtilService.generateToken();
 
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jwt);
 
@@ -117,31 +123,31 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest register) {
 
-    	String message;
-      
+        String message;
+
         if (userService.checkUsernameExists(register.getUsername())) {
-        	message = "Username " + "\"" + register.getUsername() + "\""
-        			+ " already exists";
+            message = "Username " + "\"" + register.getUsername() + "\""
+                    + " already exists";
             return ResponseEntity.badRequest().body(message);
 
         }
-        
+
         if (!planService.checkPlanExists(register.getPlan())) {
-        	message = "Plan " + "\"" +register.getPlan() + "\"" 
-        			+ " doesnt't exist";
+            message = "Plan " + "\"" + register.getPlan() + "\""
+                    + " doesnt't exist";
             return ResponseEntity.badRequest().body(message);
 
         }
-        
+
         String planName = register.getPlan();
-        
+
         Plan plan = this.planService.getPlanByPlanType(planName);
         User user = this.userService.mapRegisterToUserEntity(register, plan);
-        
+
         this.userService.saveUser(user);
-        
-        
-        Player player = playerService.mapRegisterRequestToPlayer(register, this.userService.findUser(register.getUsername()).get());
+
+        Player player = playerService.mapRegisterRequestToPlayer(register,
+                this.userService.findUser(register.getUsername()).get());
         playerService.savePlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

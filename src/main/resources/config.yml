@@ -1,0 +1,115 @@
+evaluators:
+  maxPets:
+    expression: userContext['pets'] <= planContext['maxPets']
+  maxVisitsPerMonthAndPet:
+    expression: ""
+  supportPriority:
+    expression: ""
+  haveCalendar:
+    expression: planContext['haveCalendar']
+  havePetsDashboard:
+    expression: planContext['havePetsDashboard']
+  haveVetSelection:
+    expression: planContext['haveVetSelection']
+  haveOnlineConsultations:
+    expression: planContext['haveOnlineConsultations']
+plans:
+  BASIC:
+    currency: EUR
+    description: BASIC plan
+    features:
+      maxPets:
+        description: Maximun number of pets per user
+        type: NUMERIC
+        value: 2
+      maxVisitsPerMonthAndPet:
+        description: Maximun visits per month and pet
+        type: NUMERIC
+        value: 1
+      supportPriority:
+        description: supportPriority description
+        type: TEXT
+        value: LOW
+      haveCalendar:
+        description: haveCalendar description
+        type: CONDITION
+        value: false
+      havePetsDashboard:
+        description: havePetsDashboard description
+        type: CONDITION
+        value: false
+      haveVetSelection:
+        description: haveVetSelection description
+        type: CONDITION
+        value: false
+      haveOnlineConsultations:
+        description: haveOnlineConsultations description
+        type: CONDITION
+        value: false
+    price: 0.0
+  GOLD:
+    currency: EUR
+    description: GOLD plan
+    features:
+      maxPets:
+        description: maxPets description
+        type: NUMERIC
+        value: 4
+      maxVisitsPerMonthAndPet:
+        description: maxVisitsPerMonthAndPet description
+        type: NUMERIC
+        value: 3
+      supportPriority:
+        description: supportPriority description
+        type: TEXT
+        value: MEDIUM
+      haveCalendar:
+        description: haveCalendar description
+        type: CONDITION
+        value: true
+      havePetsDashboard:
+        description: havePetsDashboard description
+        type: CONDITION
+        value: false
+      haveVetSelection:
+        description: haveVetSelection description
+        type: CONDITION
+        value: true
+      haveOnlineConsultations:
+        description: haveOnlineConsultations description
+        type: CONDITION
+        value: false
+    price: 5.0
+  PLATINUM:
+    currency: EUR
+    description: PLATINUM plan
+    features:
+      maxPets:
+        description: maxPets description
+        type: NUMERIC
+        value: 7
+      maxVisitsPerMonthAndPet:
+        description: maxVisitsPerMonthAndPet description
+        type: NUMERIC
+        value: 6
+      supportPriority:
+        description: supportPriority description
+        type: TEXT
+        value: HIGH
+      haveCalendar:
+        description: haveCalendar description
+        type: CONDITION
+        value: true
+      havePetsDashboard:
+        description: havePetsDashboard description
+        type: CONDITION
+        value: true
+      haveVetSelection:
+        description: haveVetSelection description
+        type: CONDITION
+        value: true
+      haveOnlineConsultations:
+        description: haveOnlineConsultations description
+        type: CONDITION
+        value: true
+    price: 12.0
