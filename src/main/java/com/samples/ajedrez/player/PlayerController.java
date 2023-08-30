@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.samples.ajedrez.service.JwtUtilService;
+import com.samples.ajedrez.service.JwtUtilServiceNew;
 import com.samples.ajedrez.service.TokenInfo;
 
 @RequestMapping("/api/player")
@@ -27,7 +27,7 @@ public class PlayerController {
     UserDetailsService usuarioDetailsService;
 
     @Autowired
-    JwtUtilService jwtUtilService;
+    JwtUtilServiceNew jwtUtilService;
 
     @InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
@@ -64,7 +64,11 @@ public class PlayerController {
                 final UserDetails userDetails = usuarioDetailsService
                         .loadUserByUsername(player.getUser().getUsername());
 
-                final String jwt = jwtUtilService.generateToken(userDetails);
+                // Have to modify previous code
+                // final String jwt = jwtUtilService.generateToken(userDetails);
+
+                // New code breaking changes
+                final String jwt = jwtUtilService.generateToken();
 
                 TokenInfo tokenInfo = new TokenInfo(jwt);
 

@@ -19,27 +19,26 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class JwtUtilServiceNew extends PricingContext {
 
     @Value("${jwt.secret}")
     private String JWT_SECRET_KEY;
 
-    public static final int JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * 8; // 8 Horas
-
     private final UserService userService;
 
     private final GameService gameService;
 
-    @Autowired
-    private PricingEvaluatorUtil pricingEvaluatorUtil;
+    private final PricingEvaluatorUtil pricingEvaluatorUtil;
 
     @Autowired
-    public JwtUtilServiceNew(UserService userService, GameService gameService) {
+    public JwtUtilServiceNew(UserService userService, GameService gameService,
+            PricingEvaluatorUtil pricingEvaluatorUtil) {
         this.userService = userService;
         this.gameService = gameService;
+        this.pricingEvaluatorUtil = pricingEvaluatorUtil;
     }
 
     @Override

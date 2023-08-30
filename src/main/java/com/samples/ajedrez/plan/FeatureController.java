@@ -1,14 +1,19 @@
 package com.samples.ajedrez.plan;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.github.isagroup.PricingContext;
 import io.github.isagroup.PricingService;
+import io.github.isagroup.models.Feature;
 import io.github.isagroup.models.FeatureType;
 
 @RequestMapping("/api/features")
@@ -17,9 +22,17 @@ public class FeatureController {
 
     private final PricingService pricingService;
 
+    private final PricingContext pricingContext;
+
     @Autowired
-    public FeatureController(PricingService pricingService) {
+    public FeatureController(PricingService pricingService, PricingContext pricingContext) {
         this.pricingService = pricingService;
+        this.pricingContext = pricingContext;
+    }
+
+    @GetMapping
+    public Map<String, Feature> getPlanFeatures() {
+        return pricingContext.getFeatures();
     }
 
     @DeleteMapping("/{feature}")

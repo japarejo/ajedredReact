@@ -17,10 +17,10 @@ import io.github.isagroup.models.Plan;
 @RestController
 public class PlanController {
 
-    final PricingService pricingService;
+    private final PricingService pricingService;
 
     @Autowired
-    PlanController(PricingService pricingService) {
+    public PlanController(PricingService pricingService) {
         this.pricingService = pricingService;
     }
 

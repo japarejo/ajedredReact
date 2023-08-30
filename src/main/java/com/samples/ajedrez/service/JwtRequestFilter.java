@@ -1,13 +1,12 @@
 package com.samples.ajedrez.service;
 
-import org.springframework.stereotype.Component;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,11 +18,15 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+
+    private final JwtUtilServiceNew jwtUtilService;
 
     @Autowired
-    private JwtUtilService jwtUtilService;
+    public JwtRequestFilter(UserDetailsService userDetailsService, JwtUtilServiceNew jwtUtilService) {
+        this.userDetailsService = userDetailsService;
+        this.jwtUtilService = jwtUtilService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
