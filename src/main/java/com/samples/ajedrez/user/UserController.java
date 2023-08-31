@@ -8,6 +8,7 @@ import com.samples.ajedrez.service.JwtUtilServiceNew;
 import com.samples.request.LoginRequest;
 import com.samples.request.RegisterRequest;
 
+import io.github.isagroup.PricingEvaluatorUtil;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
@@ -20,7 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.WebDataBinder;
@@ -38,11 +41,9 @@ public class UserController {
 
     private final AuthenticationManager authenticationManager;
 
-    private final UserDetailsService usuarioDetailsService;
-
-    private final JwtUtilServiceNew jwtUtilService;
-
     private final PlayerService playerService;
+
+    private final PricingEvaluatorUtil pricingEvaluatorUtil;
 
     private final UserService userService;
 
@@ -50,16 +51,14 @@ public class UserController {
 
     @Autowired
     public UserController(AuthenticationManager authManager,
-            UserDetailsService userDetailsService,
-            JwtUtilServiceNew jwtService,
+            PricingEvaluatorUtil pricingEvaluatorUtil,
             PlayerService playerService,
             UserService userService,
             PlanService planService) {
 
         this.authenticationManager = authManager;
-        this.usuarioDetailsService = userDetailsService;
-        this.jwtUtilService = jwtService;
         this.playerService = playerService;
+        this.pricingEvaluatorUtil = pricingEvaluatorUtil;
         this.userService = userService;
         this.planService = planService;
 
@@ -100,7 +99,7 @@ public class UserController {
 
         try {
 
-            authenticationManager
+            Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
 
             /*
@@ -111,7 +110,9 @@ public class UserController {
              */
 
             // This is new code that generates a token with no parameters
-            final String jwt = jwtUtilService.generateToken();
+    		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            final String jwt = pricingEvaluatorUtil.generateUserToken();
 
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jwt);
 

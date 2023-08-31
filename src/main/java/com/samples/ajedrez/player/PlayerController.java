@@ -68,9 +68,9 @@ public class PlayerController {
                 // final String jwt = jwtUtilService.generateToken(userDetails);
 
                 // New code breaking changes
-                final String jwt = jwtUtilService.generateToken();
+                // final String jwt = jwtUtilService.generateToken();
 
-                TokenInfo tokenInfo = new TokenInfo(jwt);
+                TokenInfo tokenInfo = new TokenInfo("remove me please!!!");
 
                 return ResponseEntity.ok(tokenInfo);
 

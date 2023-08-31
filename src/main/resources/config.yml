@@ -1,115 +1,40 @@
-evaluators:
-  maxPets:
-    expression: userContext['pets'] <= planContext['maxPets']
-  maxVisitsPerMonthAndPet:
-    expression: ""
-  supportPriority:
-    expression: ""
-  haveCalendar:
-    expression: planContext['haveCalendar']
-  havePetsDashboard:
-    expression: planContext['havePetsDashboard']
-  haveVetSelection:
-    expression: planContext['haveVetSelection']
-  haveOnlineConsultations:
-    expression: planContext['haveOnlineConsultations']
+features:
+  maxGames:
+    description: Max number of games to play
+    expression: userContext['gamesPlayed'] < planContext['maxGames']
+    serverExpression: userContext['gamesPlayed'] <= planContext['maxGames']
+    type: NUMERIC
+    defaultValue: 0
+  allowGameSpectators:
+    description: Allow spectators in chess games
+    expression: planContext['allowGameSpectators']
+    type: CONDITION
+    defaultValue: false
 plans:
   BASIC:
+    description: Plan for basic users
+    price: 0.00
     currency: EUR
-    description: BASIC plan
     features:
-      maxPets:
-        description: Maximun number of pets per user
-        type: NUMERIC
+      maxGames:
         value: 2
-      maxVisitsPerMonthAndPet:
-        description: Maximun visits per month and pet
-        type: NUMERIC
-        value: 1
-      supportPriority:
-        description: supportPriority description
-        type: TEXT
-        value: LOW
-      haveCalendar:
-        description: haveCalendar description
-        type: CONDITION
+      allowGameSpectators:
         value: false
-      havePetsDashboard:
-        description: havePetsDashboard description
-        type: CONDITION
-        value: false
-      haveVetSelection:
-        description: haveVetSelection description
-        type: CONDITION
-        value: false
-      haveOnlineConsultations:
-        description: haveOnlineConsultations description
-        type: CONDITION
-        value: false
-    price: 0.0
-  GOLD:
+  ADVANCED:
+    description: Plan for advanced users
+    price: 9.99
     currency: EUR
-    description: GOLD plan
     features:
-      maxPets:
-        description: maxPets description
-        type: NUMERIC
-        value: 4
-      maxVisitsPerMonthAndPet:
-        description: maxVisitsPerMonthAndPet description
-        type: NUMERIC
-        value: 3
-      supportPriority:
-        description: supportPriority description
-        type: TEXT
-        value: MEDIUM
-      haveCalendar:
-        description: haveCalendar description
-        type: CONDITION
+      maxGames:
+        value: 25
+      allowGameSpectators:
         value: true
-      havePetsDashboard:
-        description: havePetsDashboard description
-        type: CONDITION
-        value: false
-      haveVetSelection:
-        description: haveVetSelection description
-        type: CONDITION
-        value: true
-      haveOnlineConsultations:
-        description: haveOnlineConsultations description
-        type: CONDITION
-        value: false
-    price: 5.0
-  PLATINUM:
+  PRO:
+    description: Plan for pro users
+    price: 14.99
     currency: EUR
-    description: PLATINUM plan
     features:
-      maxPets:
-        description: maxPets description
-        type: NUMERIC
-        value: 7
-      maxVisitsPerMonthAndPet:
-        description: maxVisitsPerMonthAndPet description
-        type: NUMERIC
-        value: 6
-      supportPriority:
-        description: supportPriority description
-        type: TEXT
-        value: HIGH
-      haveCalendar:
-        description: haveCalendar description
-        type: CONDITION
+      maxGames:
+        value: 100
+      allowGameSpectators:
         value: true
-      havePetsDashboard:
-        description: havePetsDashboard description
-        type: CONDITION
-        value: true
-      haveVetSelection:
-        description: haveVetSelection description
-        type: CONDITION
-        value: true
-      haveOnlineConsultations:
-        description: haveOnlineConsultations description
-        type: CONDITION
-        value: true
-    price: 12.0

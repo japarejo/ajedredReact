@@ -31,14 +31,10 @@ public class JwtUtilServiceNew extends PricingContext {
 
     private final GameService gameService;
 
-    private final PricingEvaluatorUtil pricingEvaluatorUtil;
-
     @Autowired
-    public JwtUtilServiceNew(UserService userService, GameService gameService,
-            PricingEvaluatorUtil pricingEvaluatorUtil) {
+    public JwtUtilServiceNew(UserService userService, GameService gameService) {
         this.userService = userService;
         this.gameService = gameService;
-        this.pricingEvaluatorUtil = pricingEvaluatorUtil;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class JwtUtilServiceNew extends PricingContext {
 
     @Override
     public String getConfigFilePath() {
-        return "pricings/config.yml";
+        return "config.yml";
     }
 
     @Override
@@ -89,11 +85,6 @@ public class JwtUtilServiceNew extends PricingContext {
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    // New version of generate token with no parameters
-    public String generateToken() {
-        return pricingEvaluatorUtil.generateUserToken();
     }
 
     private Map<String, Object> generateUserAuthorities(User user) {
